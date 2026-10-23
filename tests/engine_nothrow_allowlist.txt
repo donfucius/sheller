@@ -1,0 +1,39 @@
+# Allowlist for tests/engine_nothrow_gate.cmake. One entry per line, as
+# <source path>:<pattern id>, path relative to the project root. The pattern ids
+# are the gate's: try, throw and catch - each one the keyword appearing anywhere
+# in a line of code once that line's comments are stripped. An entry exempts that
+# one pattern in that one file - being allowed to catch does not make a file
+# allowed to throw.
+#
+# What earns an entry is not "this file needs it" but "this frame is the point
+# where the engine hands control to a host callback". There are exactly two such
+# frames in the engine, and each of them appears here twice (its try and its
+# catch):
+#
+#   src/engine/log_state.cpp  - the log facade's state. The host's sink callback
+#     is invoked here, so a throw from that callback has to be contained here.
+#     The alternatives are ending the host's process or unwinding the throw into
+#     the host's own frame, and a diagnostic channel must not be able to produce
+#     either. It drops the one record instead.
+#   src/engine/rebuild_state.cpp - sink_trampoline, the trampoline the engine
+#     installs as syscalls::WriteSink's write pointer (built once, at
+#     src/engine/syscall_dispatch.cpp:33), and therefore the only first-party
+#     frame between the guest's NtWriteFile dispatch and the host's
+#     options.write_sink. Without a handler here, a throw from that callback
+#     unwinds into unicorn's syscall helper - a C frame with no unwind info - so
+#     on POSIX it is not an unwind at all but std::terminate, and the host dies.
+#
+# Both of them drop what they were handing over, count nothing, echo nothing to a
+# standard stream and emit no log record; see the comments at each site for the
+# three reasons. Same rule, two delivery points - which is why a third file here
+# would not be a third exemption but a new host-callback entry point, and would
+# have to be argued for as one.
+#
+# try is listed for both because a catch clause cannot be spelled without it.
+# throw is deliberately absent from both: neither file raises anything of its own
+# beyond the handler, and the gate fails either on a throw like any other engine
+# TU.
+src/engine/log_state.cpp:try
+src/engine/log_state.cpp:catch
+src/engine/rebuild_state.cpp:try
+src/engine/rebuild_state.cpp:catch

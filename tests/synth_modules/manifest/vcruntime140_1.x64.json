@@ -1,0 +1,20 @@
+{
+ "name": "vcruntime140_1.dll",
+ "arch": "x64",
+ "machine": "0x8664",
+ "export_count": 3,
+ "exports": [
+  {
+   "name": "__CxxFrameHandler4",
+   "ordinal": 1
+  },
+  {
+   "name": "__NLG_Dispatch2",
+   "ordinal": 2
+  },
+  {
+   "name": "__NLG_Return2",
+   "ordinal": 3
+  }
+ ]
+}

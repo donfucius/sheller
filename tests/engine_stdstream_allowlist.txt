@@ -1,0 +1,23 @@
+# Allowlist for tests/engine_stdstream_gate.cmake: the engine statements that
+# still write a host standard stream, one entry per line, as
+#     <path><TAB><needle><TAB><count>
+# The needle is the site's own text up to its first semicolon, so it names the
+# call rather than the file; count is how many statements that needle must claim.
+#
+# The table is the gate's own inventory, not a list kept by hand: run the gate and it
+# reports every hit it sees with the file and line, and each reported statement is
+# copied here as its own text up to the first semicolon with the count it must claim.
+# Editing the entry when its site is rerouted is the point of the ratchet: an entry
+# claiming fewer sites than registered fails the gate (zero included, as "matches nothing
+# - remove it"), and a site with no matching entry fails as "not covered". The table can
+# therefore only shrink, and a finished reroute cannot leave a dead exemption behind.
+#
+# Every entry below is a diagnostic trace whose replacement already exists in the
+# tree - log::write(), which the host installs, filters and silences - so the
+# target for this table is zero entries. The empty file stays committed, because
+# "register your site" has to remain an action somebody takes and sees.
+#
+# It is at that target: the engine TUs now render through src/engine/diag_trace.h
+# and deliver with log::write(), so no engine statement writes a host standard
+# stream and the table is empty. Anything added to it from here is a new host-stream
+# write, and the gate says so before the tree does.

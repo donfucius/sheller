@@ -1,0 +1,140 @@
+#!/usr/bin/env python3
+"""Generate the API parameter-description seed table.
+
+Reads the rohitab API Monitor definition corpus (XML) and emits
+src/behavior/api_descriptions_seed.inc - a deterministic C array of
+ApiDescription rows consumed by api_descriptions.cpp.
+
+Scope: the behavior-face primitives - every Nt function with a policy
+handler, every loader-route intercepted Win32 export, and the heap/Ldr
+family. CRT/runtime exports have zero entries by design (identity-only).
+
+Deterministic: rows emit in manifest order, params in XML order.
+
+Regenerate (adjust --api-root to the local apimonitor checkout):
+    python tools/gen_api_descriptions.py \
+        --api-root C:/devdrv/msvc/src/apimonitor/API
+"""
+
+import argparse
+import xml.etree.ElementTree as ET
+from pathlib import Path
+
+# The source manifest: module (folded name) -> XML file + API names.
+# "Name*" with both=True expands to NameA/NameW (BothCharset definitions).
+MANIFEST = [
+    ("ntdll", "Ntdll.xml", [
+        ("NtWriteFile", False), ("NtDelayExecution", False),
+        ("NtTerminateProcess", False), ("NtCreateThreadEx", False),
+        ("NtTerminateThread", False), ("NtWaitForSingleObject", False),
+        ("NtWaitForMultipleObjects", False), ("NtAllocateVirtualMemory", False),
+        ("NtProtectVirtualMemory", False), ("NtFreeVirtualMemory", False),
+        ("NtCreateSection", False), ("NtOpenSection", False),
+        ("NtMapViewOfSection", False), ("NtCreateFile", False),
+        ("NtReadFile", False), ("NtQueryInformationFile", False),
+        ("NtQueryAttributesFile", False), ("NtClose", False),
+        ("NtQueryInformationProcess", False), ("NtQuerySystemInformation", False),
+        ("NtQueryVirtualMemory", False), ("NtRaiseException", False),
+        ("NtContinue", False),
+        ("RtlCreateHeap", False), ("RtlDestroyHeap", False),
+        ("RtlAllocateHeap", False), ("RtlFreeHeap", False),
+        ("RtlReAllocateHeap", False), ("RtlSizeHeap", False),
+        ("LdrLoadDll", False),
+    ]),
+    ("kernel32", "Kernel32.xml", [
+        ("LoadLibrary", True), ("GetModuleHandle", True),
+        ("GetProcAddress", False), ("VirtualAlloc", False),
+        ("VirtualProtect", False), ("VirtualFree", False),
+        ("ExitProcess", False),
+    ]),
+    # The registry family hosts in advapi32.
+    ("advapi32", "Advapi32.xml", [
+        ("RegOpenKeyEx", True), ("RegQueryValueEx", True), ("RegCloseKey", False),
+    ]),
+]
+
+
+# Names whose absence in the XML is tolerated (skipped with a note).
+OPTIONAL = {"NtTerminateProcess", "NtRaiseException"}
+
+# Present in every real ntdll but absent from this apimonitor revision;
+# hand-written from the documented signatures.
+FALLBACK_ROWS = [
+    ("ntdll", "NtTerminateProcess", ["ProcessHandle", "ExitStatus"]),
+    ("ntdll", "RtlTerminateProcess", ["ProcessHandle", "ExitStatus"]),
+    ("ntdll", "NtRaiseException",
+     ["ExceptionCode", "ExceptionRecord", "ExceptionContext"]),
+]
+
+def extract(api_root: Path, module: str, file_name: str, wanted):
+    """Yield (module, name, [param names]) rows for one XML file."""
+    root = ET.parse(api_root / "Windows" / file_name).getroot()
+    index = {}
+    for api in root.iter("Api"):
+        name = api.get("Name", "")
+        both = (api.get("BothCharset", "") or "").lower() == "true"
+        params = [p.get("Name", "") for p in api.findall("Param")]
+        index[name] = (both, params)
+    for base, expand in wanted:
+        if base not in index:
+            if base in OPTIONAL:
+                print(f"note: {file_name} has no <Api Name=\"{base}\"> (optional)")
+                continue
+            raise SystemExit(f"{file_name}: missing <Api Name=\"{base}\">")
+        both, params = index[base]
+        names = [base + "A", base + "W"] if (expand and both) else [base]
+        for name in names:
+            yield module, name, params
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--api-root", default="C:/devdrv/msvc/src/apimonitor/API")
+    parser.add_argument("--out", default=None,
+                        help="output path (default: alongside this script)")
+    args = parser.parse_args()
+    api_root = Path(args.api_root)
+    out_path = (Path(args.out) if args.out
+                else Path(__file__).resolve().parent.parent
+                / "src" / "behavior" / "api_descriptions_seed.inc")
+    arity_path = out_path.parent.parent / "syscalls" / "syscall_arity_seed.inc"
+
+    rows = []
+    for module, file_name, wanted in MANIFEST:
+        rows.extend(extract(api_root, module, file_name, wanted))
+    rows.extend(FALLBACK_ROWS)
+
+    # Engine-side arity seed: Nt-layer rows only -
+    # name -> form-parameter count, one flat table the dispatch-time
+    # emission consults. Same manifest as the behavior-layer names, so
+    # counts and names cannot drift independently.
+    arity_rows = [(name, len(params)) for module, name, params in rows
+                  if module == "ntdll"]
+    arity_lines = [
+        "// Generated by tools/gen_api_descriptions.py (same manifest as",
+        "// api_descriptions_seed.inc): Nt function name -> form-parameter",
+        "// count for the dispatch-time decoded tier. Rows only - included",
+        "// INSIDE an array initializer.",
+    ]
+    for name, count in arity_rows:
+        arity_lines.append(f'    {{"{name}", {count}}},')
+    arity_path.write_text(chr(10).join(arity_lines) + chr(10), encoding="utf-8")
+    print(f"wrote {arity_path} ({len(arity_rows)} arity rows)")
+
+    lines = [
+        "// Generated by tools/gen_api_descriptions.py from the apimonitor API",
+        "// definition corpus (BothCharset definitions expanded to A/W rows).",
+        "// Source: apimonitor API XML, manifest pinned in the generator script.",
+        "// Regenerate with the command in the script docstring; the output is",
+        "// byte-stable for the pinned manifest.",
+        "// Included INSIDE an array initializer - rows only, no wrapper.",
+    ]
+    for module, name, params in rows:
+        joined = ",".join(params)
+        lines.append(f'    {{"{module}", "{name}", "{joined}"}},')
+    out_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    print(f"wrote {out_path} ({len(rows)} descriptions)")
+
+
+if __name__ == "__main__":
+    main()

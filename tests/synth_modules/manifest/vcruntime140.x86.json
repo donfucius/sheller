@@ -1,0 +1,335 @@
+{
+ "name": "vcruntime140.dll",
+ "arch": "x86",
+ "machine": "0x14c",
+ "export_count": 81,
+ "exports": [
+  {
+   "name": "_CreateFrameInfo",
+   "ordinal": 1
+  },
+  {
+   "name": "_CxxThrowException",
+   "ordinal": 2
+  },
+  {
+   "name": "_EH_prolog",
+   "ordinal": 3
+  },
+  {
+   "name": "_FindAndUnlinkFrame",
+   "ordinal": 4
+  },
+  {
+   "name": "_IsExceptionObjectToBeDestroyed",
+   "ordinal": 5
+  },
+  {
+   "name": "_NLG_Dispatch2",
+   "ordinal": 6
+  },
+  {
+   "name": "_NLG_Return",
+   "ordinal": 7
+  },
+  {
+   "name": "_NLG_Return2",
+   "ordinal": 8,
+   "stdcall_cleanup": 0
+  },
+  {
+   "name": "_SetWinRTOutOfMemoryExceptionCallback",
+   "ordinal": 9
+  },
+  {
+   "name": "__AdjustPointer",
+   "ordinal": 10
+  },
+  {
+   "name": "__BuildCatchObject",
+   "ordinal": 11
+  },
+  {
+   "name": "__BuildCatchObjectHelper",
+   "ordinal": 12
+  },
+  {
+   "name": "__CxxDetectRethrow",
+   "ordinal": 13
+  },
+  {
+   "name": "__CxxExceptionFilter",
+   "ordinal": 14
+  },
+  {
+   "name": "__CxxFrameHandler",
+   "ordinal": 15
+  },
+  {
+   "name": "__CxxFrameHandler2",
+   "ordinal": 16
+  },
+  {
+   "name": "__CxxFrameHandler3",
+   "ordinal": 17
+  },
+  {
+   "name": "__CxxLongjmpUnwind",
+   "ordinal": 18
+  },
+  {
+   "name": "__CxxQueryExceptionSize",
+   "ordinal": 19
+  },
+  {
+   "name": "__CxxRegisterExceptionObject",
+   "ordinal": 20
+  },
+  {
+   "name": "__CxxUnregisterExceptionObject",
+   "ordinal": 21
+  },
+  {
+   "name": "__DestructExceptionObject",
+   "ordinal": 22
+  },
+  {
+   "name": "__FrameUnwindFilter",
+   "ordinal": 23
+  },
+  {
+   "name": "__GetPlatformExceptionInfo",
+   "ordinal": 24
+  },
+  {
+   "name": "__RTCastToVoid",
+   "ordinal": 25
+  },
+  {
+   "name": "__RTDynamicCast",
+   "ordinal": 26
+  },
+  {
+   "name": "__RTtypeid",
+   "ordinal": 27
+  },
+  {
+   "name": "__TypeMatch",
+   "ordinal": 28
+  },
+  {
+   "name": "__current_exception",
+   "ordinal": 29
+  },
+  {
+   "name": "__current_exception_context",
+   "ordinal": 30
+  },
+  {
+   "name": "__intrinsic_setjmp",
+   "ordinal": 31
+  },
+  {
+   "name": "__processing_throw",
+   "ordinal": 32
+  },
+  {
+   "name": "__report_gsfailure",
+   "ordinal": 33
+  },
+  {
+   "name": "__std_exception_copy",
+   "ordinal": 34
+  },
+  {
+   "name": "__std_exception_destroy",
+   "ordinal": 35
+  },
+  {
+   "name": "__std_terminate",
+   "ordinal": 36
+  },
+  {
+   "name": "__std_type_info_compare",
+   "ordinal": 37
+  },
+  {
+   "name": "__std_type_info_destroy_list",
+   "ordinal": 38
+  },
+  {
+   "name": "__std_type_info_hash",
+   "ordinal": 39
+  },
+  {
+   "name": "__std_type_info_name",
+   "ordinal": 40
+  },
+  {
+   "name": "__telemetry_main_invoke_trigger",
+   "ordinal": 41,
+   "stdcall_cleanup": 0
+  },
+  {
+   "name": "__telemetry_main_return_trigger",
+   "ordinal": 42,
+   "stdcall_cleanup": 0
+  },
+  {
+   "name": "__unDName",
+   "ordinal": 43
+  },
+  {
+   "name": "__unDNameEx",
+   "ordinal": 44
+  },
+  {
+   "name": "__uncaught_exception",
+   "ordinal": 45
+  },
+  {
+   "name": "__uncaught_exceptions",
+   "ordinal": 46
+  },
+  {
+   "name": "__vcrt_GetModuleFileNameW",
+   "ordinal": 47
+  },
+  {
+   "name": "__vcrt_GetModuleHandleW",
+   "ordinal": 48
+  },
+  {
+   "name": "__vcrt_InitializeCriticalSectionEx",
+   "ordinal": 49
+  },
+  {
+   "name": "__vcrt_LoadLibraryExW",
+   "ordinal": 50
+  },
+  {
+   "name": "_chkesp",
+   "ordinal": 51
+  },
+  {
+   "name": "_except_handler2",
+   "ordinal": 52
+  },
+  {
+   "name": "_except_handler3",
+   "ordinal": 53
+  },
+  {
+   "name": "_except_handler4_common",
+   "ordinal": 54
+  },
+  {
+   "name": "_get_purecall_handler",
+   "ordinal": 55
+  },
+  {
+   "name": "_get_unexpected",
+   "ordinal": 56
+  },
+  {
+   "name": "_global_unwind2",
+   "ordinal": 57
+  },
+  {
+   "name": "_is_exception_typeof",
+   "ordinal": 58
+  },
+  {
+   "name": "_local_unwind2",
+   "ordinal": 59
+  },
+  {
+   "name": "_local_unwind4",
+   "ordinal": 60
+  },
+  {
+   "name": "_longjmpex",
+   "ordinal": 61
+  },
+  {
+   "name": "_purecall",
+   "ordinal": 62
+  },
+  {
+   "name": "_seh_longjmp_unwind4",
+   "ordinal": 63
+  },
+  {
+   "name": "_seh_longjmp_unwind",
+   "ordinal": 64
+  },
+  {
+   "name": "_set_purecall_handler",
+   "ordinal": 65
+  },
+  {
+   "name": "_set_se_translator",
+   "ordinal": 66
+  },
+  {
+   "name": "_setjmp3",
+   "ordinal": 67
+  },
+  {
+   "name": "longjmp",
+   "ordinal": 68
+  },
+  {
+   "name": "memchr",
+   "ordinal": 69
+  },
+  {
+   "name": "memcmp",
+   "ordinal": 70
+  },
+  {
+   "name": "memcpy",
+   "ordinal": 71
+  },
+  {
+   "name": "memmove",
+   "ordinal": 72
+  },
+  {
+   "name": "memset",
+   "ordinal": 73
+  },
+  {
+   "name": "set_unexpected",
+   "ordinal": 74
+  },
+  {
+   "name": "strchr",
+   "ordinal": 75
+  },
+  {
+   "name": "strrchr",
+   "ordinal": 76
+  },
+  {
+   "name": "strstr",
+   "ordinal": 77
+  },
+  {
+   "name": "unexpected",
+   "ordinal": 78
+  },
+  {
+   "name": "wcschr",
+   "ordinal": 79
+  },
+  {
+   "name": "wcsrchr",
+   "ordinal": 80
+  },
+  {
+   "name": "wcsstr",
+   "ordinal": 81
+  }
+ ]
+}

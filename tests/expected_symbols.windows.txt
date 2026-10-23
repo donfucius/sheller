@@ -1,0 +1,21 @@
+# Expected dynamic export face of sheller.dll - checked in for the
+# export_surface gate (tests/export_surface_gate.cmake). Six entries,
+# one line per demangled symbol, no more and no less; the gate diffs
+# symbol names, it does not count.
+#
+# Regenerate (never hand-edit) from a windows-release build:
+#   dumpbin /exports /nologo build/windows-release/src/shared/Release/sheller.dll
+#   take the name column, run each through undname, sort.
+# Spellings are MSVC's own (class/struct/enum keywords, __cdecl, __ptr64):
+# the Linux list is GCC/c++filt's, and the two are not textually
+# comparable: the two demanglers never agree on a spelling (unsigned char vs
+# uint8_t, __cdecl, __ptr64, the inline-namespace form of
+# std::filesystem::path), so each platform keeps its own list and the pair is
+# reconciled by review, with the "exactly six entries" assertion covering the
+# count.
+class std::basic_string_view<char,struct std::char_traits<char> > __cdecl sheller::unicorn_version_string(void)
+class std::expected<struct sheller::AnalysisArtifacts,struct sheller::AnalysisFailure> __cdecl sheller::analyze(class std::filesystem::path const & __ptr64,struct sheller::AnalysisOptions const & __ptr64)
+class std::expected<struct sheller::AnalysisArtifacts,struct sheller::AnalysisFailure> __cdecl sheller::analyze(class std::vector<unsigned char,class std::allocator<unsigned char> > const & __ptr64,struct sheller::AnalysisOptions const & __ptr64)
+struct sheller::UnpackOutcome __cdecl sheller::unpack_sample(class std::filesystem::path const & __ptr64,struct sheller::UnpackOptions const & __ptr64)
+struct sheller::capture::Result __cdecl sheller::capture::run(struct sheller::capture::Options const & __ptr64)
+void __cdecl sheller::log::set_sink(class std::function<void __cdecl(enum sheller::log::level,class std::basic_string_view<char,struct std::char_traits<char> >)>,enum sheller::log::level)

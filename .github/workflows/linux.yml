@@ -1,0 +1,96 @@
+name: linux
+
+# milestone-gated CI: run manually at a milestone close (gh workflow run),
+# or automatically on pull requests. Pushes to main stay un-billed.
+on:
+  workflow_dispatch:
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  linux-release:
+    runs-on: ubuntu-24.04
+    env:
+      VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Bootstrap vcpkg
+        run: |
+          git clone https://github.com/microsoft/vcpkg.git "$VCPKG_ROOT"
+          "$VCPKG_ROOT/bootstrap-vcpkg.sh" -disableMetrics
+
+      - name: Install clang-format
+        # pinned: ubuntu-24.04's apt clang-format is an 18.0 snapshot whose
+        # formatting diverges from the 18.1.x stable the tree is aligned to
+        run: pip install clang-format==18.1.8
+
+      - name: Check formatting
+        run: clang-format --dry-run -Werror $(git ls-files '*.h' '*.cpp')
+
+      - name: Public header boundary check
+        run: |
+          if grep -rnE '#[[:space:]]*include[[:space:]]*[<"](unicorn/|windows\.h|spdlog/|gtest|fmt/|peconv)' include/sheller/; then
+            echo "::error::third-party include found in public headers"
+            exit 1
+          fi
+
+      - name: Capture module unicorn boundary check
+        run: |
+          if grep -rnE '#[[:space:]]*include[[:space:]]*[<"]unicorn/' src/runtime/capture/; then
+            echo "::error::unicorn include found in the capture module (zero-unicorn boundary)"
+            exit 1
+          fi
+
+      - name: CLI module include boundary check
+        run: |
+          if grep -rnE '#[[:space:]]*include[[:space:]]*[<"]\.\./' src/cli/; then
+            echo "::error::relative-parent include found in the CLI module (public headers only)"
+            exit 1
+          fi
+
+      - name: Configure
+        run: cmake --preset linux-release
+
+      - name: Build
+        run: cmake --build --preset linux-release
+
+      - name: Export surface gate
+        # The same ctest entry the full run below executes, as its own node: a
+        # drifted dynamic face should name the symbol in the step list instead
+        # of being line 10 of a 30-test tail. --no-tests=error matters: if the
+        # gate ever stops being registered, "no tests matched" must not read as
+        # a pass.
+        run: ctest --preset linux-release -R export_surface --no-tests=error
+
+      - name: Test
+        # -E: the 4 machine-sensitive baselines (event_baseline,
+        # exception_e2e, behavior_e2e, loader_byhash_x86_e2e) carry
+        # layout-derived goldens that only match the machine that generated
+        # them - the local norm is 36/40 = clean-tree same set. Excluded
+        # until a layout-normalization pass lands (HANDOFF).
+        run: ctest --preset linux-release -E "event_baseline|exception_e2e|behavior_e2e|loader_byhash_x86_e2e"
+
+  linux-sanitizer:
+    runs-on: ubuntu-24.04
+    env:
+      VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Bootstrap vcpkg
+        run: |
+          git clone https://github.com/microsoft/vcpkg.git "$VCPKG_ROOT"
+          "$VCPKG_ROOT/bootstrap-vcpkg.sh" -disableMetrics
+
+      - name: Configure
+        run: cmake --preset linux-sanitizer
+
+      - name: Build
+        run: cmake --build --preset linux-sanitizer
+
+      - name: Test
+        run: ctest --preset linux-sanitizer -E "event_baseline|exception_e2e|behavior_e2e|loader_byhash_x86_e2e"

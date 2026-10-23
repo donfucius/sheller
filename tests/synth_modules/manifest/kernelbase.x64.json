@@ -1,0 +1,8156 @@
+{
+ "name": "kernelbase.dll",
+ "arch": "x64",
+ "machine": "0x8664",
+ "export_count": 2037,
+ "exports": [
+  {
+   "name": "MsixIsSystemPackageByAppUserModelId",
+   "ordinal": 1
+  },
+  {
+   "name": "MsixIsSystemPackageByPackageFullName",
+   "ordinal": 2
+  },
+  {
+   "name": "PackageSidFromProductId",
+   "ordinal": 3
+  },
+  {
+   "name": "AccessCheck",
+   "ordinal": 4
+  },
+  {
+   "name": "AccessCheckAndAuditAlarmW",
+   "ordinal": 5
+  },
+  {
+   "name": "AccessCheckByType",
+   "ordinal": 6
+  },
+  {
+   "name": "AccessCheckByTypeAndAuditAlarmW",
+   "ordinal": 7
+  },
+  {
+   "name": "AccessCheckByTypeResultList",
+   "ordinal": 8
+  },
+  {
+   "name": "AccessCheckByTypeResultListAndAuditAlarmByHandleW",
+   "ordinal": 9
+  },
+  {
+   "name": "AccessCheckByTypeResultListAndAuditAlarmW",
+   "ordinal": 10
+  },
+  {
+   "name": "AcquireSRWLockExclusive",
+   "ordinal": 11
+  },
+  {
+   "name": "AcquireSRWLockShared",
+   "ordinal": 12
+  },
+  {
+   "name": "AcquireStateLock",
+   "ordinal": 13
+  },
+  {
+   "name": "ActivateActCtx",
+   "ordinal": 14
+  },
+  {
+   "name": "AddAccessAllowedAce",
+   "ordinal": 15
+  },
+  {
+   "name": "AddAccessAllowedAceEx",
+   "ordinal": 16
+  },
+  {
+   "name": "AddAccessAllowedObjectAce",
+   "ordinal": 17
+  },
+  {
+   "name": "AddAccessDeniedAce",
+   "ordinal": 18
+  },
+  {
+   "name": "AddAccessDeniedAceEx",
+   "ordinal": 19
+  },
+  {
+   "name": "AddAccessDeniedObjectAce",
+   "ordinal": 20
+  },
+  {
+   "name": "AddAce",
+   "ordinal": 21
+  },
+  {
+   "name": "AddAuditAccessAce",
+   "ordinal": 22
+  },
+  {
+   "name": "AddAuditAccessAceEx",
+   "ordinal": 23
+  },
+  {
+   "name": "AddAuditAccessObjectAce",
+   "ordinal": 24
+  },
+  {
+   "name": "AddConsoleAliasA",
+   "ordinal": 25
+  },
+  {
+   "name": "AddConsoleAliasW",
+   "ordinal": 26
+  },
+  {
+   "name": "AddDependencyToProcessPackageGraph",
+   "ordinal": 27
+  },
+  {
+   "name": "AddDllDirectory",
+   "ordinal": 28
+  },
+  {
+   "name": "AddExtensionProgId",
+   "ordinal": 29
+  },
+  {
+   "name": "AddMandatoryAce",
+   "ordinal": 30
+  },
+  {
+   "name": "AddPackageDependency",
+   "ordinal": 31
+  },
+  {
+   "name": "AddPackageDependency2",
+   "ordinal": 32
+  },
+  {
+   "name": "AddPackageNameAliasesByPackageDependency",
+   "ordinal": 33
+  },
+  {
+   "name": "AddPackageNameAliasesByPackageFullName",
+   "ordinal": 34
+  },
+  {
+   "name": "AddRefActCtx",
+   "ordinal": 35
+  },
+  {
+   "name": "AddResourceAttributeAce",
+   "ordinal": 36
+  },
+  {
+   "name": "AddSIDToBoundaryDescriptor",
+   "ordinal": 37
+  },
+  {
+   "name": "AddScopedPolicyIDAce",
+   "ordinal": 38
+  },
+  {
+   "name": "AddVectoredContinueHandler",
+   "ordinal": 39
+  },
+  {
+   "name": "AddVectoredExceptionHandler",
+   "ordinal": 40
+  },
+  {
+   "name": "AdjustTokenGroups",
+   "ordinal": 41
+  },
+  {
+   "name": "AdjustTokenPrivileges",
+   "ordinal": 42
+  },
+  {
+   "name": "AllocConsole",
+   "ordinal": 43
+  },
+  {
+   "name": "AllocConsoleWithOptions",
+   "ordinal": 44
+  },
+  {
+   "name": "AllocateAndInitializeSid",
+   "ordinal": 45
+  },
+  {
+   "name": "AllocateLocallyUniqueId",
+   "ordinal": 46
+  },
+  {
+   "name": "AllocateUserPhysicalPages",
+   "ordinal": 47
+  },
+  {
+   "name": "AllocateUserPhysicalPages2",
+   "ordinal": 48
+  },
+  {
+   "name": "AllocateUserPhysicalPagesNuma",
+   "ordinal": 49
+  },
+  {
+   "name": "AppContainerDeriveSidFromMoniker",
+   "ordinal": 50
+  },
+  {
+   "name": "AppContainerFreeMemory",
+   "ordinal": 51
+  },
+  {
+   "name": "AppContainerLookupDisplayNameMrtReference",
+   "ordinal": 52
+  },
+  {
+   "name": "AppContainerLookupMoniker",
+   "ordinal": 53
+  },
+  {
+   "name": "AppContainerRegisterSid",
+   "ordinal": 54
+  },
+  {
+   "name": "AppContainerUnregisterSid",
+   "ordinal": 55
+  },
+  {
+   "name": "AppPolicyGetClrCompat",
+   "ordinal": 56
+  },
+  {
+   "name": "AppPolicyGetCreateFileAccess",
+   "ordinal": 57
+  },
+  {
+   "name": "AppPolicyGetLifecycleManagement",
+   "ordinal": 58
+  },
+  {
+   "name": "AppPolicyGetMediaFoundationCodecLoading",
+   "ordinal": 59
+  },
+  {
+   "name": "AppPolicyGetProcessTerminationMethod",
+   "ordinal": 60
+  },
+  {
+   "name": "AppPolicyGetShowDeveloperDiagnostic",
+   "ordinal": 61
+  },
+  {
+   "name": "AppPolicyGetThreadInitializationType",
+   "ordinal": 62
+  },
+  {
+   "name": "AppPolicyGetWindowingModel",
+   "ordinal": 63
+  },
+  {
+   "name": "AppXCheckPplSupport",
+   "ordinal": 64
+  },
+  {
+   "name": "AppXFreeMemory",
+   "ordinal": 65
+  },
+  {
+   "name": "AppXGetApplicationData",
+   "ordinal": 66
+  },
+  {
+   "name": "AppXGetDevelopmentMode",
+   "ordinal": 67
+  },
+  {
+   "name": "AppXGetOSMaxVersionTested",
+   "ordinal": 68
+  },
+  {
+   "name": "AppXGetOSMinVersion",
+   "ordinal": 69
+  },
+  {
+   "name": "AppXGetPackageCapabilities",
+   "ordinal": 70
+  },
+  {
+   "name": "AppXGetPackageSid",
+   "ordinal": 71
+  },
+  {
+   "name": "AppXLookupDisplayName",
+   "ordinal": 72
+  },
+  {
+   "name": "AppXLookupMoniker",
+   "ordinal": 73
+  },
+  {
+   "name": "AppXPostSuccessExtension",
+   "ordinal": 74
+  },
+  {
+   "name": "AppXPreCreationExtension",
+   "ordinal": 75
+  },
+  {
+   "name": "AppXReleaseAppXContext",
+   "ordinal": 76
+  },
+  {
+   "name": "AppXUpdatePackageCapabilities",
+   "ordinal": 77
+  },
+  {
+   "name": "ApplicationUserModelIdFromProductId",
+   "ordinal": 78
+  },
+  {
+   "name": "AreAllAccessesGranted",
+   "ordinal": 79
+  },
+  {
+   "name": "AreAnyAccessesGranted",
+   "ordinal": 80
+  },
+  {
+   "name": "AreExternalFeatureDependenciesEnabled",
+   "ordinal": 81
+  },
+  {
+   "name": "AreFileApisANSI",
+   "ordinal": 82
+  },
+  {
+   "name": "AreShortNamesEnabled",
+   "ordinal": 83
+  },
+  {
+   "name": "AreThereVisibleLogoffScriptsInternal",
+   "ordinal": 84
+  },
+  {
+   "name": "AreThereVisibleShutdownScriptsInternal",
+   "ordinal": 85
+  },
+  {
+   "name": "ArmFeatureUsageSubscriberFlushNotification",
+   "ordinal": 86
+  },
+  {
+   "name": "AttachConsole",
+   "ordinal": 87
+  },
+  {
+   "name": "BaseCheckAppcompatCache",
+   "ordinal": 88
+  },
+  {
+   "name": "BaseCheckAppcompatCacheEx",
+   "ordinal": 89
+  },
+  {
+   "name": "BaseCleanupAppcompatCacheSupport",
+   "ordinal": 90
+  },
+  {
+   "name": "BaseDllFreeResourceId",
+   "ordinal": 91
+  },
+  {
+   "name": "BaseDllMapResourceIdW",
+   "ordinal": 92
+  },
+  {
+   "name": "BaseDumpAppcompatCache",
+   "ordinal": 93
+  },
+  {
+   "name": "BaseFlushAppcompatCache",
+   "ordinal": 94
+  },
+  {
+   "name": "BaseFormatObjectAttributes",
+   "ordinal": 95
+  },
+  {
+   "name": "BaseFreeAppCompatDataForProcess",
+   "ordinal": 96
+  },
+  {
+   "name": "BaseGetConsoleReference",
+   "ordinal": 97
+  },
+  {
+   "name": "BaseGetNamedObjectDirectory",
+   "ordinal": 98
+  },
+  {
+   "name": "BaseInitAppcompatCacheSupport",
+   "ordinal": 99
+  },
+  {
+   "name": "BaseIsAppcompatInfrastructureDisabled",
+   "ordinal": 100
+  },
+  {
+   "name": "BaseMarkFileForDelete",
+   "ordinal": 101
+  },
+  {
+   "name": "BaseReadAppCompatDataForProcess",
+   "ordinal": 102
+  },
+  {
+   "name": "BaseUpdateAppcompatCache",
+   "ordinal": 103
+  },
+  {
+   "name": "BasepAdjustObjectAttributesForPrivateNamespace",
+   "ordinal": 104
+  },
+  {
+   "name": "BasepCopyFileCallback",
+   "ordinal": 105
+  },
+  {
+   "name": "BasepCopyFileExW",
+   "ordinal": 106
+  },
+  {
+   "name": "BasepNotifyTrackingService",
+   "ordinal": 107
+  },
+  {
+   "name": "Beep",
+   "ordinal": 108
+  },
+  {
+   "name": "BuildIoRingCancelRequest",
+   "ordinal": 109
+  },
+  {
+   "name": "BuildIoRingFlushFile",
+   "ordinal": 110
+  },
+  {
+   "name": "BuildIoRingReadFile",
+   "ordinal": 111
+  },
+  {
+   "name": "BuildIoRingReadFileScatter",
+   "ordinal": 112
+  },
+  {
+   "name": "BuildIoRingRegisterBuffers",
+   "ordinal": 113
+  },
+  {
+   "name": "BuildIoRingRegisterFileHandles",
+   "ordinal": 114
+  },
+  {
+   "name": "BuildIoRingWriteFile",
+   "ordinal": 115
+  },
+  {
+   "name": "BuildIoRingWriteFileGather",
+   "ordinal": 116
+  },
+  {
+   "name": "CLOSE_LOCAL_HANDLE_INTERNAL",
+   "ordinal": 117
+  },
+  {
+   "name": "CallEnclave",
+   "ordinal": 118
+  },
+  {
+   "name": "CallNamedPipeW",
+   "ordinal": 119
+  },
+  {
+   "name": "CallbackMayRunLong",
+   "ordinal": 120
+  },
+  {
+   "name": "CancelIo",
+   "ordinal": 121
+  },
+  {
+   "name": "CancelIoEx",
+   "ordinal": 122
+  },
+  {
+   "name": "CancelSynchronousIo",
+   "ordinal": 123
+  },
+  {
+   "name": "CancelThreadpoolIo",
+   "ordinal": 124
+  },
+  {
+   "name": "CancelWaitableTimer",
+   "ordinal": 125
+  },
+  {
+   "name": "CeipIsOptedIn",
+   "ordinal": 126
+  },
+  {
+   "name": "ChangeTimerQueueTimer",
+   "ordinal": 127
+  },
+  {
+   "name": "CharLowerA",
+   "ordinal": 128
+  },
+  {
+   "name": "CharLowerBuffA",
+   "ordinal": 129
+  },
+  {
+   "name": "CharLowerBuffW",
+   "ordinal": 130
+  },
+  {
+   "name": "CharLowerW",
+   "ordinal": 131
+  },
+  {
+   "name": "CharNextA",
+   "ordinal": 132
+  },
+  {
+   "name": "CharNextExA",
+   "ordinal": 133
+  },
+  {
+   "name": "CharNextW",
+   "ordinal": 134
+  },
+  {
+   "name": "CharPrevA",
+   "ordinal": 135
+  },
+  {
+   "name": "CharPrevExA",
+   "ordinal": 136
+  },
+  {
+   "name": "CharPrevW",
+   "ordinal": 137
+  },
+  {
+   "name": "CharUpperA",
+   "ordinal": 138
+  },
+  {
+   "name": "CharUpperBuffA",
+   "ordinal": 139
+  },
+  {
+   "name": "CharUpperBuffW",
+   "ordinal": 140
+  },
+  {
+   "name": "CharUpperW",
+   "ordinal": 141
+  },
+  {
+   "name": "CheckAllowDecryptedRemoteDestinationPolicy",
+   "ordinal": 142
+  },
+  {
+   "name": "CheckGroupPolicyEnabled",
+   "ordinal": 143
+  },
+  {
+   "name": "CheckIfStateChangeNotificationExists",
+   "ordinal": 144
+  },
+  {
+   "name": "CheckIsMSIXPackage",
+   "ordinal": 145
+  },
+  {
+   "name": "CheckRemoteDebuggerPresent",
+   "ordinal": 146
+  },
+  {
+   "name": "CheckTokenCapability",
+   "ordinal": 147
+  },
+  {
+   "name": "CheckTokenMembership",
+   "ordinal": 148
+  },
+  {
+   "name": "CheckTokenMembershipEx",
+   "ordinal": 149
+  },
+  {
+   "name": "ChrCmpIA",
+   "ordinal": 150
+  },
+  {
+   "name": "ChrCmpIW",
+   "ordinal": 151
+  },
+  {
+   "name": "ClearCommBreak",
+   "ordinal": 152
+  },
+  {
+   "name": "ClearCommError",
+   "ordinal": 153
+  },
+  {
+   "name": "CloseHandle",
+   "ordinal": 154
+  },
+  {
+   "name": "CloseIoRing",
+   "ordinal": 155
+  },
+  {
+   "name": "ClosePackageInfo",
+   "ordinal": 156
+  },
+  {
+   "name": "ClosePrivateNamespace",
+   "ordinal": 157
+  },
+  {
+   "name": "ClosePseudoConsole",
+   "ordinal": 158
+  },
+  {
+   "name": "CloseState",
+   "ordinal": 159
+  },
+  {
+   "name": "CloseStateAtom",
+   "ordinal": 160
+  },
+  {
+   "name": "CloseStateChangeNotification",
+   "ordinal": 161
+  },
+  {
+   "name": "CloseStateContainer",
+   "ordinal": 162
+  },
+  {
+   "name": "CloseStateLock",
+   "ordinal": 163
+  },
+  {
+   "name": "CloseThreadpool",
+   "ordinal": 164
+  },
+  {
+   "name": "CloseThreadpoolCleanupGroup",
+   "ordinal": 165
+  },
+  {
+   "name": "CloseThreadpoolCleanupGroupMembers",
+   "ordinal": 166
+  },
+  {
+   "name": "CloseThreadpoolIo",
+   "ordinal": 167
+  },
+  {
+   "name": "CloseThreadpoolTimer",
+   "ordinal": 168
+  },
+  {
+   "name": "CloseThreadpoolWait",
+   "ordinal": 169
+  },
+  {
+   "name": "CloseThreadpoolWork",
+   "ordinal": 170
+  },
+  {
+   "name": "CommandLineToArgvW",
+   "ordinal": 171
+  },
+  {
+   "name": "CommitStateAtom",
+   "ordinal": 172
+  },
+  {
+   "name": "CompareFileTime",
+   "ordinal": 173
+  },
+  {
+   "name": "CompareObjectHandles",
+   "ordinal": 174
+  },
+  {
+   "name": "CompareStringA",
+   "ordinal": 175
+  },
+  {
+   "name": "CompareStringEx",
+   "ordinal": 176
+  },
+  {
+   "name": "CompareStringOrdinal",
+   "ordinal": 177
+  },
+  {
+   "name": "CompareStringW",
+   "ordinal": 178
+  },
+  {
+   "name": "ConnectNamedPipe",
+   "ordinal": 179
+  },
+  {
+   "name": "ContinueDebugEvent",
+   "ordinal": 180
+  },
+  {
+   "name": "ConvertAuxiliaryCounterToPerformanceCounter",
+   "ordinal": 181
+  },
+  {
+   "name": "ConvertDefaultLocale",
+   "ordinal": 182
+  },
+  {
+   "name": "ConvertFiberToThread",
+   "ordinal": 183
+  },
+  {
+   "name": "ConvertPerformanceCounterToAuxiliaryCounter",
+   "ordinal": 184
+  },
+  {
+   "name": "ConvertThreadToFiber",
+   "ordinal": 185
+  },
+  {
+   "name": "ConvertThreadToFiberEx",
+   "ordinal": 186
+  },
+  {
+   "name": "ConvertToAutoInheritPrivateObjectSecurity",
+   "ordinal": 187
+  },
+  {
+   "name": "CopyContext",
+   "ordinal": 188
+  },
+  {
+   "name": "CopyFile2",
+   "ordinal": 189
+  },
+  {
+   "name": "CopyFileExW",
+   "ordinal": 190
+  },
+  {
+   "name": "CopyFileFromAppW",
+   "ordinal": 191
+  },
+  {
+   "name": "CopyFileW",
+   "ordinal": 192
+  },
+  {
+   "name": "CopyMemoryNonTemporal",
+   "ordinal": 193
+  },
+  {
+   "name": "CopySid",
+   "ordinal": 194
+  },
+  {
+   "name": "CouldMultiUserAppsBehaviorBePossibleForPackage",
+   "ordinal": 195
+  },
+  {
+   "name": "CreateActCtxW",
+   "ordinal": 196
+  },
+  {
+   "name": "CreateAppContainerToken",
+   "ordinal": 197
+  },
+  {
+   "name": "CreateAppSiloToken",
+   "ordinal": 198
+  },
+  {
+   "name": "CreateBoundaryDescriptorW",
+   "ordinal": 199
+  },
+  {
+   "name": "CreateConsoleScreenBuffer",
+   "ordinal": 200
+  },
+  {
+   "name": "CreateDirectory2A",
+   "ordinal": 201
+  },
+  {
+   "name": "CreateDirectory2W",
+   "ordinal": 202
+  },
+  {
+   "name": "CreateDirectoryA",
+   "ordinal": 203
+  },
+  {
+   "name": "CreateDirectoryExW",
+   "ordinal": 204
+  },
+  {
+   "name": "CreateDirectoryFromAppW",
+   "ordinal": 205
+  },
+  {
+   "name": "CreateDirectoryW",
+   "ordinal": 206
+  },
+  {
+   "name": "CreateEnclave",
+   "ordinal": 207
+  },
+  {
+   "name": "CreateEventA",
+   "ordinal": 208
+  },
+  {
+   "name": "CreateEventExA",
+   "ordinal": 209
+  },
+  {
+   "name": "CreateEventExW",
+   "ordinal": 210
+  },
+  {
+   "name": "CreateEventW",
+   "ordinal": 211
+  },
+  {
+   "name": "CreateFiber",
+   "ordinal": 212
+  },
+  {
+   "name": "CreateFiberEx",
+   "ordinal": 213
+  },
+  {
+   "name": "CreateFile2",
+   "ordinal": 214
+  },
+  {
+   "name": "CreateFile2FromAppW",
+   "ordinal": 215
+  },
+  {
+   "name": "CreateFile3",
+   "ordinal": 216
+  },
+  {
+   "name": "CreateFileA",
+   "ordinal": 217
+  },
+  {
+   "name": "CreateFileFromAppW",
+   "ordinal": 218
+  },
+  {
+   "name": "CreateFileMapping2",
+   "ordinal": 219
+  },
+  {
+   "name": "CreateFileMappingFromApp",
+   "ordinal": 220
+  },
+  {
+   "name": "CreateFileMappingNumaW",
+   "ordinal": 221
+  },
+  {
+   "name": "CreateFileMappingW",
+   "ordinal": 222
+  },
+  {
+   "name": "CreateFileW",
+   "ordinal": 223
+  },
+  {
+   "name": "CreateHardLinkA",
+   "ordinal": 224
+  },
+  {
+   "name": "CreateHardLinkW",
+   "ordinal": 225
+  },
+  {
+   "name": "CreateIoCompletionPort",
+   "ordinal": 226
+  },
+  {
+   "name": "CreateIoRing",
+   "ordinal": 227
+  },
+  {
+   "name": "CreateMemoryResourceNotification",
+   "ordinal": 228
+  },
+  {
+   "name": "CreateMutexA",
+   "ordinal": 229
+  },
+  {
+   "name": "CreateMutexExA",
+   "ordinal": 230
+  },
+  {
+   "name": "CreateMutexExW",
+   "ordinal": 231
+  },
+  {
+   "name": "CreateMutexW",
+   "ordinal": 232
+  },
+  {
+   "name": "CreateNamedPipeW",
+   "ordinal": 233
+  },
+  {
+   "name": "CreatePipe",
+   "ordinal": 234
+  },
+  {
+   "name": "CreatePrivateNamespaceW",
+   "ordinal": 235
+  },
+  {
+   "name": "CreatePrivateObjectSecurity",
+   "ordinal": 236
+  },
+  {
+   "name": "CreatePrivateObjectSecurityEx",
+   "ordinal": 237
+  },
+  {
+   "name": "CreatePrivateObjectSecurityWithMultipleInheritance",
+   "ordinal": 238
+  },
+  {
+   "name": "CreateProcessA",
+   "ordinal": 239
+  },
+  {
+   "name": "CreateProcessAsUserA",
+   "ordinal": 240
+  },
+  {
+   "name": "CreateProcessAsUserW",
+   "ordinal": 241
+  },
+  {
+   "name": "CreateProcessInternalA",
+   "ordinal": 242
+  },
+  {
+   "name": "CreateProcessInternalW",
+   "ordinal": 243
+  },
+  {
+   "name": "CreateProcessW",
+   "ordinal": 244
+  },
+  {
+   "name": "CreatePseudoConsole",
+   "ordinal": 245
+  },
+  {
+   "name": "CreatePseudoConsoleAsUser",
+   "ordinal": 246
+  },
+  {
+   "name": "CreateRemoteThread",
+   "ordinal": 247
+  },
+  {
+   "name": "CreateRemoteThreadEx",
+   "ordinal": 248
+  },
+  {
+   "name": "CreateRestrictedToken",
+   "ordinal": 249
+  },
+  {
+   "name": "CreateSemaphoreExW",
+   "ordinal": 250
+  },
+  {
+   "name": "CreateSemaphoreW",
+   "ordinal": 251
+  },
+  {
+   "name": "CreateStateAtom",
+   "ordinal": 252
+  },
+  {
+   "name": "CreateStateChangeNotification",
+   "ordinal": 253
+  },
+  {
+   "name": "CreateStateContainer",
+   "ordinal": 254
+  },
+  {
+   "name": "CreateStateLock",
+   "ordinal": 255
+  },
+  {
+   "name": "CreateStateSubcontainer",
+   "ordinal": 256
+  },
+  {
+   "name": "CreateSymbolicLinkW",
+   "ordinal": 257
+  },
+  {
+   "name": "CreateThread",
+   "ordinal": 258
+  },
+  {
+   "name": "CreateThreadpool",
+   "ordinal": 259
+  },
+  {
+   "name": "CreateThreadpoolCleanupGroup",
+   "ordinal": 260
+  },
+  {
+   "name": "CreateThreadpoolIo",
+   "ordinal": 261
+  },
+  {
+   "name": "CreateThreadpoolTimer",
+   "ordinal": 262
+  },
+  {
+   "name": "CreateThreadpoolWait",
+   "ordinal": 263
+  },
+  {
+   "name": "CreateThreadpoolWork",
+   "ordinal": 264
+  },
+  {
+   "name": "CreateTimerQueue",
+   "ordinal": 265
+  },
+  {
+   "name": "CreateTimerQueueTimer",
+   "ordinal": 266
+  },
+  {
+   "name": "CreateWaitableTimerExW",
+   "ordinal": 267
+  },
+  {
+   "name": "CreateWaitableTimerW",
+   "ordinal": 268
+  },
+  {
+   "name": "CreateWellKnownSid",
+   "ordinal": 269
+  },
+  {
+   "name": "CtrlRoutine",
+   "ordinal": 270
+  },
+  {
+   "name": "CveEventWrite",
+   "ordinal": 271
+  },
+  {
+   "name": "DeactivateActCtx",
+   "ordinal": 272
+  },
+  {
+   "name": "DebugActiveProcess",
+   "ordinal": 273
+  },
+  {
+   "name": "DebugActiveProcessStop",
+   "ordinal": 274
+  },
+  {
+   "name": "DebugBreak",
+   "ordinal": 275
+  },
+  {
+   "name": "DecodePointer",
+   "ordinal": 276
+  },
+  {
+   "name": "DecodeRemotePointer",
+   "ordinal": 277
+  },
+  {
+   "name": "DecodeSystemPointer",
+   "ordinal": 278
+  },
+  {
+   "name": "DefineDosDeviceW",
+   "ordinal": 279
+  },
+  {
+   "name": "DelayLoadFailureHook",
+   "ordinal": 280
+  },
+  {
+   "name": "DelayLoadFailureHookLookup",
+   "ordinal": 281
+  },
+  {
+   "name": "DeleteAce",
+   "ordinal": 282
+  },
+  {
+   "name": "DeleteBoundaryDescriptor",
+   "ordinal": 283
+  },
+  {
+   "name": "DeleteCriticalSection",
+   "ordinal": 284
+  },
+  {
+   "name": "DeleteEnclave",
+   "ordinal": 285
+  },
+  {
+   "name": "DeleteFiber",
+   "ordinal": 286
+  },
+  {
+   "name": "DeleteFile2A",
+   "ordinal": 287
+  },
+  {
+   "name": "DeleteFile2W",
+   "ordinal": 288
+  },
+  {
+   "name": "DeleteFileA",
+   "ordinal": 289
+  },
+  {
+   "name": "DeleteFileFromAppW",
+   "ordinal": 290
+  },
+  {
+   "name": "DeleteFileW",
+   "ordinal": 291
+  },
+  {
+   "name": "DeletePackageDependency",
+   "ordinal": 292
+  },
+  {
+   "name": "DeletePersistedRegistryValue",
+   "ordinal": 293
+  },
+  {
+   "name": "DeleteProcThreadAttributeList",
+   "ordinal": 294
+  },
+  {
+   "name": "DeleteStateAtomValue",
+   "ordinal": 295
+  },
+  {
+   "name": "DeleteStateContainer",
+   "ordinal": 296
+  },
+  {
+   "name": "DeleteStateContainerValue",
+   "ordinal": 297
+  },
+  {
+   "name": "DeleteSynchronizationBarrier",
+   "ordinal": 298
+  },
+  {
+   "name": "DeleteTimerQueue",
+   "ordinal": 299
+  },
+  {
+   "name": "DeleteTimerQueueEx",
+   "ordinal": 300
+  },
+  {
+   "name": "DeleteTimerQueueTimer",
+   "ordinal": 301
+  },
+  {
+   "name": "DeleteVolumeMountPointW",
+   "ordinal": 302
+  },
+  {
+   "name": "DeriveCapabilitySidsFromName",
+   "ordinal": 303
+  },
+  {
+   "name": "DestroyPrivateObjectSecurity",
+   "ordinal": 304
+  },
+  {
+   "name": "DeviceIoControl",
+   "ordinal": 305
+  },
+  {
+   "name": "DisablePredefinedHandleTableInternal",
+   "ordinal": 306
+  },
+  {
+   "name": "DisableThreadLibraryCalls",
+   "ordinal": 307
+  },
+  {
+   "name": "DisassociateCurrentThreadFromCallback",
+   "ordinal": 308
+  },
+  {
+   "name": "DiscardVirtualMemory",
+   "ordinal": 309
+  },
+  {
+   "name": "DisconnectNamedPipe",
+   "ordinal": 310
+  },
+  {
+   "name": "DnsHostnameToComputerNameExW",
+   "ordinal": 311
+  },
+  {
+   "name": "DsBindWithSpnExW",
+   "ordinal": 312
+  },
+  {
+   "name": "DsCrackNamesW",
+   "ordinal": 313
+  },
+  {
+   "name": "DsFreeDomainControllerInfoW",
+   "ordinal": 314
+  },
+  {
+   "name": "DsFreeNameResultW",
+   "ordinal": 315
+  },
+  {
+   "name": "DsFreeNgcKey",
+   "ordinal": 316
+  },
+  {
+   "name": "DsFreePasswordCredentials",
+   "ordinal": 317
+  },
+  {
+   "name": "DsGetDomainControllerInfoW",
+   "ordinal": 318
+  },
+  {
+   "name": "DsMakePasswordCredentialsW",
+   "ordinal": 319
+  },
+  {
+   "name": "DsReadNgcKeyW",
+   "ordinal": 320
+  },
+  {
+   "name": "DsUnBindW",
+   "ordinal": 321
+  },
+  {
+   "name": "DsWriteNgcKeyW",
+   "ordinal": 322
+  },
+  {
+   "name": "DuplicateHandle",
+   "ordinal": 323
+  },
+  {
+   "name": "DuplicateStateContainerHandle",
+   "ordinal": 324
+  },
+  {
+   "name": "DuplicateToken",
+   "ordinal": 325
+  },
+  {
+   "name": "DuplicateTokenEx",
+   "ordinal": 326
+  },
+  {
+   "name": "EmptyWorkingSet",
+   "ordinal": 327
+  },
+  {
+   "name": "EnableProcessOptionalXStateFeatures",
+   "ordinal": 328
+  },
+  {
+   "name": "EncodePointer",
+   "ordinal": 329
+  },
+  {
+   "name": "EncodeRemotePointer",
+   "ordinal": 330
+  },
+  {
+   "name": "EncodeSystemPointer",
+   "ordinal": 331
+  },
+  {
+   "name": "EnterCriticalPolicySectionInternal",
+   "ordinal": 332
+  },
+  {
+   "name": "EnterCriticalSection",
+   "ordinal": 333
+  },
+  {
+   "name": "EnterSynchronizationBarrier",
+   "ordinal": 334
+  },
+  {
+   "name": "EnumCalendarInfoExEx",
+   "ordinal": 335
+  },
+  {
+   "name": "EnumCalendarInfoExW",
+   "ordinal": 336
+  },
+  {
+   "name": "EnumCalendarInfoW",
+   "ordinal": 337
+  },
+  {
+   "name": "EnumDateFormatsExEx",
+   "ordinal": 338
+  },
+  {
+   "name": "EnumDateFormatsExW",
+   "ordinal": 339
+  },
+  {
+   "name": "EnumDateFormatsW",
+   "ordinal": 340
+  },
+  {
+   "name": "EnumDeviceDrivers",
+   "ordinal": 341
+  },
+  {
+   "name": "EnumDynamicTimeZoneInformation",
+   "ordinal": 342
+  },
+  {
+   "name": "EnumLanguageGroupLocalesW",
+   "ordinal": 343
+  },
+  {
+   "name": "EnumPageFilesA",
+   "ordinal": 344
+  },
+  {
+   "name": "EnumPageFilesW",
+   "ordinal": 345
+  },
+  {
+   "name": "EnumProcessModules",
+   "ordinal": 346
+  },
+  {
+   "name": "EnumProcessModulesEx",
+   "ordinal": 347
+  },
+  {
+   "name": "EnumProcesses",
+   "ordinal": 348
+  },
+  {
+   "name": "EnumResourceLanguagesExA",
+   "ordinal": 349
+  },
+  {
+   "name": "EnumResourceLanguagesExW",
+   "ordinal": 350
+  },
+  {
+   "name": "EnumResourceNamesA",
+   "ordinal": 351
+  },
+  {
+   "name": "EnumResourceNamesExA",
+   "ordinal": 352
+  },
+  {
+   "name": "EnumResourceNamesExW",
+   "ordinal": 353
+  },
+  {
+   "name": "EnumResourceNamesW",
+   "ordinal": 354
+  },
+  {
+   "name": "EnumResourceTypesExA",
+   "ordinal": 355
+  },
+  {
+   "name": "EnumResourceTypesExW",
+   "ordinal": 356
+  },
+  {
+   "name": "EnumSystemCodePagesW",
+   "ordinal": 357
+  },
+  {
+   "name": "EnumSystemFirmwareTables",
+   "ordinal": 358
+  },
+  {
+   "name": "EnumSystemGeoID",
+   "ordinal": 359
+  },
+  {
+   "name": "EnumSystemGeoNames",
+   "ordinal": 360
+  },
+  {
+   "name": "EnumSystemLanguageGroupsW",
+   "ordinal": 361
+  },
+  {
+   "name": "EnumSystemLocalesA",
+   "ordinal": 362
+  },
+  {
+   "name": "EnumSystemLocalesEx",
+   "ordinal": 363
+  },
+  {
+   "name": "EnumSystemLocalesW",
+   "ordinal": 364
+  },
+  {
+   "name": "EnumTimeFormatsEx",
+   "ordinal": 365
+  },
+  {
+   "name": "EnumTimeFormatsW",
+   "ordinal": 366
+  },
+  {
+   "name": "EnumUILanguagesW",
+   "ordinal": 367
+  },
+  {
+   "name": "EnumerateExtensionNames",
+   "ordinal": 368
+  },
+  {
+   "name": "EnumerateStateAtomValues",
+   "ordinal": 369
+  },
+  {
+   "name": "EnumerateStateContainerItems",
+   "ordinal": 370
+  },
+  {
+   "name": "EqualDomainSid",
+   "ordinal": 371
+  },
+  {
+   "name": "EqualPrefixSid",
+   "ordinal": 372
+  },
+  {
+   "name": "EqualSid",
+   "ordinal": 373
+  },
+  {
+   "name": "EscapeCommFunction",
+   "ordinal": 374
+  },
+  {
+   "name": "EventActivityIdControl",
+   "ordinal": 375
+  },
+  {
+   "name": "EventEnabled",
+   "ordinal": 376
+  },
+  {
+   "name": "EventProviderEnabled",
+   "ordinal": 377
+  },
+  {
+   "name": "EventRegister",
+   "ordinal": 378
+  },
+  {
+   "name": "EventSetInformation",
+   "ordinal": 379
+  },
+  {
+   "name": "EventUnregister",
+   "ordinal": 380
+  },
+  {
+   "name": "EventWrite",
+   "ordinal": 381
+  },
+  {
+   "name": "EventWriteEx",
+   "ordinal": 382
+  },
+  {
+   "name": "EventWriteString",
+   "ordinal": 383
+  },
+  {
+   "name": "EventWriteTransfer",
+   "ordinal": 384
+  },
+  {
+   "name": "ExitProcess",
+   "ordinal": 385
+  },
+  {
+   "name": "ExitThread",
+   "ordinal": 386
+  },
+  {
+   "name": "ExpandEnvironmentStringsA",
+   "ordinal": 387
+  },
+  {
+   "name": "ExpandEnvironmentStringsW",
+   "ordinal": 388
+  },
+  {
+   "name": "ExpungeConsoleCommandHistoryA",
+   "ordinal": 389
+  },
+  {
+   "name": "ExpungeConsoleCommandHistoryW",
+   "ordinal": 390
+  },
+  {
+   "name": "ExtensionProgIdExists",
+   "ordinal": 391
+  },
+  {
+   "name": "FatalAppExitA",
+   "ordinal": 392
+  },
+  {
+   "name": "FatalAppExitW",
+   "ordinal": 393
+  },
+  {
+   "name": "FileTimeToLocalFileTime",
+   "ordinal": 394
+  },
+  {
+   "name": "FileTimeToSystemTime",
+   "ordinal": 395
+  },
+  {
+   "name": "FillConsoleOutputAttribute",
+   "ordinal": 396
+  },
+  {
+   "name": "FillConsoleOutputCharacterA",
+   "ordinal": 397
+  },
+  {
+   "name": "FillConsoleOutputCharacterW",
+   "ordinal": 398
+  },
+  {
+   "name": "FindActCtxSectionGuid",
+   "ordinal": 399
+  },
+  {
+   "name": "FindActCtxSectionStringW",
+   "ordinal": 400
+  },
+  {
+   "name": "FindClose",
+   "ordinal": 401
+  },
+  {
+   "name": "FindCloseChangeNotification",
+   "ordinal": 402
+  },
+  {
+   "name": "FindFirstChangeNotificationA",
+   "ordinal": 403
+  },
+  {
+   "name": "FindFirstChangeNotificationW",
+   "ordinal": 404
+  },
+  {
+   "name": "FindFirstFileA",
+   "ordinal": 405
+  },
+  {
+   "name": "FindFirstFileExA",
+   "ordinal": 406
+  },
+  {
+   "name": "FindFirstFileExFromAppW",
+   "ordinal": 407
+  },
+  {
+   "name": "FindFirstFileExW",
+   "ordinal": 408
+  },
+  {
+   "name": "FindFirstFileNameW",
+   "ordinal": 409
+  },
+  {
+   "name": "FindFirstFileW",
+   "ordinal": 410
+  },
+  {
+   "name": "FindFirstFreeAce",
+   "ordinal": 411
+  },
+  {
+   "name": "FindFirstStreamW",
+   "ordinal": 412
+  },
+  {
+   "name": "FindFirstVolumeW",
+   "ordinal": 413
+  },
+  {
+   "name": "FindNLSString",
+   "ordinal": 414
+  },
+  {
+   "name": "FindNLSStringEx",
+   "ordinal": 415
+  },
+  {
+   "name": "FindNextChangeNotification",
+   "ordinal": 416
+  },
+  {
+   "name": "FindNextFileA",
+   "ordinal": 417
+  },
+  {
+   "name": "FindNextFileNameW",
+   "ordinal": 418
+  },
+  {
+   "name": "FindNextFileW",
+   "ordinal": 419
+  },
+  {
+   "name": "FindNextStreamW",
+   "ordinal": 420
+  },
+  {
+   "name": "FindNextVolumeW",
+   "ordinal": 421
+  },
+  {
+   "name": "FindPackageDependency",
+   "ordinal": 422
+  },
+  {
+   "name": "FindPackagesByPackageFamily",
+   "ordinal": 423
+  },
+  {
+   "name": "FindResourceExW",
+   "ordinal": 424
+  },
+  {
+   "name": "FindResourceW",
+   "ordinal": 425
+  },
+  {
+   "name": "FindStringOrdinal",
+   "ordinal": 426
+  },
+  {
+   "name": "FindVolumeClose",
+   "ordinal": 427
+  },
+  {
+   "name": "FlsAlloc",
+   "ordinal": 428
+  },
+  {
+   "name": "FlsFree",
+   "ordinal": 429
+  },
+  {
+   "name": "FlsGetValue",
+   "ordinal": 430
+  },
+  {
+   "name": "FlsGetValue2",
+   "ordinal": 431
+  },
+  {
+   "name": "FlsSetValue",
+   "ordinal": 432
+  },
+  {
+   "name": "FlushConsoleInputBuffer",
+   "ordinal": 433
+  },
+  {
+   "name": "FlushFileBuffers",
+   "ordinal": 434
+  },
+  {
+   "name": "FlushInstructionCache",
+   "ordinal": 435
+  },
+  {
+   "name": "FlushProcessWriteBuffers",
+   "ordinal": 436
+  },
+  {
+   "name": "FlushViewOfFile",
+   "ordinal": 437
+  },
+  {
+   "name": "FoldStringW",
+   "ordinal": 438
+  },
+  {
+   "name": "ForceSyncFgPolicyInternal",
+   "ordinal": 439
+  },
+  {
+   "name": "FormatApplicationUserModelId",
+   "ordinal": 440
+  },
+  {
+   "name": "FormatApplicationUserModelIdA",
+   "ordinal": 441
+  },
+  {
+   "name": "FormatMessageA",
+   "ordinal": 442
+  },
+  {
+   "name": "FormatMessageW",
+   "ordinal": 443
+  },
+  {
+   "name": "FreeConsole",
+   "ordinal": 444
+  },
+  {
+   "name": "FreeEnvironmentStringsA",
+   "ordinal": 445
+  },
+  {
+   "name": "FreeEnvironmentStringsW",
+   "ordinal": 446
+  },
+  {
+   "name": "FreeGPOListInternalA",
+   "ordinal": 447
+  },
+  {
+   "name": "FreeGPOListInternalW",
+   "ordinal": 448
+  },
+  {
+   "name": "FreeLibrary",
+   "ordinal": 449
+  },
+  {
+   "name": "FreeLibraryAndExitThread",
+   "ordinal": 450
+  },
+  {
+   "name": "FreeLibraryWhenCallbackReturns",
+   "ordinal": 451
+  },
+  {
+   "name": "FreeResource",
+   "ordinal": 452
+  },
+  {
+   "name": "FreeSid",
+   "ordinal": 453
+  },
+  {
+   "name": "FreeUserPhysicalPages",
+   "ordinal": 454
+  },
+  {
+   "name": "GenerateConsoleCtrlEvent",
+   "ordinal": 455
+  },
+  {
+   "name": "GenerateGPNotificationInternal",
+   "ordinal": 456
+  },
+  {
+   "name": "GetACP",
+   "ordinal": 457
+  },
+  {
+   "name": "GetAcceptLanguagesA",
+   "ordinal": 458
+  },
+  {
+   "name": "GetAcceptLanguagesW",
+   "ordinal": 459
+  },
+  {
+   "name": "GetAce",
+   "ordinal": 460
+  },
+  {
+   "name": "GetAclInformation",
+   "ordinal": 461
+  },
+  {
+   "name": "GetAdjustObjectAttributesForPrivateNamespaceRoutine",
+   "ordinal": 462
+  },
+  {
+   "name": "GetAlternatePackageRoots",
+   "ordinal": 463
+  },
+  {
+   "name": "GetApiSetModuleBaseName",
+   "ordinal": 464
+  },
+  {
+   "name": "GetAppContainerAce",
+   "ordinal": 465
+  },
+  {
+   "name": "GetAppContainerNamedObjectPath",
+   "ordinal": 466
+  },
+  {
+   "name": "GetAppDataFolder",
+   "ordinal": 467
+  },
+  {
+   "name": "GetAppModelVersion",
+   "ordinal": 468
+  },
+  {
+   "name": "GetApplicationRecoveryCallback",
+   "ordinal": 469
+  },
+  {
+   "name": "GetApplicationRestartSettings",
+   "ordinal": 470
+  },
+  {
+   "name": "GetApplicationUserModelId",
+   "ordinal": 471
+  },
+  {
+   "name": "GetApplicationUserModelIdFromToken",
+   "ordinal": 472
+  },
+  {
+   "name": "GetAppliedGPOListInternalA",
+   "ordinal": 473
+  },
+  {
+   "name": "GetAppliedGPOListInternalW",
+   "ordinal": 474
+  },
+  {
+   "name": "GetCPFileNameFromRegistry",
+   "ordinal": 475
+  },
+  {
+   "name": "GetCPHashNode",
+   "ordinal": 476
+  },
+  {
+   "name": "GetCPInfo",
+   "ordinal": 477
+  },
+  {
+   "name": "GetCPInfoExW",
+   "ordinal": 478
+  },
+  {
+   "name": "GetCachedSigningLevel",
+   "ordinal": 479
+  },
+  {
+   "name": "GetCalendar",
+   "ordinal": 480
+  },
+  {
+   "name": "GetCalendarInfoEx",
+   "ordinal": 481
+  },
+  {
+   "name": "GetCalendarInfoW",
+   "ordinal": 482
+  },
+  {
+   "name": "GetCommConfig",
+   "ordinal": 483
+  },
+  {
+   "name": "GetCommMask",
+   "ordinal": 484
+  },
+  {
+   "name": "GetCommModemStatus",
+   "ordinal": 485
+  },
+  {
+   "name": "GetCommPorts",
+   "ordinal": 486
+  },
+  {
+   "name": "GetCommProperties",
+   "ordinal": 487
+  },
+  {
+   "name": "GetCommState",
+   "ordinal": 488
+  },
+  {
+   "name": "GetCommTimeouts",
+   "ordinal": 489
+  },
+  {
+   "name": "GetCommandLineA",
+   "ordinal": 490
+  },
+  {
+   "name": "GetCommandLineW",
+   "ordinal": 491
+  },
+  {
+   "name": "GetCompressedFileSizeA",
+   "ordinal": 492
+  },
+  {
+   "name": "GetCompressedFileSizeW",
+   "ordinal": 493
+  },
+  {
+   "name": "GetComputerNameExA",
+   "ordinal": 494
+  },
+  {
+   "name": "GetComputerNameExW",
+   "ordinal": 495
+  },
+  {
+   "name": "GetConsoleAliasA",
+   "ordinal": 496
+  },
+  {
+   "name": "GetConsoleAliasExesA",
+   "ordinal": 497
+  },
+  {
+   "name": "GetConsoleAliasExesLengthA",
+   "ordinal": 498
+  },
+  {
+   "name": "GetConsoleAliasExesLengthW",
+   "ordinal": 499
+  },
+  {
+   "name": "GetConsoleAliasExesW",
+   "ordinal": 500
+  },
+  {
+   "name": "GetConsoleAliasW",
+   "ordinal": 501
+  },
+  {
+   "name": "GetConsoleAliasesA",
+   "ordinal": 502
+  },
+  {
+   "name": "GetConsoleAliasesLengthA",
+   "ordinal": 503
+  },
+  {
+   "name": "GetConsoleAliasesLengthW",
+   "ordinal": 504
+  },
+  {
+   "name": "GetConsoleAliasesW",
+   "ordinal": 505
+  },
+  {
+   "name": "GetConsoleCP",
+   "ordinal": 506
+  },
+  {
+   "name": "GetConsoleCommandHistoryA",
+   "ordinal": 507
+  },
+  {
+   "name": "GetConsoleCommandHistoryLengthA",
+   "ordinal": 508
+  },
+  {
+   "name": "GetConsoleCommandHistoryLengthW",
+   "ordinal": 509
+  },
+  {
+   "name": "GetConsoleCommandHistoryW",
+   "ordinal": 510
+  },
+  {
+   "name": "GetConsoleCursorInfo",
+   "ordinal": 511
+  },
+  {
+   "name": "GetConsoleDisplayMode",
+   "ordinal": 512
+  },
+  {
+   "name": "GetConsoleFontSize",
+   "ordinal": 513
+  },
+  {
+   "name": "GetConsoleHistoryInfo",
+   "ordinal": 514
+  },
+  {
+   "name": "GetConsoleInputExeNameA",
+   "ordinal": 515
+  },
+  {
+   "name": "GetConsoleInputExeNameW",
+   "ordinal": 516
+  },
+  {
+   "name": "GetConsoleMode",
+   "ordinal": 517
+  },
+  {
+   "name": "GetConsoleOriginalTitleA",
+   "ordinal": 518
+  },
+  {
+   "name": "GetConsoleOriginalTitleW",
+   "ordinal": 519
+  },
+  {
+   "name": "GetConsoleOutputCP",
+   "ordinal": 520
+  },
+  {
+   "name": "GetConsoleProcessList",
+   "ordinal": 521
+  },
+  {
+   "name": "GetConsoleScreenBufferInfo",
+   "ordinal": 522
+  },
+  {
+   "name": "GetConsoleScreenBufferInfoEx",
+   "ordinal": 523
+  },
+  {
+   "name": "GetConsoleSelectionInfo",
+   "ordinal": 524
+  },
+  {
+   "name": "GetConsoleTitleA",
+   "ordinal": 525
+  },
+  {
+   "name": "GetConsoleTitleW",
+   "ordinal": 526
+  },
+  {
+   "name": "GetConsoleWindow",
+   "ordinal": 527
+  },
+  {
+   "name": "GetCurrencyFormatEx",
+   "ordinal": 528
+  },
+  {
+   "name": "GetCurrencyFormatW",
+   "ordinal": 529
+  },
+  {
+   "name": "GetCurrentActCtx",
+   "ordinal": 530
+  },
+  {
+   "name": "GetCurrentApplicationUserModelId",
+   "ordinal": 531
+  },
+  {
+   "name": "GetCurrentConsoleFont",
+   "ordinal": 532
+  },
+  {
+   "name": "GetCurrentConsoleFontEx",
+   "ordinal": 533
+  },
+  {
+   "name": "GetCurrentDirectoryA",
+   "ordinal": 534
+  },
+  {
+   "name": "GetCurrentDirectoryW",
+   "ordinal": 535
+  },
+  {
+   "name": "GetCurrentPackageApplicationContext",
+   "ordinal": 536
+  },
+  {
+   "name": "GetCurrentPackageApplicationResourcesContext",
+   "ordinal": 537
+  },
+  {
+   "name": "GetCurrentPackageContext",
+   "ordinal": 538
+  },
+  {
+   "name": "GetCurrentPackageFamilyName",
+   "ordinal": 539
+  },
+  {
+   "name": "GetCurrentPackageFullName",
+   "ordinal": 540
+  },
+  {
+   "name": "GetCurrentPackageGlobalizationContext",
+   "ordinal": 541
+  },
+  {
+   "name": "GetCurrentPackageId",
+   "ordinal": 542
+  },
+  {
+   "name": "GetCurrentPackageInfo",
+   "ordinal": 543
+  },
+  {
+   "name": "GetCurrentPackageInfo2",
+   "ordinal": 544
+  },
+  {
+   "name": "GetCurrentPackageInfo3",
+   "ordinal": 545
+  },
+  {
+   "name": "GetCurrentPackageInfo_PackageNameAliases",
+   "ordinal": 546
+  },
+  {
+   "name": "GetCurrentPackagePath",
+   "ordinal": 547
+  },
+  {
+   "name": "GetCurrentPackagePath2",
+   "ordinal": 548
+  },
+  {
+   "name": "GetCurrentPackageResourcesContext",
+   "ordinal": 549
+  },
+  {
+   "name": "GetCurrentPackageSecurityContext",
+   "ordinal": 550
+  },
+  {
+   "name": "GetCurrentProcess",
+   "ordinal": 551
+  },
+  {
+   "name": "GetCurrentProcessId",
+   "ordinal": 552
+  },
+  {
+   "name": "GetCurrentProcessorNumber",
+   "ordinal": 553
+  },
+  {
+   "name": "GetCurrentProcessorNumberEx",
+   "ordinal": 554
+  },
+  {
+   "name": "GetCurrentTargetPlatformContext",
+   "ordinal": 555
+  },
+  {
+   "name": "GetCurrentThread",
+   "ordinal": 556
+  },
+  {
+   "name": "GetCurrentThreadId",
+   "ordinal": 557
+  },
+  {
+   "name": "GetCurrentThreadStackLimits",
+   "ordinal": 558
+  },
+  {
+   "name": "GetDateFormatA",
+   "ordinal": 559
+  },
+  {
+   "name": "GetDateFormatEx",
+   "ordinal": 560
+  },
+  {
+   "name": "GetDateFormatW",
+   "ordinal": 561
+  },
+  {
+   "name": "GetDeveloperDriveEnablementState",
+   "ordinal": 562
+  },
+  {
+   "name": "GetDeviceDriverBaseNameA",
+   "ordinal": 563
+  },
+  {
+   "name": "GetDeviceDriverBaseNameW",
+   "ordinal": 564
+  },
+  {
+   "name": "GetDeviceDriverFileNameA",
+   "ordinal": 565
+  },
+  {
+   "name": "GetDeviceDriverFileNameW",
+   "ordinal": 566
+  },
+  {
+   "name": "GetDiskFreeSpaceA",
+   "ordinal": 567
+  },
+  {
+   "name": "GetDiskFreeSpaceExA",
+   "ordinal": 568
+  },
+  {
+   "name": "GetDiskFreeSpaceExW",
+   "ordinal": 569
+  },
+  {
+   "name": "GetDiskFreeSpaceW",
+   "ordinal": 570
+  },
+  {
+   "name": "GetDiskSpaceInformationA",
+   "ordinal": 571
+  },
+  {
+   "name": "GetDiskSpaceInformationW",
+   "ordinal": 572
+  },
+  {
+   "name": "GetDiskSpaceInformationWCOS",
+   "ordinal": 573
+  },
+  {
+   "name": "GetDriveTypeA",
+   "ordinal": 574
+  },
+  {
+   "name": "GetDriveTypeW",
+   "ordinal": 575
+  },
+  {
+   "name": "GetDurationFormatEx",
+   "ordinal": 576
+  },
+  {
+   "name": "GetDynamicTimeZoneInformation",
+   "ordinal": 577
+  },
+  {
+   "name": "GetDynamicTimeZoneInformationEffectiveYears",
+   "ordinal": 578
+  },
+  {
+   "name": "GetEffectivePackageStatusForUser",
+   "ordinal": 579
+  },
+  {
+   "name": "GetEffectivePackageStatusForUserSid",
+   "ordinal": 580
+  },
+  {
+   "name": "GetEightBitStringToUnicodeSizeRoutine",
+   "ordinal": 581
+  },
+  {
+   "name": "GetEightBitStringToUnicodeStringRoutine",
+   "ordinal": 582
+  },
+  {
+   "name": "GetEnabledXStateFeatures",
+   "ordinal": 583
+  },
+  {
+   "name": "GetEnvironmentStrings",
+   "ordinal": 584
+  },
+  {
+   "name": "GetEnvironmentStringsA",
+   "ordinal": 585
+  },
+  {
+   "name": "GetEnvironmentStringsW",
+   "ordinal": 586
+  },
+  {
+   "name": "GetEnvironmentVariableA",
+   "ordinal": 587
+  },
+  {
+   "name": "GetEnvironmentVariableW",
+   "ordinal": 588
+  },
+  {
+   "name": "GetEraNameCountedString",
+   "ordinal": 589
+  },
+  {
+   "name": "GetErrorMode",
+   "ordinal": 590
+  },
+  {
+   "name": "GetExitCodeProcess",
+   "ordinal": 591
+  },
+  {
+   "name": "GetExitCodeThread",
+   "ordinal": 592
+  },
+  {
+   "name": "GetExtensionApplicationUserModelId",
+   "ordinal": 593
+  },
+  {
+   "name": "GetExtensionProgIds",
+   "ordinal": 594
+  },
+  {
+   "name": "GetExtensionProperty",
+   "ordinal": 595
+  },
+  {
+   "name": "GetExtensionProperty2",
+   "ordinal": 596
+  },
+  {
+   "name": "GetFallbackDisplayName",
+   "ordinal": 597
+  },
+  {
+   "name": "GetFeatureToggleConfiguration",
+   "ordinal": 598
+  },
+  {
+   "name": "GetFeatureTogglesChangeToken",
+   "ordinal": 599
+  },
+  {
+   "name": "GetFileAttributesA",
+   "ordinal": 600
+  },
+  {
+   "name": "GetFileAttributesExA",
+   "ordinal": 601
+  },
+  {
+   "name": "GetFileAttributesExFromAppW",
+   "ordinal": 602
+  },
+  {
+   "name": "GetFileAttributesExW",
+   "ordinal": 603
+  },
+  {
+   "name": "GetFileAttributesW",
+   "ordinal": 604
+  },
+  {
+   "name": "GetFileInformationByHandle",
+   "ordinal": 605
+  },
+  {
+   "name": "GetFileInformationByHandleEx",
+   "ordinal": 606
+  },
+  {
+   "name": "GetFileInformationByName",
+   "ordinal": 607
+  },
+  {
+   "name": "GetFileMUIInfo",
+   "ordinal": 608
+  },
+  {
+   "name": "GetFileMUIPath",
+   "ordinal": 609
+  },
+  {
+   "name": "GetFileSecurityW",
+   "ordinal": 610
+  },
+  {
+   "name": "GetFileSize",
+   "ordinal": 611
+  },
+  {
+   "name": "GetFileSizeEx",
+   "ordinal": 612
+  },
+  {
+   "name": "GetFileTime",
+   "ordinal": 613
+  },
+  {
+   "name": "GetFileType",
+   "ordinal": 614
+  },
+  {
+   "name": "GetFileVersionInfoA",
+   "ordinal": 615
+  },
+  {
+   "name": "GetFileVersionInfoByHandle",
+   "ordinal": 616
+  },
+  {
+   "name": "GetFileVersionInfoExA",
+   "ordinal": 617
+  },
+  {
+   "name": "GetFileVersionInfoExW",
+   "ordinal": 618
+  },
+  {
+   "name": "GetFileVersionInfoSizeA",
+   "ordinal": 619
+  },
+  {
+   "name": "GetFileVersionInfoSizeExA",
+   "ordinal": 620
+  },
+  {
+   "name": "GetFileVersionInfoSizeExW",
+   "ordinal": 621
+  },
+  {
+   "name": "GetFileVersionInfoSizeW",
+   "ordinal": 622
+  },
+  {
+   "name": "GetFileVersionInfoW",
+   "ordinal": 623
+  },
+  {
+   "name": "GetFinalPathNameByHandleA",
+   "ordinal": 624
+  },
+  {
+   "name": "GetFinalPathNameByHandleW",
+   "ordinal": 625
+  },
+  {
+   "name": "GetFullPathNameA",
+   "ordinal": 626
+  },
+  {
+   "name": "GetFullPathNameW",
+   "ordinal": 627
+  },
+  {
+   "name": "GetGPOListInternalA",
+   "ordinal": 628
+  },
+  {
+   "name": "GetGPOListInternalW",
+   "ordinal": 629
+  },
+  {
+   "name": "GetGamingDeviceModelInformation",
+   "ordinal": 630
+  },
+  {
+   "name": "GetGeoInfoEx",
+   "ordinal": 631
+  },
+  {
+   "name": "GetGeoInfoW",
+   "ordinal": 632
+  },
+  {
+   "name": "GetHandleInformation",
+   "ordinal": 633
+  },
+  {
+   "name": "GetHivePath",
+   "ordinal": 634
+  },
+  {
+   "name": "GetIdForPackageDependencyContext",
+   "ordinal": 635
+  },
+  {
+   "name": "GetIntegratedDisplaySize",
+   "ordinal": 636
+  },
+  {
+   "name": "GetIoRingInfo",
+   "ordinal": 637
+  },
+  {
+   "name": "GetIsEdpEnabled",
+   "ordinal": 638
+  },
+  {
+   "name": "GetIsWdagEnabled",
+   "ordinal": 639
+  },
+  {
+   "name": "GetKernelObjectSecurity",
+   "ordinal": 640
+  },
+  {
+   "name": "GetLargePageMinimum",
+   "ordinal": 641
+  },
+  {
+   "name": "GetLargestConsoleWindowSize",
+   "ordinal": 642
+  },
+  {
+   "name": "GetLastError",
+   "ordinal": 643
+  },
+  {
+   "name": "GetLengthSid",
+   "ordinal": 644
+  },
+  {
+   "name": "GetLocalTime",
+   "ordinal": 645
+  },
+  {
+   "name": "GetLocaleInfoA",
+   "ordinal": 646
+  },
+  {
+   "name": "GetLocaleInfoEx",
+   "ordinal": 647
+  },
+  {
+   "name": "GetLocaleInfoHelper",
+   "ordinal": 648
+  },
+  {
+   "name": "GetLocaleInfoW",
+   "ordinal": 649
+  },
+  {
+   "name": "GetLogicalDriveStringsW",
+   "ordinal": 650
+  },
+  {
+   "name": "GetLogicalDrives",
+   "ordinal": 651
+  },
+  {
+   "name": "GetLogicalProcessorInformation",
+   "ordinal": 652
+  },
+  {
+   "name": "GetLogicalProcessorInformationEx",
+   "ordinal": 653
+  },
+  {
+   "name": "GetLongPathNameA",
+   "ordinal": 654
+  },
+  {
+   "name": "GetLongPathNameW",
+   "ordinal": 655
+  },
+  {
+   "name": "GetMachineTypeAttributes",
+   "ordinal": 656
+  },
+  {
+   "name": "GetMappedFileNameA",
+   "ordinal": 657
+  },
+  {
+   "name": "GetMappedFileNameW",
+   "ordinal": 658
+  },
+  {
+   "name": "GetMemoryErrorHandlingCapabilities",
+   "ordinal": 659
+  },
+  {
+   "name": "GetMemoryNumaClosestInitiatorNode",
+   "ordinal": 660
+  },
+  {
+   "name": "GetMemoryNumaPerformanceInformation",
+   "ordinal": 661
+  },
+  {
+   "name": "GetModuleBaseNameA",
+   "ordinal": 662
+  },
+  {
+   "name": "GetModuleBaseNameW",
+   "ordinal": 663
+  },
+  {
+   "name": "GetModuleFileNameA",
+   "ordinal": 664
+  },
+  {
+   "name": "GetModuleFileNameExA",
+   "ordinal": 665
+  },
+  {
+   "name": "GetModuleFileNameExW",
+   "ordinal": 666
+  },
+  {
+   "name": "GetModuleFileNameW",
+   "ordinal": 667
+  },
+  {
+   "name": "GetModuleHandleA",
+   "ordinal": 668
+  },
+  {
+   "name": "GetModuleHandleExA",
+   "ordinal": 669
+  },
+  {
+   "name": "GetModuleHandleExW",
+   "ordinal": 670
+  },
+  {
+   "name": "GetModuleHandleW",
+   "ordinal": 671
+  },
+  {
+   "name": "GetModuleInformation",
+   "ordinal": 672
+  },
+  {
+   "name": "GetNLSVersion",
+   "ordinal": 673
+  },
+  {
+   "name": "GetNLSVersionEx",
+   "ordinal": 674
+  },
+  {
+   "name": "GetNamedLocaleHashNode",
+   "ordinal": 675
+  },
+  {
+   "name": "GetNamedPipeAttribute",
+   "ordinal": 676
+  },
+  {
+   "name": "GetNamedPipeClientComputerNameW",
+   "ordinal": 677
+  },
+  {
+   "name": "GetNamedPipeHandleStateW",
+   "ordinal": 678
+  },
+  {
+   "name": "GetNamedPipeInfo",
+   "ordinal": 679
+  },
+  {
+   "name": "GetNativeSystemInfo",
+   "ordinal": 680
+  },
+  {
+   "name": "GetNextFgPolicyRefreshInfoInternal",
+   "ordinal": 681
+  },
+  {
+   "name": "GetNumaHighestNodeNumber",
+   "ordinal": 682
+  },
+  {
+   "name": "GetNumaNodeProcessorMask2",
+   "ordinal": 683
+  },
+  {
+   "name": "GetNumaNodeProcessorMaskEx",
+   "ordinal": 684
+  },
+  {
+   "name": "GetNumaProximityNodeEx",
+   "ordinal": 685
+  },
+  {
+   "name": "GetNumberFormatEx",
+   "ordinal": 686
+  },
+  {
+   "name": "GetNumberFormatW",
+   "ordinal": 687
+  },
+  {
+   "name": "GetNumberOfConsoleInputEvents",
+   "ordinal": 688
+  },
+  {
+   "name": "GetNumberOfConsoleMouseButtons",
+   "ordinal": 689
+  },
+  {
+   "name": "GetOEMCP",
+   "ordinal": 690
+  },
+  {
+   "name": "GetOsManufacturingMode",
+   "ordinal": 691
+  },
+  {
+   "name": "GetOsSafeBootMode",
+   "ordinal": 692
+  },
+  {
+   "name": "GetOverlappedResult",
+   "ordinal": 693
+  },
+  {
+   "name": "GetOverlappedResultEx",
+   "ordinal": 694
+  },
+  {
+   "name": "GetPackageApplicationContext",
+   "ordinal": 695
+  },
+  {
+   "name": "GetPackageApplicationIds",
+   "ordinal": 696
+  },
+  {
+   "name": "GetPackageApplicationProperty",
+   "ordinal": 697
+  },
+  {
+   "name": "GetPackageApplicationPropertyString",
+   "ordinal": 698
+  },
+  {
+   "name": "GetPackageApplicationResourcesContext",
+   "ordinal": 699
+  },
+  {
+   "name": "GetPackageContext",
+   "ordinal": 700
+  },
+  {
+   "name": "GetPackageDependencyInformation",
+   "ordinal": 701
+  },
+  {
+   "name": "GetPackageFamilyName",
+   "ordinal": 702
+  },
+  {
+   "name": "GetPackageFamilyNameFromFilePath",
+   "ordinal": 703
+  },
+  {
+   "name": "GetPackageFamilyNameFromProgId",
+   "ordinal": 704
+  },
+  {
+   "name": "GetPackageFamilyNameFromToken",
+   "ordinal": 705
+  },
+  {
+   "name": "GetPackageFullName",
+   "ordinal": 706
+  },
+  {
+   "name": "GetPackageFullNameFromToken",
+   "ordinal": 707
+  },
+  {
+   "name": "GetPackageGlobalizationContext",
+   "ordinal": 708
+  },
+  {
+   "name": "GetPackageGlobalizationProperty",
+   "ordinal": 709
+  },
+  {
+   "name": "GetPackageGraphRevisionId",
+   "ordinal": 710
+  },
+  {
+   "name": "GetPackageId",
+   "ordinal": 711
+  },
+  {
+   "name": "GetPackageInfo",
+   "ordinal": 712
+  },
+  {
+   "name": "GetPackageInfo2",
+   "ordinal": 713
+  },
+  {
+   "name": "GetPackageInfo3",
+   "ordinal": 714
+  },
+  {
+   "name": "GetPackageNameAliasesByPackageFullName",
+   "ordinal": 715
+  },
+  {
+   "name": "GetPackageOSMaxVersionTested",
+   "ordinal": 716
+  },
+  {
+   "name": "GetPackagePath",
+   "ordinal": 717
+  },
+  {
+   "name": "GetPackagePathByFullName",
+   "ordinal": 718
+  },
+  {
+   "name": "GetPackagePathByFullName2",
+   "ordinal": 719
+  },
+  {
+   "name": "GetPackagePathOnVolume",
+   "ordinal": 720
+  },
+  {
+   "name": "GetPackageProperty",
+   "ordinal": 721
+  },
+  {
+   "name": "GetPackagePropertyString",
+   "ordinal": 722
+  },
+  {
+   "name": "GetPackageResourcesContext",
+   "ordinal": 723
+  },
+  {
+   "name": "GetPackageResourcesProperty",
+   "ordinal": 724
+  },
+  {
+   "name": "GetPackageSecurityContext",
+   "ordinal": 725
+  },
+  {
+   "name": "GetPackageSecurityProperty",
+   "ordinal": 726
+  },
+  {
+   "name": "GetPackageStatus",
+   "ordinal": 727
+  },
+  {
+   "name": "GetPackageStatusForUser",
+   "ordinal": 728
+  },
+  {
+   "name": "GetPackageStatusForUserSid",
+   "ordinal": 729
+  },
+  {
+   "name": "GetPackageTargetPlatformProperty",
+   "ordinal": 730
+  },
+  {
+   "name": "GetPackageVolumeSisPath",
+   "ordinal": 731
+  },
+  {
+   "name": "GetPackagedDataForFile",
+   "ordinal": 732
+  },
+  {
+   "name": "GetPackagesByPackageFamily",
+   "ordinal": 733
+  },
+  {
+   "name": "GetPerformanceInfo",
+   "ordinal": 734
+  },
+  {
+   "name": "GetPersistedFileLocationW",
+   "ordinal": 735
+  },
+  {
+   "name": "GetPersistedRegistryLocationW",
+   "ordinal": 736
+  },
+  {
+   "name": "GetPersistedRegistryValueW",
+   "ordinal": 737
+  },
+  {
+   "name": "GetPhysicallyInstalledSystemMemory",
+   "ordinal": 738
+  },
+  {
+   "name": "GetPreviousFgPolicyRefreshInfoInternal",
+   "ordinal": 739
+  },
+  {
+   "name": "GetPriorityClass",
+   "ordinal": 740
+  },
+  {
+   "name": "GetPrivateObjectSecurity",
+   "ordinal": 741
+  },
+  {
+   "name": "GetProcAddress",
+   "ordinal": 742
+  },
+  {
+   "name": "GetProcAddressForCaller",
+   "ordinal": 743
+  },
+  {
+   "name": "GetProcessDefaultCpuSetMasks",
+   "ordinal": 744
+  },
+  {
+   "name": "GetProcessDefaultCpuSets",
+   "ordinal": 745
+  },
+  {
+   "name": "GetProcessGroupAffinity",
+   "ordinal": 746
+  },
+  {
+   "name": "GetProcessHandleCount",
+   "ordinal": 747
+  },
+  {
+   "name": "GetProcessHeap",
+   "ordinal": 748
+  },
+  {
+   "name": "GetProcessHeaps",
+   "ordinal": 749
+  },
+  {
+   "name": "GetProcessId",
+   "ordinal": 750
+  },
+  {
+   "name": "GetProcessIdOfThread",
+   "ordinal": 751
+  },
+  {
+   "name": "GetProcessImageFileNameA",
+   "ordinal": 752
+  },
+  {
+   "name": "GetProcessImageFileNameW",
+   "ordinal": 753
+  },
+  {
+   "name": "GetProcessInformation",
+   "ordinal": 754
+  },
+  {
+   "name": "GetProcessMemoryInfo",
+   "ordinal": 755
+  },
+  {
+   "name": "GetProcessMitigationPolicy",
+   "ordinal": 756
+  },
+  {
+   "name": "GetProcessPreferredUILanguages",
+   "ordinal": 757
+  },
+  {
+   "name": "GetProcessPriorityBoost",
+   "ordinal": 758
+  },
+  {
+   "name": "GetProcessShutdownParameters",
+   "ordinal": 759
+  },
+  {
+   "name": "GetProcessTimes",
+   "ordinal": 760
+  },
+  {
+   "name": "GetProcessVersion",
+   "ordinal": 761
+  },
+  {
+   "name": "GetProcessWorkingSetSize",
+   "ordinal": 762
+  },
+  {
+   "name": "GetProcessWorkingSetSizeEx",
+   "ordinal": 763
+  },
+  {
+   "name": "GetProcessesUsingPackageDependency",
+   "ordinal": 764
+  },
+  {
+   "name": "GetProcessorSystemCycleTime",
+   "ordinal": 765
+  },
+  {
+   "name": "GetProductInfo",
+   "ordinal": 766
+  },
+  {
+   "name": "GetProtocolAumid",
+   "ordinal": 767
+  },
+  {
+   "name": "GetProtocolProperty",
+   "ordinal": 768
+  },
+  {
+   "name": "GetPtrCalData",
+   "ordinal": 769
+  },
+  {
+   "name": "GetPtrCalDataArray",
+   "ordinal": 770
+  },
+  {
+   "name": "GetPublisherCacheFolder",
+   "ordinal": 771
+  },
+  {
+   "name": "GetPublisherRootFolder",
+   "ordinal": 772
+  },
+  {
+   "name": "GetQueuedCompletionStatus",
+   "ordinal": 773
+  },
+  {
+   "name": "GetQueuedCompletionStatusEx",
+   "ordinal": 774
+  },
+  {
+   "name": "GetRegistryExtensionFlags",
+   "ordinal": 775
+  },
+  {
+   "name": "GetRegistryValueWithFallbackW",
+   "ordinal": 776
+  },
+  {
+   "name": "GetResolvedPackageFullNameForPackageDependency",
+   "ordinal": 777
+  },
+  {
+   "name": "GetResolvedPackageFullNameForPackageDependency2",
+   "ordinal": 778
+  },
+  {
+   "name": "GetRoamingLastObservedChangeTime",
+   "ordinal": 779
+  },
+  {
+   "name": "GetRuntimeAttestationReport",
+   "ordinal": 780
+  },
+  {
+   "name": "GetSecureSystemAppDataFolder",
+   "ordinal": 781
+  },
+  {
+   "name": "GetSecurityDescriptorControl",
+   "ordinal": 782
+  },
+  {
+   "name": "GetSecurityDescriptorDacl",
+   "ordinal": 783
+  },
+  {
+   "name": "GetSecurityDescriptorGroup",
+   "ordinal": 784
+  },
+  {
+   "name": "GetSecurityDescriptorLength",
+   "ordinal": 785
+  },
+  {
+   "name": "GetSecurityDescriptorOwner",
+   "ordinal": 786
+  },
+  {
+   "name": "GetSecurityDescriptorRMControl",
+   "ordinal": 787
+  },
+  {
+   "name": "GetSecurityDescriptorSacl",
+   "ordinal": 788
+  },
+  {
+   "name": "GetSerializedAtomBytes",
+   "ordinal": 789
+  },
+  {
+   "name": "GetSharedLocalFolder",
+   "ordinal": 790
+  },
+  {
+   "name": "GetShortPathNameW",
+   "ordinal": 791
+  },
+  {
+   "name": "GetSidIdentifierAuthority",
+   "ordinal": 792
+  },
+  {
+   "name": "GetSidLengthRequired",
+   "ordinal": 793
+  },
+  {
+   "name": "GetSidSubAuthority",
+   "ordinal": 794
+  },
+  {
+   "name": "GetSidSubAuthorityCount",
+   "ordinal": 795
+  },
+  {
+   "name": "GetStagedPackageOrigin",
+   "ordinal": 796
+  },
+  {
+   "name": "GetStagedPackageOrigin2",
+   "ordinal": 797
+  },
+  {
+   "name": "GetStagedPackagePathByFullName",
+   "ordinal": 798
+  },
+  {
+   "name": "GetStagedPackagePathByFullName2",
+   "ordinal": 799
+  },
+  {
+   "name": "GetStartupInfoW",
+   "ordinal": 800
+  },
+  {
+   "name": "GetStateContainerDepth",
+   "ordinal": 801
+  },
+  {
+   "name": "GetStateFolder",
+   "ordinal": 802
+  },
+  {
+   "name": "GetStateRootFolder",
+   "ordinal": 803
+  },
+  {
+   "name": "GetStateRootFolderBase",
+   "ordinal": 804
+  },
+  {
+   "name": "GetStateSettingsFolder",
+   "ordinal": 805
+  },
+  {
+   "name": "GetStateVersion",
+   "ordinal": 806
+  },
+  {
+   "name": "GetStdHandle",
+   "ordinal": 807
+  },
+  {
+   "name": "GetStringScripts",
+   "ordinal": 808
+  },
+  {
+   "name": "GetStringTableEntry",
+   "ordinal": 809
+  },
+  {
+   "name": "GetStringTypeA",
+   "ordinal": 810
+  },
+  {
+   "name": "GetStringTypeExW",
+   "ordinal": 811
+  },
+  {
+   "name": "GetStringTypeW",
+   "ordinal": 812
+  },
+  {
+   "name": "GetSystemAppDataFolder",
+   "ordinal": 813
+  },
+  {
+   "name": "GetSystemAppDataKey",
+   "ordinal": 814
+  },
+  {
+   "name": "GetSystemCpuSetInformation",
+   "ordinal": 815
+  },
+  {
+   "name": "GetSystemDefaultLCID",
+   "ordinal": 816
+  },
+  {
+   "name": "GetSystemDefaultLangID",
+   "ordinal": 817
+  },
+  {
+   "name": "GetSystemDefaultLocaleName",
+   "ordinal": 818
+  },
+  {
+   "name": "GetSystemDefaultUILanguage",
+   "ordinal": 819
+  },
+  {
+   "name": "GetSystemDirectoryA",
+   "ordinal": 820
+  },
+  {
+   "name": "GetSystemDirectoryW",
+   "ordinal": 821
+  },
+  {
+   "name": "GetSystemFileCacheSize",
+   "ordinal": 822
+  },
+  {
+   "name": "GetSystemFirmwareTable",
+   "ordinal": 823
+  },
+  {
+   "name": "GetSystemInfo",
+   "ordinal": 824
+  },
+  {
+   "name": "GetSystemLeapSecondInformation",
+   "ordinal": 825
+  },
+  {
+   "name": "GetSystemMetadataPath",
+   "ordinal": 826
+  },
+  {
+   "name": "GetSystemMetadataPathForPackage",
+   "ordinal": 827
+  },
+  {
+   "name": "GetSystemMetadataPathForPackageFamily",
+   "ordinal": 828
+  },
+  {
+   "name": "GetSystemPreferredUILanguages",
+   "ordinal": 829
+  },
+  {
+   "name": "GetSystemStateRootFolder",
+   "ordinal": 830
+  },
+  {
+   "name": "GetSystemTime",
+   "ordinal": 831
+  },
+  {
+   "name": "GetSystemTimeAdjustment",
+   "ordinal": 832
+  },
+  {
+   "name": "GetSystemTimeAdjustmentPrecise",
+   "ordinal": 833
+  },
+  {
+   "name": "GetSystemTimeAsFileTime",
+   "ordinal": 834
+  },
+  {
+   "name": "GetSystemTimePreciseAsFileTime",
+   "ordinal": 835
+  },
+  {
+   "name": "GetSystemTimes",
+   "ordinal": 836
+  },
+  {
+   "name": "GetSystemWindowsDirectoryA",
+   "ordinal": 837
+  },
+  {
+   "name": "GetSystemWindowsDirectoryW",
+   "ordinal": 838
+  },
+  {
+   "name": "GetSystemWow64Directory2A",
+   "ordinal": 839
+  },
+  {
+   "name": "GetSystemWow64Directory2W",
+   "ordinal": 840
+  },
+  {
+   "name": "GetSystemWow64DirectoryA",
+   "ordinal": 841
+  },
+  {
+   "name": "GetSystemWow64DirectoryW",
+   "ordinal": 842
+  },
+  {
+   "name": "GetTargetPlatformContext",
+   "ordinal": 843
+  },
+  {
+   "name": "GetTempFileNameA",
+   "ordinal": 844
+  },
+  {
+   "name": "GetTempFileNameW",
+   "ordinal": 845
+  },
+  {
+   "name": "GetTempPath2A",
+   "ordinal": 846
+  },
+  {
+   "name": "GetTempPath2W",
+   "ordinal": 847
+  },
+  {
+   "name": "GetTempPathA",
+   "ordinal": 848
+  },
+  {
+   "name": "GetTempPathW",
+   "ordinal": 849
+  },
+  {
+   "name": "GetThreadContext",
+   "ordinal": 850
+  },
+  {
+   "name": "GetThreadDescription",
+   "ordinal": 851
+  },
+  {
+   "name": "GetThreadEnabledXStateFeatures",
+   "ordinal": 852
+  },
+  {
+   "name": "GetThreadErrorMode",
+   "ordinal": 853
+  },
+  {
+   "name": "GetThreadGroupAffinity",
+   "ordinal": 854
+  },
+  {
+   "name": "GetThreadIOPendingFlag",
+   "ordinal": 855
+  },
+  {
+   "name": "GetThreadId",
+   "ordinal": 856
+  },
+  {
+   "name": "GetThreadIdealProcessorEx",
+   "ordinal": 857
+  },
+  {
+   "name": "GetThreadInformation",
+   "ordinal": 858
+  },
+  {
+   "name": "GetThreadLocale",
+   "ordinal": 859
+  },
+  {
+   "name": "GetThreadPreferredUILanguages",
+   "ordinal": 860
+  },
+  {
+   "name": "GetThreadPriority",
+   "ordinal": 861
+  },
+  {
+   "name": "GetThreadPriorityBoost",
+   "ordinal": 862
+  },
+  {
+   "name": "GetThreadSelectedCpuSetMasks",
+   "ordinal": 863
+  },
+  {
+   "name": "GetThreadSelectedCpuSets",
+   "ordinal": 864
+  },
+  {
+   "name": "GetThreadTimes",
+   "ordinal": 865
+  },
+  {
+   "name": "GetThreadUILanguage",
+   "ordinal": 866
+  },
+  {
+   "name": "GetTickCount",
+   "ordinal": 867
+  },
+  {
+   "name": "GetTickCount64",
+   "ordinal": 868
+  },
+  {
+   "name": "GetTimeFormatA",
+   "ordinal": 869
+  },
+  {
+   "name": "GetTimeFormatEx",
+   "ordinal": 870
+  },
+  {
+   "name": "GetTimeFormatW",
+   "ordinal": 871
+  },
+  {
+   "name": "GetTimeZoneInformation",
+   "ordinal": 872
+  },
+  {
+   "name": "GetTimeZoneInformationForYear",
+   "ordinal": 873
+  },
+  {
+   "name": "GetTokenInformation",
+   "ordinal": 874
+  },
+  {
+   "name": "GetTraceEnableFlags",
+   "ordinal": 875
+  },
+  {
+   "name": "GetTraceEnableLevel",
+   "ordinal": 876
+  },
+  {
+   "name": "GetTraceLoggerHandle",
+   "ordinal": 877
+  },
+  {
+   "name": "GetUILanguageInfo",
+   "ordinal": 878
+  },
+  {
+   "name": "GetUnicodeStringToEightBitSizeRoutine",
+   "ordinal": 879
+  },
+  {
+   "name": "GetUnicodeStringToEightBitStringRoutine",
+   "ordinal": 880
+  },
+  {
+   "name": "GetUserDefaultGeoName",
+   "ordinal": 881
+  },
+  {
+   "name": "GetUserDefaultLCID",
+   "ordinal": 882
+  },
+  {
+   "name": "GetUserDefaultLangID",
+   "ordinal": 883
+  },
+  {
+   "name": "GetUserDefaultLocaleName",
+   "ordinal": 884
+  },
+  {
+   "name": "GetUserDefaultUILanguage",
+   "ordinal": 885
+  },
+  {
+   "name": "GetUserGeoID",
+   "ordinal": 886
+  },
+  {
+   "name": "GetUserInfo",
+   "ordinal": 887
+  },
+  {
+   "name": "GetUserInfoWord",
+   "ordinal": 888
+  },
+  {
+   "name": "GetUserOverrideString",
+   "ordinal": 889
+  },
+  {
+   "name": "GetUserOverrideWord",
+   "ordinal": 890
+  },
+  {
+   "name": "GetUserPreferredUILanguages",
+   "ordinal": 891
+  },
+  {
+   "name": "GetVersion",
+   "ordinal": 892
+  },
+  {
+   "name": "GetVersionExA",
+   "ordinal": 893
+  },
+  {
+   "name": "GetVersionExW",
+   "ordinal": 894
+  },
+  {
+   "name": "GetVolumeInformationA",
+   "ordinal": 895
+  },
+  {
+   "name": "GetVolumeInformationByHandleW",
+   "ordinal": 896
+  },
+  {
+   "name": "GetVolumeInformationW",
+   "ordinal": 897
+  },
+  {
+   "name": "GetVolumeNameForVolumeMountPointW",
+   "ordinal": 898
+  },
+  {
+   "name": "GetVolumePathNameW",
+   "ordinal": 899
+  },
+  {
+   "name": "GetVolumePathNamesForVolumeNameW",
+   "ordinal": 900
+  },
+  {
+   "name": "GetWindowsAccountDomainSid",
+   "ordinal": 901
+  },
+  {
+   "name": "GetWindowsDirectoryA",
+   "ordinal": 902
+  },
+  {
+   "name": "GetWindowsDirectoryW",
+   "ordinal": 903
+  },
+  {
+   "name": "GetWriteWatch",
+   "ordinal": 904
+  },
+  {
+   "name": "GetWsChanges",
+   "ordinal": 905
+  },
+  {
+   "name": "GetWsChangesEx",
+   "ordinal": 906
+  },
+  {
+   "name": "GetXStateFeaturesMask",
+   "ordinal": 907
+  },
+  {
+   "name": "GlobalAlloc",
+   "ordinal": 908
+  },
+  {
+   "name": "GlobalFlags",
+   "ordinal": 909
+  },
+  {
+   "name": "GlobalFree",
+   "ordinal": 910
+  },
+  {
+   "name": "GlobalHandle",
+   "ordinal": 911
+  },
+  {
+   "name": "GlobalLock",
+   "ordinal": 912
+  },
+  {
+   "name": "GlobalMemoryStatusEx",
+   "ordinal": 913
+  },
+  {
+   "name": "GlobalReAlloc",
+   "ordinal": 914
+  },
+  {
+   "name": "GlobalSize",
+   "ordinal": 915
+  },
+  {
+   "name": "GlobalUnlock",
+   "ordinal": 916
+  },
+  {
+   "name": "GuardCheckLongJumpTarget",
+   "ordinal": 917
+  },
+  {
+   "name": "HasPolicyForegroundProcessingCompletedInternal",
+   "ordinal": 918
+  },
+  {
+   "name": "HashData",
+   "ordinal": 919
+  },
+  {
+   "name": "HeapAlloc",
+   "ordinal": 920
+  },
+  {
+   "name": "HeapCompact",
+   "ordinal": 921
+  },
+  {
+   "name": "HeapCreate",
+   "ordinal": 922
+  },
+  {
+   "name": "HeapDestroy",
+   "ordinal": 923
+  },
+  {
+   "name": "HeapFree",
+   "ordinal": 924
+  },
+  {
+   "name": "HeapLock",
+   "ordinal": 925
+  },
+  {
+   "name": "HeapQueryInformation",
+   "ordinal": 926
+  },
+  {
+   "name": "HeapReAlloc",
+   "ordinal": 927
+  },
+  {
+   "name": "HeapSetInformation",
+   "ordinal": 928
+  },
+  {
+   "name": "HeapSize",
+   "ordinal": 929
+  },
+  {
+   "name": "HeapSummary",
+   "ordinal": 930
+  },
+  {
+   "name": "HeapUnlock",
+   "ordinal": 931
+  },
+  {
+   "name": "HeapValidate",
+   "ordinal": 932
+  },
+  {
+   "name": "HeapWalk",
+   "ordinal": 933
+  },
+  {
+   "name": "IdnToAscii",
+   "ordinal": 934
+  },
+  {
+   "name": "IdnToNameprepUnicode",
+   "ordinal": 935
+  },
+  {
+   "name": "IdnToUnicode",
+   "ordinal": 936
+  },
+  {
+   "name": "ImpersonateAnonymousToken",
+   "ordinal": 937
+  },
+  {
+   "name": "ImpersonateLoggedOnUser",
+   "ordinal": 938
+  },
+  {
+   "name": "ImpersonateNamedPipeClient",
+   "ordinal": 939
+  },
+  {
+   "name": "ImpersonateSelf",
+   "ordinal": 940
+  },
+  {
+   "name": "IncrementPackageStatusVersion",
+   "ordinal": 941
+  },
+  {
+   "name": "InitOnceBeginInitialize",
+   "ordinal": 942
+  },
+  {
+   "name": "InitOnceComplete",
+   "ordinal": 943
+  },
+  {
+   "name": "InitOnceExecuteOnce",
+   "ordinal": 944
+  },
+  {
+   "name": "InitOnceInitialize",
+   "ordinal": 945
+  },
+  {
+   "name": "InitializeAcl",
+   "ordinal": 946
+  },
+  {
+   "name": "InitializeConditionVariable",
+   "ordinal": 947
+  },
+  {
+   "name": "InitializeContext",
+   "ordinal": 948
+  },
+  {
+   "name": "InitializeContext2",
+   "ordinal": 949
+  },
+  {
+   "name": "InitializeCriticalSection",
+   "ordinal": 950
+  },
+  {
+   "name": "InitializeCriticalSectionAndSpinCount",
+   "ordinal": 951
+  },
+  {
+   "name": "InitializeCriticalSectionEx",
+   "ordinal": 952
+  },
+  {
+   "name": "InitializeEnclave",
+   "ordinal": 953
+  },
+  {
+   "name": "InitializeProcThreadAttributeList",
+   "ordinal": 954
+  },
+  {
+   "name": "InitializeProcessForWsWatch",
+   "ordinal": 955
+  },
+  {
+   "name": "InitializeSListHead",
+   "ordinal": 956
+  },
+  {
+   "name": "InitializeSRWLock",
+   "ordinal": 957
+  },
+  {
+   "name": "InitializeSecurityDescriptor",
+   "ordinal": 958
+  },
+  {
+   "name": "InitializeSid",
+   "ordinal": 959
+  },
+  {
+   "name": "InitializeSynchronizationBarrier",
+   "ordinal": 960
+  },
+  {
+   "name": "InstallELAMCertificateInfo",
+   "ordinal": 961
+  },
+  {
+   "name": "InterlockedFlushSList",
+   "ordinal": 962
+  },
+  {
+   "name": "InterlockedPopEntrySList",
+   "ordinal": 963
+  },
+  {
+   "name": "InterlockedPushEntrySList",
+   "ordinal": 964
+  },
+  {
+   "name": "InterlockedPushListSList",
+   "ordinal": 965
+  },
+  {
+   "name": "InterlockedPushListSListEx",
+   "ordinal": 966
+  },
+  {
+   "name": "InternalLcidToName",
+   "ordinal": 967
+  },
+  {
+   "name": "Internal_EnumCalendarInfo",
+   "ordinal": 968
+  },
+  {
+   "name": "Internal_EnumDateFormats",
+   "ordinal": 969
+  },
+  {
+   "name": "Internal_EnumLanguageGroupLocales",
+   "ordinal": 970
+  },
+  {
+   "name": "Internal_EnumSystemCodePages",
+   "ordinal": 971
+  },
+  {
+   "name": "Internal_EnumSystemLanguageGroups",
+   "ordinal": 972
+  },
+  {
+   "name": "Internal_EnumSystemLocales",
+   "ordinal": 973
+  },
+  {
+   "name": "Internal_EnumTimeFormats",
+   "ordinal": 974
+  },
+  {
+   "name": "Internal_EnumUILanguages",
+   "ordinal": 975
+  },
+  {
+   "name": "InternetTimeFromSystemTimeA",
+   "ordinal": 976
+  },
+  {
+   "name": "InternetTimeFromSystemTimeW",
+   "ordinal": 977
+  },
+  {
+   "name": "InternetTimeToSystemTimeA",
+   "ordinal": 978
+  },
+  {
+   "name": "InternetTimeToSystemTimeW",
+   "ordinal": 979
+  },
+  {
+   "name": "InvalidateAppModelVersionCache",
+   "ordinal": 980
+  },
+  {
+   "name": "IsApiSetImplemented",
+   "ordinal": 981
+  },
+  {
+   "name": "IsCharAlphaA",
+   "ordinal": 982
+  },
+  {
+   "name": "IsCharAlphaNumericA",
+   "ordinal": 983
+  },
+  {
+   "name": "IsCharAlphaNumericW",
+   "ordinal": 984
+  },
+  {
+   "name": "IsCharAlphaW",
+   "ordinal": 985
+  },
+  {
+   "name": "IsCharBlankW",
+   "ordinal": 986
+  },
+  {
+   "name": "IsCharCntrlW",
+   "ordinal": 987
+  },
+  {
+   "name": "IsCharDigitW",
+   "ordinal": 988
+  },
+  {
+   "name": "IsCharLowerA",
+   "ordinal": 989
+  },
+  {
+   "name": "IsCharLowerW",
+   "ordinal": 990
+  },
+  {
+   "name": "IsCharPunctW",
+   "ordinal": 991
+  },
+  {
+   "name": "IsCharSpaceA",
+   "ordinal": 992
+  },
+  {
+   "name": "IsCharSpaceW",
+   "ordinal": 993
+  },
+  {
+   "name": "IsCharUpperA",
+   "ordinal": 994
+  },
+  {
+   "name": "IsCharUpperW",
+   "ordinal": 995
+  },
+  {
+   "name": "IsCharXDigitW",
+   "ordinal": 996
+  },
+  {
+   "name": "IsDBCSLeadByte",
+   "ordinal": 997
+  },
+  {
+   "name": "IsDBCSLeadByteEx",
+   "ordinal": 998
+  },
+  {
+   "name": "IsDebuggerPresent",
+   "ordinal": 999
+  },
+  {
+   "name": "IsDeveloperModeEnabled",
+   "ordinal": 1000
+  },
+  {
+   "name": "IsDeveloperModePolicyApplied",
+   "ordinal": 1001
+  },
+  {
+   "name": "IsEnclaveTypeSupported",
+   "ordinal": 1002
+  },
+  {
+   "name": "IsInternetESCEnabled",
+   "ordinal": 1003
+  },
+  {
+   "name": "IsIoRingOpSupported",
+   "ordinal": 1004
+  },
+  {
+   "name": "IsMrtResourceRedirectionEnabled",
+   "ordinal": 1005
+  },
+  {
+   "name": "IsNLSDefinedString",
+   "ordinal": 1006
+  },
+  {
+   "name": "IsNormalizedString",
+   "ordinal": 1007
+  },
+  {
+   "name": "IsOnDemandRegistrationSupportedForExtensionCategory",
+   "ordinal": 1008
+  },
+  {
+   "name": "IsPackageFeatureSupported",
+   "ordinal": 1009
+  },
+  {
+   "name": "IsProcessCritical",
+   "ordinal": 1010
+  },
+  {
+   "name": "IsProcessInJob",
+   "ordinal": 1011
+  },
+  {
+   "name": "IsProcessorFeaturePresent",
+   "ordinal": 1012
+  },
+  {
+   "name": "IsSideloadingEnabled",
+   "ordinal": 1013
+  },
+  {
+   "name": "IsSideloadingPolicyApplied",
+   "ordinal": 1014
+  },
+  {
+   "name": "IsSyncForegroundPolicyRefresh",
+   "ordinal": 1015
+  },
+  {
+   "name": "IsThreadAFiber",
+   "ordinal": 1016
+  },
+  {
+   "name": "IsThreadpoolTimerSet",
+   "ordinal": 1017
+  },
+  {
+   "name": "IsTimeZoneRedirectionEnabled",
+   "ordinal": 1018
+  },
+  {
+   "name": "IsTokenRestricted",
+   "ordinal": 1019
+  },
+  {
+   "name": "IsUserCetAvailableInEnvironment",
+   "ordinal": 1020
+  },
+  {
+   "name": "IsValidAcl",
+   "ordinal": 1021
+  },
+  {
+   "name": "IsValidCodePage",
+   "ordinal": 1022
+  },
+  {
+   "name": "IsValidLanguageGroup",
+   "ordinal": 1023
+  },
+  {
+   "name": "IsValidLocale",
+   "ordinal": 1024
+  },
+  {
+   "name": "IsValidLocaleName",
+   "ordinal": 1025
+  },
+  {
+   "name": "IsValidNLSVersion",
+   "ordinal": 1026
+  },
+  {
+   "name": "IsValidRelativeSecurityDescriptor",
+   "ordinal": 1027
+  },
+  {
+   "name": "IsValidSecurityDescriptor",
+   "ordinal": 1028
+  },
+  {
+   "name": "IsValidSid",
+   "ordinal": 1029
+  },
+  {
+   "name": "IsWellKnownSid",
+   "ordinal": 1030
+  },
+  {
+   "name": "IsWow64GuestMachineSupported",
+   "ordinal": 1031
+  },
+  {
+   "name": "IsWow64Process",
+   "ordinal": 1032
+  },
+  {
+   "name": "IsWow64Process2",
+   "ordinal": 1033
+  },
+  {
+   "name": "K32EmptyWorkingSet",
+   "ordinal": 1034
+  },
+  {
+   "name": "K32EnumDeviceDrivers",
+   "ordinal": 1035
+  },
+  {
+   "name": "K32EnumPageFilesA",
+   "ordinal": 1036
+  },
+  {
+   "name": "K32EnumPageFilesW",
+   "ordinal": 1037
+  },
+  {
+   "name": "K32EnumProcessModules",
+   "ordinal": 1038
+  },
+  {
+   "name": "K32EnumProcessModulesEx",
+   "ordinal": 1039
+  },
+  {
+   "name": "K32EnumProcesses",
+   "ordinal": 1040
+  },
+  {
+   "name": "K32GetDeviceDriverBaseNameA",
+   "ordinal": 1041
+  },
+  {
+   "name": "K32GetDeviceDriverBaseNameW",
+   "ordinal": 1042
+  },
+  {
+   "name": "K32GetDeviceDriverFileNameA",
+   "ordinal": 1043
+  },
+  {
+   "name": "K32GetDeviceDriverFileNameW",
+   "ordinal": 1044
+  },
+  {
+   "name": "K32GetMappedFileNameA",
+   "ordinal": 1045
+  },
+  {
+   "name": "K32GetMappedFileNameW",
+   "ordinal": 1046
+  },
+  {
+   "name": "K32GetModuleBaseNameA",
+   "ordinal": 1047
+  },
+  {
+   "name": "K32GetModuleBaseNameW",
+   "ordinal": 1048
+  },
+  {
+   "name": "K32GetModuleFileNameExA",
+   "ordinal": 1049
+  },
+  {
+   "name": "K32GetModuleFileNameExW",
+   "ordinal": 1050
+  },
+  {
+   "name": "K32GetModuleInformation",
+   "ordinal": 1051
+  },
+  {
+   "name": "K32GetPerformanceInfo",
+   "ordinal": 1052
+  },
+  {
+   "name": "K32GetProcessImageFileNameA",
+   "ordinal": 1053
+  },
+  {
+   "name": "K32GetProcessImageFileNameW",
+   "ordinal": 1054
+  },
+  {
+   "name": "K32GetProcessMemoryInfo",
+   "ordinal": 1055
+  },
+  {
+   "name": "K32GetWsChanges",
+   "ordinal": 1056
+  },
+  {
+   "name": "K32GetWsChangesEx",
+   "ordinal": 1057
+  },
+  {
+   "name": "K32InitializeProcessForWsWatch",
+   "ordinal": 1058
+  },
+  {
+   "name": "K32QueryWorkingSet",
+   "ordinal": 1059
+  },
+  {
+   "name": "K32QueryWorkingSetEx",
+   "ordinal": 1060
+  },
+  {
+   "name": "KernelBaseGetGlobalData",
+   "ordinal": 1061
+  },
+  {
+   "name": "KernelbasePostInit",
+   "ordinal": 1062
+  },
+  {
+   "name": "LCIDToLocaleName",
+   "ordinal": 1063
+  },
+  {
+   "name": "LCMapStringA",
+   "ordinal": 1064
+  },
+  {
+   "name": "LCMapStringEx",
+   "ordinal": 1065
+  },
+  {
+   "name": "LCMapStringW",
+   "ordinal": 1066
+  },
+  {
+   "name": "LeaveCriticalPolicySectionInternal",
+   "ordinal": 1067
+  },
+  {
+   "name": "LeaveCriticalSection",
+   "ordinal": 1068
+  },
+  {
+   "name": "LeaveCriticalSectionWhenCallbackReturns",
+   "ordinal": 1069
+  },
+  {
+   "name": "LoadAppInitDlls",
+   "ordinal": 1070
+  },
+  {
+   "name": "LoadEnclaveData",
+   "ordinal": 1071
+  },
+  {
+   "name": "LoadEnclaveImageA",
+   "ordinal": 1072
+  },
+  {
+   "name": "LoadEnclaveImageW",
+   "ordinal": 1073
+  },
+  {
+   "name": "LoadLibraryA",
+   "ordinal": 1074
+  },
+  {
+   "name": "LoadLibraryExA",
+   "ordinal": 1075
+  },
+  {
+   "name": "LoadLibraryExW",
+   "ordinal": 1076
+  },
+  {
+   "name": "LoadLibraryW",
+   "ordinal": 1077
+  },
+  {
+   "name": "LoadPackagedLibrary",
+   "ordinal": 1078
+  },
+  {
+   "name": "LoadResource",
+   "ordinal": 1079
+  },
+  {
+   "name": "LoadStringA",
+   "ordinal": 1080
+  },
+  {
+   "name": "LoadStringBaseExW",
+   "ordinal": 1081
+  },
+  {
+   "name": "LoadStringByReference",
+   "ordinal": 1082
+  },
+  {
+   "name": "LoadStringW",
+   "ordinal": 1083
+  },
+  {
+   "name": "LocalAlloc",
+   "ordinal": 1084
+  },
+  {
+   "name": "LocalFileTimeToFileTime",
+   "ordinal": 1085
+  },
+  {
+   "name": "LocalFileTimeToLocalSystemTime",
+   "ordinal": 1086
+  },
+  {
+   "name": "LocalFlags",
+   "ordinal": 1087
+  },
+  {
+   "name": "LocalFree",
+   "ordinal": 1088
+  },
+  {
+   "name": "LocalLock",
+   "ordinal": 1089
+  },
+  {
+   "name": "LocalReAlloc",
+   "ordinal": 1090
+  },
+  {
+   "name": "LocalSize",
+   "ordinal": 1091
+  },
+  {
+   "name": "LocalSystemTimeToLocalFileTime",
+   "ordinal": 1092
+  },
+  {
+   "name": "LocalUnlock",
+   "ordinal": 1093
+  },
+  {
+   "name": "LocaleNameToLCID",
+   "ordinal": 1094
+  },
+  {
+   "name": "LocateXStateFeature",
+   "ordinal": 1095
+  },
+  {
+   "name": "LockFile",
+   "ordinal": 1096
+  },
+  {
+   "name": "LockFileEx",
+   "ordinal": 1097
+  },
+  {
+   "name": "LockResource",
+   "ordinal": 1098
+  },
+  {
+   "name": "LogFeatureProcessUsage",
+   "ordinal": 1099
+  },
+  {
+   "name": "LogStagedFeatureUsage",
+   "ordinal": 1100
+  },
+  {
+   "name": "MakeAbsoluteSD",
+   "ordinal": 1101
+  },
+  {
+   "name": "MakeAbsoluteSD2",
+   "ordinal": 1102
+  },
+  {
+   "name": "MakeSelfRelativeSD",
+   "ordinal": 1103
+  },
+  {
+   "name": "MapGenericMask",
+   "ordinal": 1104
+  },
+  {
+   "name": "MapPredefinedHandleInternal",
+   "ordinal": 1105
+  },
+  {
+   "name": "MapUserPhysicalPages",
+   "ordinal": 1106
+  },
+  {
+   "name": "MapViewOfFile",
+   "ordinal": 1107
+  },
+  {
+   "name": "MapViewOfFile3",
+   "ordinal": 1108
+  },
+  {
+   "name": "MapViewOfFile3FromApp",
+   "ordinal": 1109
+  },
+  {
+   "name": "MapViewOfFileEx",
+   "ordinal": 1110
+  },
+  {
+   "name": "MapViewOfFileExNuma",
+   "ordinal": 1111
+  },
+  {
+   "name": "MapViewOfFileFromApp",
+   "ordinal": 1112
+  },
+  {
+   "name": "MapViewOfFileNuma2",
+   "ordinal": 1113
+  },
+  {
+   "name": "MoveFileExW",
+   "ordinal": 1114
+  },
+  {
+   "name": "MoveFileFromAppW",
+   "ordinal": 1115
+  },
+  {
+   "name": "MoveFileWithProgressTransactedW",
+   "ordinal": 1116
+  },
+  {
+   "name": "MoveFileWithProgressW",
+   "ordinal": 1117
+  },
+  {
+   "name": "MulDiv",
+   "ordinal": 1118
+  },
+  {
+   "name": "MultiByteToWideChar",
+   "ordinal": 1119
+  },
+  {
+   "name": "NamedPipeEventEnum",
+   "ordinal": 1120
+  },
+  {
+   "name": "NamedPipeEventSelect",
+   "ordinal": 1121
+  },
+  {
+   "name": "NeedCurrentDirectoryForExePathA",
+   "ordinal": 1122
+  },
+  {
+   "name": "NeedCurrentDirectoryForExePathW",
+   "ordinal": 1123
+  },
+  {
+   "name": "NlsCheckPolicy",
+   "ordinal": 1124
+  },
+  {
+   "name": "NlsDispatchAnsiEnumProc",
+   "ordinal": 1125
+  },
+  {
+   "name": "NlsGetACPFromLocale",
+   "ordinal": 1126
+  },
+  {
+   "name": "NlsGetCacheUpdateCount",
+   "ordinal": 1127
+  },
+  {
+   "name": "NlsIsUserDefaultLocale",
+   "ordinal": 1128
+  },
+  {
+   "name": "NlsUpdateLocale",
+   "ordinal": 1129
+  },
+  {
+   "name": "NlsUpdateSystemLocale",
+   "ordinal": 1130
+  },
+  {
+   "name": "NlsValidateLocale",
+   "ordinal": 1131
+  },
+  {
+   "name": "NormalizeString",
+   "ordinal": 1132
+  },
+  {
+   "name": "NotifyFeatureToggleUsage",
+   "ordinal": 1133
+  },
+  {
+   "name": "NotifyMountMgr",
+   "ordinal": 1134
+  },
+  {
+   "name": "NotifyRedirectedStringChange",
+   "ordinal": 1135
+  },
+  {
+   "name": "ObjectCloseAuditAlarmW",
+   "ordinal": 1136
+  },
+  {
+   "name": "ObjectDeleteAuditAlarmW",
+   "ordinal": 1137
+  },
+  {
+   "name": "ObjectOpenAuditAlarmW",
+   "ordinal": 1138
+  },
+  {
+   "name": "ObjectPrivilegeAuditAlarmW",
+   "ordinal": 1139
+  },
+  {
+   "name": "OfferVirtualMemory",
+   "ordinal": 1140
+  },
+  {
+   "name": "OpenCommPort",
+   "ordinal": 1141
+  },
+  {
+   "name": "OpenDedicatedMemoryPartition",
+   "ordinal": 1142
+  },
+  {
+   "name": "OpenEventA",
+   "ordinal": 1143
+  },
+  {
+   "name": "OpenEventW",
+   "ordinal": 1144
+  },
+  {
+   "name": "OpenFileById",
+   "ordinal": 1145
+  },
+  {
+   "name": "OpenFileMappingFromApp",
+   "ordinal": 1146
+  },
+  {
+   "name": "OpenFileMappingW",
+   "ordinal": 1147
+  },
+  {
+   "name": "OpenGlobalizationUserSettingsKey",
+   "ordinal": 1148
+  },
+  {
+   "name": "OpenMutexW",
+   "ordinal": 1149
+  },
+  {
+   "name": "OpenPackageInfoByFullName",
+   "ordinal": 1150
+  },
+  {
+   "name": "OpenPackageInfoByFullNameForMachine",
+   "ordinal": 1151
+  },
+  {
+   "name": "OpenPackageInfoByFullNameForUser",
+   "ordinal": 1152
+  },
+  {
+   "name": "OpenPrivateNamespaceW",
+   "ordinal": 1153
+  },
+  {
+   "name": "OpenProcess",
+   "ordinal": 1154
+  },
+  {
+   "name": "OpenProcessToken",
+   "ordinal": 1155
+  },
+  {
+   "name": "OpenRegKey",
+   "ordinal": 1156
+  },
+  {
+   "name": "OpenSemaphoreW",
+   "ordinal": 1157
+  },
+  {
+   "name": "OpenState",
+   "ordinal": 1158
+  },
+  {
+   "name": "OpenStateAtom",
+   "ordinal": 1159
+  },
+  {
+   "name": "OpenStateExplicit",
+   "ordinal": 1160
+  },
+  {
+   "name": "OpenStateExplicitForUserSid",
+   "ordinal": 1161
+  },
+  {
+   "name": "OpenStateExplicitForUserSidString",
+   "ordinal": 1162
+  },
+  {
+   "name": "OpenThread",
+   "ordinal": 1163
+  },
+  {
+   "name": "OpenThreadToken",
+   "ordinal": 1164
+  },
+  {
+   "name": "OpenWaitableTimerW",
+   "ordinal": 1165
+  },
+  {
+   "name": "OutputDebugStringA",
+   "ordinal": 1166
+  },
+  {
+   "name": "OutputDebugStringW",
+   "ordinal": 1167
+  },
+  {
+   "name": "OverrideRoamingDataModificationTimesInRange",
+   "ordinal": 1168
+  },
+  {
+   "name": "PackageFamilyNameFromFullName",
+   "ordinal": 1169
+  },
+  {
+   "name": "PackageFamilyNameFromFullNameA",
+   "ordinal": 1170
+  },
+  {
+   "name": "PackageFamilyNameFromId",
+   "ordinal": 1171
+  },
+  {
+   "name": "PackageFamilyNameFromIdA",
+   "ordinal": 1172
+  },
+  {
+   "name": "PackageFamilyNameFromProductId",
+   "ordinal": 1173
+  },
+  {
+   "name": "PackageFullNameFromId",
+   "ordinal": 1174
+  },
+  {
+   "name": "PackageFullNameFromIdA",
+   "ordinal": 1175
+  },
+  {
+   "name": "PackageFullNameFromProductId",
+   "ordinal": 1176
+  },
+  {
+   "name": "PackageIdFromFullName",
+   "ordinal": 1177
+  },
+  {
+   "name": "PackageIdFromFullNameA",
+   "ordinal": 1178
+  },
+  {
+   "name": "PackageIdFromProductId",
+   "ordinal": 1179
+  },
+  {
+   "name": "PackageIsEffectiveSupportedUsersMultiple",
+   "ordinal": 1180
+  },
+  {
+   "name": "PackageNameAndPublisherIdFromFamilyName",
+   "ordinal": 1181
+  },
+  {
+   "name": "PackageNameAndPublisherIdFromFamilyNameA",
+   "ordinal": 1182
+  },
+  {
+   "name": "PackagePublisherAddUserIfNecessary",
+   "ordinal": 1183
+  },
+  {
+   "name": "PackagePublisherIdFromPublisher",
+   "ordinal": 1184
+  },
+  {
+   "name": "PackageRelativeApplicationIdFromProductId",
+   "ordinal": 1185
+  },
+  {
+   "name": "PackageSidFromFamilyName",
+   "ordinal": 1186
+  },
+  {
+   "name": "ParseApplicationUserModelId",
+   "ordinal": 1187
+  },
+  {
+   "name": "ParseApplicationUserModelIdA",
+   "ordinal": 1188
+  },
+  {
+   "name": "ParseURLA",
+   "ordinal": 1189
+  },
+  {
+   "name": "ParseURLW",
+   "ordinal": 1190
+  },
+  {
+   "name": "PathAddBackslashA",
+   "ordinal": 1191
+  },
+  {
+   "name": "PathAddBackslashW",
+   "ordinal": 1192
+  },
+  {
+   "name": "PathAddExtensionA",
+   "ordinal": 1193
+  },
+  {
+   "name": "PathAddExtensionW",
+   "ordinal": 1194
+  },
+  {
+   "name": "PathAllocCanonicalize",
+   "ordinal": 1195
+  },
+  {
+   "name": "PathAllocCombine",
+   "ordinal": 1196
+  },
+  {
+   "name": "PathAppendA",
+   "ordinal": 1197
+  },
+  {
+   "name": "PathAppendW",
+   "ordinal": 1198
+  },
+  {
+   "name": "PathCanonicalizeA",
+   "ordinal": 1199
+  },
+  {
+   "name": "PathCanonicalizeW",
+   "ordinal": 1200
+  },
+  {
+   "name": "PathCchAddBackslash",
+   "ordinal": 1201
+  },
+  {
+   "name": "PathCchAddBackslashEx",
+   "ordinal": 1202
+  },
+  {
+   "name": "PathCchAddExtension",
+   "ordinal": 1203
+  },
+  {
+   "name": "PathCchAppend",
+   "ordinal": 1204
+  },
+  {
+   "name": "PathCchAppendEx",
+   "ordinal": 1205
+  },
+  {
+   "name": "PathCchCanonicalize",
+   "ordinal": 1206
+  },
+  {
+   "name": "PathCchCanonicalizeEx",
+   "ordinal": 1207
+  },
+  {
+   "name": "PathCchCombine",
+   "ordinal": 1208
+  },
+  {
+   "name": "PathCchCombineEx",
+   "ordinal": 1209
+  },
+  {
+   "name": "PathCchFindExtension",
+   "ordinal": 1210
+  },
+  {
+   "name": "PathCchIsRoot",
+   "ordinal": 1211
+  },
+  {
+   "name": "PathCchRemoveBackslash",
+   "ordinal": 1212
+  },
+  {
+   "name": "PathCchRemoveBackslashEx",
+   "ordinal": 1213
+  },
+  {
+   "name": "PathCchRemoveExtension",
+   "ordinal": 1214
+  },
+  {
+   "name": "PathCchRemoveFileSpec",
+   "ordinal": 1215
+  },
+  {
+   "name": "PathCchRenameExtension",
+   "ordinal": 1216
+  },
+  {
+   "name": "PathCchSkipRoot",
+   "ordinal": 1217
+  },
+  {
+   "name": "PathCchStripPrefix",
+   "ordinal": 1218
+  },
+  {
+   "name": "PathCchStripToRoot",
+   "ordinal": 1219
+  },
+  {
+   "name": "PathCombineA",
+   "ordinal": 1220
+  },
+  {
+   "name": "PathCombineW",
+   "ordinal": 1221
+  },
+  {
+   "name": "PathCommonPrefixA",
+   "ordinal": 1222
+  },
+  {
+   "name": "PathCommonPrefixW",
+   "ordinal": 1223
+  },
+  {
+   "name": "PathCreateFromUrlA",
+   "ordinal": 1224
+  },
+  {
+   "name": "PathCreateFromUrlAlloc",
+   "ordinal": 1225
+  },
+  {
+   "name": "PathCreateFromUrlW",
+   "ordinal": 1226
+  },
+  {
+   "name": "PathFileExistsA",
+   "ordinal": 1227
+  },
+  {
+   "name": "PathFileExistsW",
+   "ordinal": 1228
+  },
+  {
+   "name": "PathFindExtensionA",
+   "ordinal": 1229
+  },
+  {
+   "name": "PathFindExtensionW",
+   "ordinal": 1230
+  },
+  {
+   "name": "PathFindFileNameA",
+   "ordinal": 1231
+  },
+  {
+   "name": "PathFindFileNameW",
+   "ordinal": 1232
+  },
+  {
+   "name": "PathFindNextComponentA",
+   "ordinal": 1233
+  },
+  {
+   "name": "PathFindNextComponentW",
+   "ordinal": 1234
+  },
+  {
+   "name": "PathGetArgsA",
+   "ordinal": 1235
+  },
+  {
+   "name": "PathGetArgsW",
+   "ordinal": 1236
+  },
+  {
+   "name": "PathGetCharTypeA",
+   "ordinal": 1237
+  },
+  {
+   "name": "PathGetCharTypeW",
+   "ordinal": 1238
+  },
+  {
+   "name": "PathGetDriveNumberA",
+   "ordinal": 1239
+  },
+  {
+   "name": "PathGetDriveNumberW",
+   "ordinal": 1240
+  },
+  {
+   "name": "PathIsFileSpecA",
+   "ordinal": 1241
+  },
+  {
+   "name": "PathIsFileSpecW",
+   "ordinal": 1242
+  },
+  {
+   "name": "PathIsLFNFileSpecA",
+   "ordinal": 1243
+  },
+  {
+   "name": "PathIsLFNFileSpecW",
+   "ordinal": 1244
+  },
+  {
+   "name": "PathIsPrefixA",
+   "ordinal": 1245
+  },
+  {
+   "name": "PathIsPrefixW",
+   "ordinal": 1246
+  },
+  {
+   "name": "PathIsRelativeA",
+   "ordinal": 1247
+  },
+  {
+   "name": "PathIsRelativeW",
+   "ordinal": 1248
+  },
+  {
+   "name": "PathIsRootA",
+   "ordinal": 1249
+  },
+  {
+   "name": "PathIsRootW",
+   "ordinal": 1250
+  },
+  {
+   "name": "PathIsSameRootA",
+   "ordinal": 1251
+  },
+  {
+   "name": "PathIsSameRootW",
+   "ordinal": 1252
+  },
+  {
+   "name": "PathIsUNCA",
+   "ordinal": 1253
+  },
+  {
+   "name": "PathIsUNCEx",
+   "ordinal": 1254
+  },
+  {
+   "name": "PathIsUNCServerA",
+   "ordinal": 1255
+  },
+  {
+   "name": "PathIsUNCServerShareA",
+   "ordinal": 1256
+  },
+  {
+   "name": "PathIsUNCServerShareW",
+   "ordinal": 1257
+  },
+  {
+   "name": "PathIsUNCServerW",
+   "ordinal": 1258
+  },
+  {
+   "name": "PathIsUNCW",
+   "ordinal": 1259
+  },
+  {
+   "name": "PathIsURLA",
+   "ordinal": 1260
+  },
+  {
+   "name": "PathIsURLW",
+   "ordinal": 1261
+  },
+  {
+   "name": "PathIsValidCharA",
+   "ordinal": 1262
+  },
+  {
+   "name": "PathIsValidCharW",
+   "ordinal": 1263
+  },
+  {
+   "name": "PathMatchSpecA",
+   "ordinal": 1264
+  },
+  {
+   "name": "PathMatchSpecExA",
+   "ordinal": 1265
+  },
+  {
+   "name": "PathMatchSpecExW",
+   "ordinal": 1266
+  },
+  {
+   "name": "PathMatchSpecW",
+   "ordinal": 1267
+  },
+  {
+   "name": "PathParseIconLocationA",
+   "ordinal": 1268
+  },
+  {
+   "name": "PathParseIconLocationW",
+   "ordinal": 1269
+  },
+  {
+   "name": "PathQuoteSpacesA",
+   "ordinal": 1270
+  },
+  {
+   "name": "PathQuoteSpacesW",
+   "ordinal": 1271
+  },
+  {
+   "name": "PathRelativePathToA",
+   "ordinal": 1272
+  },
+  {
+   "name": "PathRelativePathToW",
+   "ordinal": 1273
+  },
+  {
+   "name": "PathRemoveBackslashA",
+   "ordinal": 1274
+  },
+  {
+   "name": "PathRemoveBackslashW",
+   "ordinal": 1275
+  },
+  {
+   "name": "PathRemoveBlanksA",
+   "ordinal": 1276
+  },
+  {
+   "name": "PathRemoveBlanksW",
+   "ordinal": 1277
+  },
+  {
+   "name": "PathRemoveExtensionA",
+   "ordinal": 1278
+  },
+  {
+   "name": "PathRemoveExtensionW",
+   "ordinal": 1279
+  },
+  {
+   "name": "PathRemoveFileSpecA",
+   "ordinal": 1280
+  },
+  {
+   "name": "PathRemoveFileSpecW",
+   "ordinal": 1281
+  },
+  {
+   "name": "PathRenameExtensionA",
+   "ordinal": 1282
+  },
+  {
+   "name": "PathRenameExtensionW",
+   "ordinal": 1283
+  },
+  {
+   "name": "PathSearchAndQualifyA",
+   "ordinal": 1284
+  },
+  {
+   "name": "PathSearchAndQualifyW",
+   "ordinal": 1285
+  },
+  {
+   "name": "PathSkipRootA",
+   "ordinal": 1286
+  },
+  {
+   "name": "PathSkipRootW",
+   "ordinal": 1287
+  },
+  {
+   "name": "PathStripPathA",
+   "ordinal": 1288
+  },
+  {
+   "name": "PathStripPathW",
+   "ordinal": 1289
+  },
+  {
+   "name": "PathStripToRootA",
+   "ordinal": 1290
+  },
+  {
+   "name": "PathStripToRootW",
+   "ordinal": 1291
+  },
+  {
+   "name": "PathUnExpandEnvStringsA",
+   "ordinal": 1292
+  },
+  {
+   "name": "PathUnExpandEnvStringsW",
+   "ordinal": 1293
+  },
+  {
+   "name": "PathUnquoteSpacesA",
+   "ordinal": 1294
+  },
+  {
+   "name": "PathUnquoteSpacesW",
+   "ordinal": 1295
+  },
+  {
+   "name": "PcwAddQueryItem",
+   "ordinal": 1296
+  },
+  {
+   "name": "PcwClearCounterSetSecurity",
+   "ordinal": 1297
+  },
+  {
+   "name": "PcwCollectData",
+   "ordinal": 1298
+  },
+  {
+   "name": "PcwCompleteNotification",
+   "ordinal": 1299
+  },
+  {
+   "name": "PcwCreateNotifier",
+   "ordinal": 1300
+  },
+  {
+   "name": "PcwCreateQuery",
+   "ordinal": 1301
+  },
+  {
+   "name": "PcwDisconnectCounterSet",
+   "ordinal": 1302
+  },
+  {
+   "name": "PcwEnumerateInstances",
+   "ordinal": 1303
+  },
+  {
+   "name": "PcwIsNotifierAlive",
+   "ordinal": 1304
+  },
+  {
+   "name": "PcwQueryCounterSetSecurity",
+   "ordinal": 1305
+  },
+  {
+   "name": "PcwReadNotificationData",
+   "ordinal": 1306
+  },
+  {
+   "name": "PcwRegisterCounterSet",
+   "ordinal": 1307
+  },
+  {
+   "name": "PcwRemoveQueryItem",
+   "ordinal": 1308
+  },
+  {
+   "name": "PcwSendNotification",
+   "ordinal": 1309
+  },
+  {
+   "name": "PcwSendStatelessNotification",
+   "ordinal": 1310
+  },
+  {
+   "name": "PcwSetCounterSetSecurity",
+   "ordinal": 1311
+  },
+  {
+   "name": "PcwSetQueryItemUserData",
+   "ordinal": 1312
+  },
+  {
+   "name": "PeekConsoleInputA",
+   "ordinal": 1313
+  },
+  {
+   "name": "PeekConsoleInputW",
+   "ordinal": 1314
+  },
+  {
+   "name": "PeekNamedPipe",
+   "ordinal": 1315
+  },
+  {
+   "name": "PerfCreateInstance",
+   "ordinal": 1316
+  },
+  {
+   "name": "PerfDecrementULongCounterValue",
+   "ordinal": 1317
+  },
+  {
+   "name": "PerfDecrementULongLongCounterValue",
+   "ordinal": 1318
+  },
+  {
+   "name": "PerfDeleteInstance",
+   "ordinal": 1319
+  },
+  {
+   "name": "PerfIncrementULongCounterValue",
+   "ordinal": 1320
+  },
+  {
+   "name": "PerfIncrementULongLongCounterValue",
+   "ordinal": 1321
+  },
+  {
+   "name": "PerfQueryInstance",
+   "ordinal": 1322
+  },
+  {
+   "name": "PerfSetCounterRefValue",
+   "ordinal": 1323
+  },
+  {
+   "name": "PerfSetCounterSetInfo",
+   "ordinal": 1324
+  },
+  {
+   "name": "PerfSetULongCounterValue",
+   "ordinal": 1325
+  },
+  {
+   "name": "PerfSetULongLongCounterValue",
+   "ordinal": 1326
+  },
+  {
+   "name": "PerfStartProvider",
+   "ordinal": 1327
+  },
+  {
+   "name": "PerfStartProviderEx",
+   "ordinal": 1328
+  },
+  {
+   "name": "PerfStopProvider",
+   "ordinal": 1329
+  },
+  {
+   "name": "PoolPerAppKeyStateInternal",
+   "ordinal": 1330
+  },
+  {
+   "name": "PopIoRingCompletion",
+   "ordinal": 1331
+  },
+  {
+   "name": "PostQueuedCompletionStatus",
+   "ordinal": 1332
+  },
+  {
+   "name": "PrefetchVirtualMemory",
+   "ordinal": 1333
+  },
+  {
+   "name": "PrivCopyFileExW",
+   "ordinal": 1334
+  },
+  {
+   "name": "PrivilegeCheck",
+   "ordinal": 1335
+  },
+  {
+   "name": "PrivilegedServiceAuditAlarmW",
+   "ordinal": 1336
+  },
+  {
+   "name": "ProcessIdToSessionId",
+   "ordinal": 1337
+  },
+  {
+   "name": "ProductIdFromPackageFamilyName",
+   "ordinal": 1338
+  },
+  {
+   "name": "PsmCreateKey",
+   "ordinal": 1339
+  },
+  {
+   "name": "PsmCreateKeyWithDynamicId",
+   "ordinal": 1340
+  },
+  {
+   "name": "PsmEqualApplication",
+   "ordinal": 1341
+  },
+  {
+   "name": "PsmEqualPackage",
+   "ordinal": 1342
+  },
+  {
+   "name": "PsmGetApplicationNameFromKey",
+   "ordinal": 1343
+  },
+  {
+   "name": "PsmGetAumidFromKey",
+   "ordinal": 1344
+  },
+  {
+   "name": "PsmGetDynamicIdFromKey",
+   "ordinal": 1345
+  },
+  {
+   "name": "PsmGetKeyFromProcess",
+   "ordinal": 1346
+  },
+  {
+   "name": "PsmGetKeyFromToken",
+   "ordinal": 1347
+  },
+  {
+   "name": "PsmGetPackageFullNameFromKey",
+   "ordinal": 1348
+  },
+  {
+   "name": "PsmIsChildKey",
+   "ordinal": 1349
+  },
+  {
+   "name": "PsmIsDynamicKey",
+   "ordinal": 1350
+  },
+  {
+   "name": "PsmIsValidKey",
+   "ordinal": 1351
+  },
+  {
+   "name": "PssCaptureSnapshot",
+   "ordinal": 1352
+  },
+  {
+   "name": "PssDuplicateSnapshot",
+   "ordinal": 1353
+  },
+  {
+   "name": "PssFreeSnapshot",
+   "ordinal": 1354
+  },
+  {
+   "name": "PssQuerySnapshot",
+   "ordinal": 1355
+  },
+  {
+   "name": "PssWalkMarkerCreate",
+   "ordinal": 1356
+  },
+  {
+   "name": "PssWalkMarkerFree",
+   "ordinal": 1357
+  },
+  {
+   "name": "PssWalkMarkerGetPosition",
+   "ordinal": 1358
+  },
+  {
+   "name": "PssWalkMarkerSeekToBeginning",
+   "ordinal": 1359
+  },
+  {
+   "name": "PssWalkMarkerSetPosition",
+   "ordinal": 1360
+  },
+  {
+   "name": "PssWalkSnapshot",
+   "ordinal": 1361
+  },
+  {
+   "name": "PublishStateChangeNotification",
+   "ordinal": 1362
+  },
+  {
+   "name": "PublisherFromPackageFullName",
+   "ordinal": 1363
+  },
+  {
+   "name": "PulseEvent",
+   "ordinal": 1364
+  },
+  {
+   "name": "PurgeComm",
+   "ordinal": 1365
+  },
+  {
+   "name": "QISearch",
+   "ordinal": 1366
+  },
+  {
+   "name": "QueryActCtxSettingsW",
+   "ordinal": 1367
+  },
+  {
+   "name": "QueryActCtxW",
+   "ordinal": 1368
+  },
+  {
+   "name": "QueryAuxiliaryCounterFrequency",
+   "ordinal": 1369
+  },
+  {
+   "name": "QueryDepthSList",
+   "ordinal": 1370
+  },
+  {
+   "name": "QueryDosDeviceW",
+   "ordinal": 1371
+  },
+  {
+   "name": "QueryFullProcessImageNameA",
+   "ordinal": 1372
+  },
+  {
+   "name": "QueryFullProcessImageNameW",
+   "ordinal": 1373
+  },
+  {
+   "name": "QueryGlobalizationUserSettingsStatus",
+   "ordinal": 1374
+  },
+  {
+   "name": "QueryIdleProcessorCycleTime",
+   "ordinal": 1375
+  },
+  {
+   "name": "QueryIdleProcessorCycleTimeEx",
+   "ordinal": 1376
+  },
+  {
+   "name": "QueryInterruptTime",
+   "ordinal": 1377
+  },
+  {
+   "name": "QueryInterruptTimePrecise",
+   "ordinal": 1378
+  },
+  {
+   "name": "QueryIoRingCapabilities",
+   "ordinal": 1379
+  },
+  {
+   "name": "QueryMemoryResourceNotification",
+   "ordinal": 1380
+  },
+  {
+   "name": "QueryOptionalDelayLoadedAPI",
+   "ordinal": 1381
+  },
+  {
+   "name": "QueryPartitionInformation",
+   "ordinal": 1382
+  },
+  {
+   "name": "QueryPerformanceCounter",
+   "ordinal": 1383
+  },
+  {
+   "name": "QueryPerformanceFrequency",
+   "ordinal": 1384
+  },
+  {
+   "name": "QueryProcessAffinityUpdateMode",
+   "ordinal": 1385
+  },
+  {
+   "name": "QueryProcessCycleTime",
+   "ordinal": 1386
+  },
+  {
+   "name": "QueryProtectedPolicy",
+   "ordinal": 1387
+  },
+  {
+   "name": "QuerySecurityAccessMask",
+   "ordinal": 1388
+  },
+  {
+   "name": "QueryStateAtomValueInfo",
+   "ordinal": 1389
+  },
+  {
+   "name": "QueryStateContainerCreatedNew",
+   "ordinal": 1390
+  },
+  {
+   "name": "QueryStateContainerItemInfo",
+   "ordinal": 1391
+  },
+  {
+   "name": "QueryThreadCycleTime",
+   "ordinal": 1392
+  },
+  {
+   "name": "QueryThreadpoolStackInformation",
+   "ordinal": 1393
+  },
+  {
+   "name": "QueryUnbiasedInterruptTime",
+   "ordinal": 1394
+  },
+  {
+   "name": "QueryUnbiasedInterruptTimePrecise",
+   "ordinal": 1395
+  },
+  {
+   "name": "QueryVirtualMemoryInformation",
+   "ordinal": 1396
+  },
+  {
+   "name": "QueryWorkingSet",
+   "ordinal": 1397
+  },
+  {
+   "name": "QueryWorkingSetEx",
+   "ordinal": 1398
+  },
+  {
+   "name": "QueueUserAPC",
+   "ordinal": 1399
+  },
+  {
+   "name": "QueueUserAPC2",
+   "ordinal": 1400
+  },
+  {
+   "name": "QueueUserWorkItem",
+   "ordinal": 1401
+  },
+  {
+   "name": "QuirkGetData",
+   "ordinal": 1402
+  },
+  {
+   "name": "QuirkGetData2",
+   "ordinal": 1403
+  },
+  {
+   "name": "QuirkIsEnabled",
+   "ordinal": 1404
+  },
+  {
+   "name": "QuirkIsEnabled2",
+   "ordinal": 1405
+  },
+  {
+   "name": "QuirkIsEnabled3",
+   "ordinal": 1406
+  },
+  {
+   "name": "QuirkIsEnabledForPackage",
+   "ordinal": 1407
+  },
+  {
+   "name": "QuirkIsEnabledForPackage2",
+   "ordinal": 1408
+  },
+  {
+   "name": "QuirkIsEnabledForPackage3",
+   "ordinal": 1409
+  },
+  {
+   "name": "QuirkIsEnabledForPackage4",
+   "ordinal": 1410
+  },
+  {
+   "name": "QuirkIsEnabledForProcess",
+   "ordinal": 1411
+  },
+  {
+   "name": "RaiseCustomSystemEventTrigger",
+   "ordinal": 1412
+  },
+  {
+   "name": "RaiseException",
+   "ordinal": 1413
+  },
+  {
+   "name": "RaiseFailFastException",
+   "ordinal": 1414
+  },
+  {
+   "name": "ReOpenFile",
+   "ordinal": 1415
+  },
+  {
+   "name": "ReadConsoleA",
+   "ordinal": 1416
+  },
+  {
+   "name": "ReadConsoleInputA",
+   "ordinal": 1417
+  },
+  {
+   "name": "ReadConsoleInputExA",
+   "ordinal": 1418
+  },
+  {
+   "name": "ReadConsoleInputExW",
+   "ordinal": 1419
+  },
+  {
+   "name": "ReadConsoleInputW",
+   "ordinal": 1420
+  },
+  {
+   "name": "ReadConsoleOutputA",
+   "ordinal": 1421
+  },
+  {
+   "name": "ReadConsoleOutputAttribute",
+   "ordinal": 1422
+  },
+  {
+   "name": "ReadConsoleOutputCharacterA",
+   "ordinal": 1423
+  },
+  {
+   "name": "ReadConsoleOutputCharacterW",
+   "ordinal": 1424
+  },
+  {
+   "name": "ReadConsoleOutputW",
+   "ordinal": 1425
+  },
+  {
+   "name": "ReadConsoleW",
+   "ordinal": 1426
+  },
+  {
+   "name": "ReadDirectoryChangesExW",
+   "ordinal": 1427
+  },
+  {
+   "name": "ReadDirectoryChangesW",
+   "ordinal": 1428
+  },
+  {
+   "name": "ReadFile",
+   "ordinal": 1429
+  },
+  {
+   "name": "ReadFileEx",
+   "ordinal": 1430
+  },
+  {
+   "name": "ReadFileScatter",
+   "ordinal": 1431
+  },
+  {
+   "name": "ReadProcessMemory",
+   "ordinal": 1432
+  },
+  {
+   "name": "ReadStateAtomValue",
+   "ordinal": 1433
+  },
+  {
+   "name": "ReadStateContainerValue",
+   "ordinal": 1434
+  },
+  {
+   "name": "ReclaimVirtualMemory",
+   "ordinal": 1435
+  },
+  {
+   "name": "RecordFeatureUsage2",
+   "ordinal": 1436
+  },
+  {
+   "name": "RefreshPackageInfo",
+   "ordinal": 1437
+  },
+  {
+   "name": "RefreshPolicyExInternal",
+   "ordinal": 1438
+  },
+  {
+   "name": "RefreshPolicyInternal",
+   "ordinal": 1439
+  },
+  {
+   "name": "RegCloseKey",
+   "ordinal": 1440
+  },
+  {
+   "name": "RegCopyTreeW",
+   "ordinal": 1441
+  },
+  {
+   "name": "RegCreateKeyExA",
+   "ordinal": 1442
+  },
+  {
+   "name": "RegCreateKeyExInternalA",
+   "ordinal": 1443
+  },
+  {
+   "name": "RegCreateKeyExInternalW",
+   "ordinal": 1444
+  },
+  {
+   "name": "RegCreateKeyExW",
+   "ordinal": 1445
+  },
+  {
+   "name": "RegDeleteKeyExA",
+   "ordinal": 1446
+  },
+  {
+   "name": "RegDeleteKeyExInternalA",
+   "ordinal": 1447
+  },
+  {
+   "name": "RegDeleteKeyExInternalW",
+   "ordinal": 1448
+  },
+  {
+   "name": "RegDeleteKeyExW",
+   "ordinal": 1449
+  },
+  {
+   "name": "RegDeleteKeyValueA",
+   "ordinal": 1450
+  },
+  {
+   "name": "RegDeleteKeyValueW",
+   "ordinal": 1451
+  },
+  {
+   "name": "RegDeleteTreeA",
+   "ordinal": 1452
+  },
+  {
+   "name": "RegDeleteTreeW",
+   "ordinal": 1453
+  },
+  {
+   "name": "RegDeleteValueA",
+   "ordinal": 1454
+  },
+  {
+   "name": "RegDeleteValueW",
+   "ordinal": 1455
+  },
+  {
+   "name": "RegDisablePredefinedCacheEx",
+   "ordinal": 1456
+  },
+  {
+   "name": "RegEnumKeyExA",
+   "ordinal": 1457
+  },
+  {
+   "name": "RegEnumKeyExW",
+   "ordinal": 1458
+  },
+  {
+   "name": "RegEnumValueA",
+   "ordinal": 1459
+  },
+  {
+   "name": "RegEnumValueW",
+   "ordinal": 1460
+  },
+  {
+   "name": "RegFlushKey",
+   "ordinal": 1461
+  },
+  {
+   "name": "RegGetKeySecurity",
+   "ordinal": 1462
+  },
+  {
+   "name": "RegGetValueA",
+   "ordinal": 1463
+  },
+  {
+   "name": "RegGetValueW",
+   "ordinal": 1464
+  },
+  {
+   "name": "RegKrnGetAppKeyEventAddressInternal",
+   "ordinal": 1465
+  },
+  {
+   "name": "RegKrnGetAppKeyLoaded",
+   "ordinal": 1466
+  },
+  {
+   "name": "RegKrnGetClassesEnumTableAddressInternal",
+   "ordinal": 1467
+  },
+  {
+   "name": "RegKrnGetHKEY_ClassesRootAddress",
+   "ordinal": 1468
+  },
+  {
+   "name": "RegKrnGetTermsrvRegistryExtensionFlags",
+   "ordinal": 1469
+  },
+  {
+   "name": "RegKrnResetAppKeyLoaded",
+   "ordinal": 1470
+  },
+  {
+   "name": "RegKrnSetDllHasThreadStateGlobal",
+   "ordinal": 1471
+  },
+  {
+   "name": "RegKrnSetTermsrvRegistryExtensionFlags",
+   "ordinal": 1472
+  },
+  {
+   "name": "RegLoadAppKeyA",
+   "ordinal": 1473
+  },
+  {
+   "name": "RegLoadAppKeyW",
+   "ordinal": 1474
+  },
+  {
+   "name": "RegLoadKeyA",
+   "ordinal": 1475
+  },
+  {
+   "name": "RegLoadKeyW",
+   "ordinal": 1476
+  },
+  {
+   "name": "RegLoadMUIStringA",
+   "ordinal": 1477
+  },
+  {
+   "name": "RegLoadMUIStringW",
+   "ordinal": 1478
+  },
+  {
+   "name": "RegNotifyChangeKeyValue",
+   "ordinal": 1479
+  },
+  {
+   "name": "RegOpenCurrentUser",
+   "ordinal": 1480
+  },
+  {
+   "name": "RegOpenKeyExA",
+   "ordinal": 1481
+  },
+  {
+   "name": "RegOpenKeyExInternalA",
+   "ordinal": 1482
+  },
+  {
+   "name": "RegOpenKeyExInternalW",
+   "ordinal": 1483
+  },
+  {
+   "name": "RegOpenKeyExW",
+   "ordinal": 1484
+  },
+  {
+   "name": "RegOpenUserClassesRoot",
+   "ordinal": 1485
+  },
+  {
+   "name": "RegQueryInfoKeyA",
+   "ordinal": 1486
+  },
+  {
+   "name": "RegQueryInfoKeyW",
+   "ordinal": 1487
+  },
+  {
+   "name": "RegQueryMultipleValuesA",
+   "ordinal": 1488
+  },
+  {
+   "name": "RegQueryMultipleValuesW",
+   "ordinal": 1489
+  },
+  {
+   "name": "RegQueryValueExA",
+   "ordinal": 1490
+  },
+  {
+   "name": "RegQueryValueExW",
+   "ordinal": 1491
+  },
+  {
+   "name": "RegRestoreKeyA",
+   "ordinal": 1492
+  },
+  {
+   "name": "RegRestoreKeyW",
+   "ordinal": 1493
+  },
+  {
+   "name": "RegSaveKeyExA",
+   "ordinal": 1494
+  },
+  {
+   "name": "RegSaveKeyExW",
+   "ordinal": 1495
+  },
+  {
+   "name": "RegSetKeySecurity",
+   "ordinal": 1496
+  },
+  {
+   "name": "RegSetKeyValueA",
+   "ordinal": 1497
+  },
+  {
+   "name": "RegSetKeyValueW",
+   "ordinal": 1498
+  },
+  {
+   "name": "RegSetValueExA",
+   "ordinal": 1499
+  },
+  {
+   "name": "RegSetValueExW",
+   "ordinal": 1500
+  },
+  {
+   "name": "RegUnLoadKeyA",
+   "ordinal": 1501
+  },
+  {
+   "name": "RegUnLoadKeyW",
+   "ordinal": 1502
+  },
+  {
+   "name": "RegisterApplicationRestart",
+   "ordinal": 1503
+  },
+  {
+   "name": "RegisterBadMemoryNotification",
+   "ordinal": 1504
+  },
+  {
+   "name": "RegisterGPNotificationInternal",
+   "ordinal": 1505
+  },
+  {
+   "name": "RegisterStateChangeNotification",
+   "ordinal": 1506
+  },
+  {
+   "name": "RegisterStateLock",
+   "ordinal": 1507
+  },
+  {
+   "name": "RegisterTraceGuidsW",
+   "ordinal": 1508
+  },
+  {
+   "name": "RegisterWaitForSingleObjectEx",
+   "ordinal": 1509
+  },
+  {
+   "name": "ReleaseActCtx",
+   "ordinal": 1510
+  },
+  {
+   "name": "ReleaseMutex",
+   "ordinal": 1511
+  },
+  {
+   "name": "ReleaseMutexWhenCallbackReturns",
+   "ordinal": 1512
+  },
+  {
+   "name": "ReleasePackagedDataForFile",
+   "ordinal": 1513
+  },
+  {
+   "name": "ReleasePseudoConsole",
+   "ordinal": 1514
+  },
+  {
+   "name": "ReleaseSRWLockExclusive",
+   "ordinal": 1515
+  },
+  {
+   "name": "ReleaseSRWLockShared",
+   "ordinal": 1516
+  },
+  {
+   "name": "ReleaseSemaphore",
+   "ordinal": 1517
+  },
+  {
+   "name": "ReleaseSemaphoreWhenCallbackReturns",
+   "ordinal": 1518
+  },
+  {
+   "name": "ReleaseStateLock",
+   "ordinal": 1519
+  },
+  {
+   "name": "RemapPredefinedHandleInternal",
+   "ordinal": 1520
+  },
+  {
+   "name": "RemoveDirectory2A",
+   "ordinal": 1521
+  },
+  {
+   "name": "RemoveDirectory2W",
+   "ordinal": 1522
+  },
+  {
+   "name": "RemoveDirectoryA",
+   "ordinal": 1523
+  },
+  {
+   "name": "RemoveDirectoryFromAppW",
+   "ordinal": 1524
+  },
+  {
+   "name": "RemoveDirectoryW",
+   "ordinal": 1525
+  },
+  {
+   "name": "RemoveDllDirectory",
+   "ordinal": 1526
+  },
+  {
+   "name": "RemoveExtensionProgIds",
+   "ordinal": 1527
+  },
+  {
+   "name": "RemovePackageDependency",
+   "ordinal": 1528
+  },
+  {
+   "name": "RemovePackageStatus",
+   "ordinal": 1529
+  },
+  {
+   "name": "RemovePackageStatusForUser",
+   "ordinal": 1530
+  },
+  {
+   "name": "RemoveVectoredContinueHandler",
+   "ordinal": 1531
+  },
+  {
+   "name": "RemoveVectoredExceptionHandler",
+   "ordinal": 1532
+  },
+  {
+   "name": "ReplaceFileExInternal",
+   "ordinal": 1533
+  },
+  {
+   "name": "ReplaceFileFromAppW",
+   "ordinal": 1534
+  },
+  {
+   "name": "ReplaceFileW",
+   "ordinal": 1535
+  },
+  {
+   "name": "ResetEvent",
+   "ordinal": 1536
+  },
+  {
+   "name": "ResetState",
+   "ordinal": 1537
+  },
+  {
+   "name": "ResetWriteWatch",
+   "ordinal": 1538
+  },
+  {
+   "name": "ResizePseudoConsole",
+   "ordinal": 1539
+  },
+  {
+   "name": "ResolveDelayLoadedAPI",
+   "ordinal": 1540
+  },
+  {
+   "name": "ResolveDelayLoadsFromDll",
+   "ordinal": 1541
+  },
+  {
+   "name": "ResolveLocaleName",
+   "ordinal": 1542
+  },
+  {
+   "name": "RestoreLastError",
+   "ordinal": 1543
+  },
+  {
+   "name": "RestoreThreadPreferredUILanguages",
+   "ordinal": 1544
+  },
+  {
+   "name": "ResumeThread",
+   "ordinal": 1545
+  },
+  {
+   "name": "RevertToSelf",
+   "ordinal": 1546
+  },
+  {
+   "name": "RsopLoggingEnabledInternal",
+   "ordinal": 1547
+  },
+  {
+   "name": "SHCoCreateInstance",
+   "ordinal": 1548
+  },
+  {
+   "name": "SHExpandEnvironmentStringsA",
+   "ordinal": 1549
+  },
+  {
+   "name": "SHExpandEnvironmentStringsW",
+   "ordinal": 1550
+  },
+  {
+   "name": "SHLoadIndirectString",
+   "ordinal": 1551
+  },
+  {
+   "name": "SHLoadIndirectStringInternal",
+   "ordinal": 1552
+  },
+  {
+   "name": "SHRegCloseUSKey",
+   "ordinal": 1553
+  },
+  {
+   "name": "SHRegCreateUSKeyA",
+   "ordinal": 1554
+  },
+  {
+   "name": "SHRegCreateUSKeyW",
+   "ordinal": 1555
+  },
+  {
+   "name": "SHRegDeleteEmptyUSKeyA",
+   "ordinal": 1556
+  },
+  {
+   "name": "SHRegDeleteEmptyUSKeyW",
+   "ordinal": 1557
+  },
+  {
+   "name": "SHRegDeleteUSValueA",
+   "ordinal": 1558
+  },
+  {
+   "name": "SHRegDeleteUSValueW",
+   "ordinal": 1559
+  },
+  {
+   "name": "SHRegEnumUSKeyA",
+   "ordinal": 1560
+  },
+  {
+   "name": "SHRegEnumUSKeyW",
+   "ordinal": 1561
+  },
+  {
+   "name": "SHRegEnumUSValueA",
+   "ordinal": 1562
+  },
+  {
+   "name": "SHRegEnumUSValueW",
+   "ordinal": 1563
+  },
+  {
+   "name": "SHRegGetBoolUSValueA",
+   "ordinal": 1564
+  },
+  {
+   "name": "SHRegGetBoolUSValueW",
+   "ordinal": 1565
+  },
+  {
+   "name": "SHRegGetUSValueA",
+   "ordinal": 1566
+  },
+  {
+   "name": "SHRegGetUSValueW",
+   "ordinal": 1567
+  },
+  {
+   "name": "SHRegOpenUSKeyA",
+   "ordinal": 1568
+  },
+  {
+   "name": "SHRegOpenUSKeyW",
+   "ordinal": 1569
+  },
+  {
+   "name": "SHRegQueryInfoUSKeyA",
+   "ordinal": 1570
+  },
+  {
+   "name": "SHRegQueryInfoUSKeyW",
+   "ordinal": 1571
+  },
+  {
+   "name": "SHRegQueryUSValueA",
+   "ordinal": 1572
+  },
+  {
+   "name": "SHRegQueryUSValueW",
+   "ordinal": 1573
+  },
+  {
+   "name": "SHRegSetUSValueA",
+   "ordinal": 1574
+  },
+  {
+   "name": "SHRegSetUSValueW",
+   "ordinal": 1575
+  },
+  {
+   "name": "SHRegWriteUSValueA",
+   "ordinal": 1576
+  },
+  {
+   "name": "SHRegWriteUSValueW",
+   "ordinal": 1577
+  },
+  {
+   "name": "SHTruncateString",
+   "ordinal": 1578
+  },
+  {
+   "name": "SaveAlternatePackageRootPath",
+   "ordinal": 1579
+  },
+  {
+   "name": "SaveStateRootFolderPath",
+   "ordinal": 1580
+  },
+  {
+   "name": "ScrollConsoleScreenBufferA",
+   "ordinal": 1581
+  },
+  {
+   "name": "ScrollConsoleScreenBufferW",
+   "ordinal": 1582
+  },
+  {
+   "name": "SearchPathA",
+   "ordinal": 1583
+  },
+  {
+   "name": "SearchPathW",
+   "ordinal": 1584
+  },
+  {
+   "name": "SetAclInformation",
+   "ordinal": 1585
+  },
+  {
+   "name": "SetCachedSigningLevel",
+   "ordinal": 1586
+  },
+  {
+   "name": "SetCalendarInfoW",
+   "ordinal": 1587
+  },
+  {
+   "name": "SetClientDynamicTimeZoneInformation",
+   "ordinal": 1588
+  },
+  {
+   "name": "SetClientTimeZoneInformation",
+   "ordinal": 1589
+  },
+  {
+   "name": "SetCommBreak",
+   "ordinal": 1590
+  },
+  {
+   "name": "SetCommConfig",
+   "ordinal": 1591
+  },
+  {
+   "name": "SetCommMask",
+   "ordinal": 1592
+  },
+  {
+   "name": "SetCommState",
+   "ordinal": 1593
+  },
+  {
+   "name": "SetCommTimeouts",
+   "ordinal": 1594
+  },
+  {
+   "name": "SetComputerNameA",
+   "ordinal": 1595
+  },
+  {
+   "name": "SetComputerNameEx2W",
+   "ordinal": 1596
+  },
+  {
+   "name": "SetComputerNameExA",
+   "ordinal": 1597
+  },
+  {
+   "name": "SetComputerNameExW",
+   "ordinal": 1598
+  },
+  {
+   "name": "SetComputerNameW",
+   "ordinal": 1599
+  },
+  {
+   "name": "SetConsoleActiveScreenBuffer",
+   "ordinal": 1600
+  },
+  {
+   "name": "SetConsoleCP",
+   "ordinal": 1601
+  },
+  {
+   "name": "SetConsoleCtrlHandler",
+   "ordinal": 1602
+  },
+  {
+   "name": "SetConsoleCursorInfo",
+   "ordinal": 1603
+  },
+  {
+   "name": "SetConsoleCursorPosition",
+   "ordinal": 1604
+  },
+  {
+   "name": "SetConsoleDisplayMode",
+   "ordinal": 1605
+  },
+  {
+   "name": "SetConsoleHistoryInfo",
+   "ordinal": 1606
+  },
+  {
+   "name": "SetConsoleInputExeNameA",
+   "ordinal": 1607
+  },
+  {
+   "name": "SetConsoleInputExeNameW",
+   "ordinal": 1608
+  },
+  {
+   "name": "SetConsoleMode",
+   "ordinal": 1609
+  },
+  {
+   "name": "SetConsoleNumberOfCommandsA",
+   "ordinal": 1610
+  },
+  {
+   "name": "SetConsoleNumberOfCommandsW",
+   "ordinal": 1611
+  },
+  {
+   "name": "SetConsoleOutputCP",
+   "ordinal": 1612
+  },
+  {
+   "name": "SetConsoleScreenBufferInfoEx",
+   "ordinal": 1613
+  },
+  {
+   "name": "SetConsoleScreenBufferSize",
+   "ordinal": 1614
+  },
+  {
+   "name": "SetConsoleTextAttribute",
+   "ordinal": 1615
+  },
+  {
+   "name": "SetConsoleTitleA",
+   "ordinal": 1616
+  },
+  {
+   "name": "SetConsoleTitleW",
+   "ordinal": 1617
+  },
+  {
+   "name": "SetConsoleWindowInfo",
+   "ordinal": 1618
+  },
+  {
+   "name": "SetCriticalSectionSpinCount",
+   "ordinal": 1619
+  },
+  {
+   "name": "SetCurrentConsoleFontEx",
+   "ordinal": 1620
+  },
+  {
+   "name": "SetCurrentDirectoryA",
+   "ordinal": 1621
+  },
+  {
+   "name": "SetCurrentDirectoryW",
+   "ordinal": 1622
+  },
+  {
+   "name": "SetDefaultDllDirectories",
+   "ordinal": 1623
+  },
+  {
+   "name": "SetDynamicTimeZoneInformation",
+   "ordinal": 1624
+  },
+  {
+   "name": "SetEndOfFile",
+   "ordinal": 1625
+  },
+  {
+   "name": "SetEnvironmentStringsW",
+   "ordinal": 1626
+  },
+  {
+   "name": "SetEnvironmentVariableA",
+   "ordinal": 1627
+  },
+  {
+   "name": "SetEnvironmentVariableW",
+   "ordinal": 1628
+  },
+  {
+   "name": "SetErrorMode",
+   "ordinal": 1629
+  },
+  {
+   "name": "SetEvent",
+   "ordinal": 1630
+  },
+  {
+   "name": "SetEventWhenCallbackReturns",
+   "ordinal": 1631
+  },
+  {
+   "name": "SetExtensionProperty",
+   "ordinal": 1632
+  },
+  {
+   "name": "SetFileApisToANSI",
+   "ordinal": 1633
+  },
+  {
+   "name": "SetFileApisToOEM",
+   "ordinal": 1634
+  },
+  {
+   "name": "SetFileAttributesA",
+   "ordinal": 1635
+  },
+  {
+   "name": "SetFileAttributesFromAppW",
+   "ordinal": 1636
+  },
+  {
+   "name": "SetFileAttributesW",
+   "ordinal": 1637
+  },
+  {
+   "name": "SetFileInformationByHandle",
+   "ordinal": 1638
+  },
+  {
+   "name": "SetFileIoOverlappedRange",
+   "ordinal": 1639
+  },
+  {
+   "name": "SetFilePointer",
+   "ordinal": 1640
+  },
+  {
+   "name": "SetFilePointerEx",
+   "ordinal": 1641
+  },
+  {
+   "name": "SetFileSecurityW",
+   "ordinal": 1642
+  },
+  {
+   "name": "SetFileTime",
+   "ordinal": 1643
+  },
+  {
+   "name": "SetFileValidData",
+   "ordinal": 1644
+  },
+  {
+   "name": "SetHandleCount",
+   "ordinal": 1645
+  },
+  {
+   "name": "SetHandleInformation",
+   "ordinal": 1646
+  },
+  {
+   "name": "SetIoRingCompletionEvent",
+   "ordinal": 1647
+  },
+  {
+   "name": "SetIsDeveloperModeEnabled",
+   "ordinal": 1648
+  },
+  {
+   "name": "SetIsSideloadingEnabled",
+   "ordinal": 1649
+  },
+  {
+   "name": "SetKernelObjectSecurity",
+   "ordinal": 1650
+  },
+  {
+   "name": "SetLastConsoleEventActive",
+   "ordinal": 1651
+  },
+  {
+   "name": "SetLastError",
+   "ordinal": 1652
+  },
+  {
+   "name": "SetLocalTime",
+   "ordinal": 1653
+  },
+  {
+   "name": "SetLocaleInfoW",
+   "ordinal": 1654
+  },
+  {
+   "name": "SetNamedPipeHandleState",
+   "ordinal": 1655
+  },
+  {
+   "name": "SetPersistedRegistryBOOL",
+   "ordinal": 1656
+  },
+  {
+   "name": "SetPersistedRegistryDWORD",
+   "ordinal": 1657
+  },
+  {
+   "name": "SetPersistedRegistryString",
+   "ordinal": 1658
+  },
+  {
+   "name": "SetPersistedRegistryValue",
+   "ordinal": 1659
+  },
+  {
+   "name": "SetPriorityClass",
+   "ordinal": 1660
+  },
+  {
+   "name": "SetPrivateObjectSecurity",
+   "ordinal": 1661
+  },
+  {
+   "name": "SetPrivateObjectSecurityEx",
+   "ordinal": 1662
+  },
+  {
+   "name": "SetProcessAffinityUpdateMode",
+   "ordinal": 1663
+  },
+  {
+   "name": "SetProcessDefaultCpuSetMasks",
+   "ordinal": 1664
+  },
+  {
+   "name": "SetProcessDefaultCpuSets",
+   "ordinal": 1665
+  },
+  {
+   "name": "SetProcessDynamicEHContinuationTargets",
+   "ordinal": 1666
+  },
+  {
+   "name": "SetProcessDynamicEnforcedCetCompatibleRanges",
+   "ordinal": 1667
+  },
+  {
+   "name": "SetProcessGroupAffinity",
+   "ordinal": 1668
+  },
+  {
+   "name": "SetProcessInformation",
+   "ordinal": 1669
+  },
+  {
+   "name": "SetProcessMitigationPolicy",
+   "ordinal": 1670
+  },
+  {
+   "name": "SetProcessPreferredUILanguages",
+   "ordinal": 1671
+  },
+  {
+   "name": "SetProcessPriorityBoost",
+   "ordinal": 1672
+  },
+  {
+   "name": "SetProcessShutdownParameters",
+   "ordinal": 1673
+  },
+  {
+   "name": "SetProcessValidCallTargets",
+   "ordinal": 1674
+  },
+  {
+   "name": "SetProcessValidCallTargetsForMappedView",
+   "ordinal": 1675
+  },
+  {
+   "name": "SetProcessWorkingSetSize",
+   "ordinal": 1676
+  },
+  {
+   "name": "SetProcessWorkingSetSizeEx",
+   "ordinal": 1677
+  },
+  {
+   "name": "SetProtectedPolicy",
+   "ordinal": 1678
+  },
+  {
+   "name": "SetProtocolProperty",
+   "ordinal": 1679
+  },
+  {
+   "name": "SetRoamingLastObservedChangeTime",
+   "ordinal": 1680
+  },
+  {
+   "name": "SetSecurityAccessMask",
+   "ordinal": 1681
+  },
+  {
+   "name": "SetSecurityDescriptorControl",
+   "ordinal": 1682
+  },
+  {
+   "name": "SetSecurityDescriptorDacl",
+   "ordinal": 1683
+  },
+  {
+   "name": "SetSecurityDescriptorGroup",
+   "ordinal": 1684
+  },
+  {
+   "name": "SetSecurityDescriptorOwner",
+   "ordinal": 1685
+  },
+  {
+   "name": "SetSecurityDescriptorRMControl",
+   "ordinal": 1686
+  },
+  {
+   "name": "SetSecurityDescriptorSacl",
+   "ordinal": 1687
+  },
+  {
+   "name": "SetStateVersion",
+   "ordinal": 1688
+  },
+  {
+   "name": "SetStdHandle",
+   "ordinal": 1689
+  },
+  {
+   "name": "SetStdHandleEx",
+   "ordinal": 1690
+  },
+  {
+   "name": "SetSystemFileCacheSize",
+   "ordinal": 1691
+  },
+  {
+   "name": "SetSystemTime",
+   "ordinal": 1692
+  },
+  {
+   "name": "SetSystemTimeAdjustment",
+   "ordinal": 1693
+  },
+  {
+   "name": "SetSystemTimeAdjustmentPrecise",
+   "ordinal": 1694
+  },
+  {
+   "name": "SetThreadContext",
+   "ordinal": 1695
+  },
+  {
+   "name": "SetThreadDescription",
+   "ordinal": 1696
+  },
+  {
+   "name": "SetThreadErrorMode",
+   "ordinal": 1697
+  },
+  {
+   "name": "SetThreadGroupAffinity",
+   "ordinal": 1698
+  },
+  {
+   "name": "SetThreadIdealProcessor",
+   "ordinal": 1699
+  },
+  {
+   "name": "SetThreadIdealProcessorEx",
+   "ordinal": 1700
+  },
+  {
+   "name": "SetThreadInformation",
+   "ordinal": 1701
+  },
+  {
+   "name": "SetThreadLocale",
+   "ordinal": 1702
+  },
+  {
+   "name": "SetThreadPreferredUILanguages",
+   "ordinal": 1703
+  },
+  {
+   "name": "SetThreadPreferredUILanguages2",
+   "ordinal": 1704
+  },
+  {
+   "name": "SetThreadPriority",
+   "ordinal": 1705
+  },
+  {
+   "name": "SetThreadPriorityBoost",
+   "ordinal": 1706
+  },
+  {
+   "name": "SetThreadSelectedCpuSetMasks",
+   "ordinal": 1707
+  },
+  {
+   "name": "SetThreadSelectedCpuSets",
+   "ordinal": 1708
+  },
+  {
+   "name": "SetThreadStackGuarantee",
+   "ordinal": 1709
+  },
+  {
+   "name": "SetThreadToken",
+   "ordinal": 1710
+  },
+  {
+   "name": "SetThreadUILanguage",
+   "ordinal": 1711
+  },
+  {
+   "name": "SetThreadpoolStackInformation",
+   "ordinal": 1712
+  },
+  {
+   "name": "SetThreadpoolThreadMaximum",
+   "ordinal": 1713
+  },
+  {
+   "name": "SetThreadpoolThreadMinimum",
+   "ordinal": 1714
+  },
+  {
+   "name": "SetThreadpoolTimer",
+   "ordinal": 1715
+  },
+  {
+   "name": "SetThreadpoolTimerEx",
+   "ordinal": 1716
+  },
+  {
+   "name": "SetThreadpoolWait",
+   "ordinal": 1717
+  },
+  {
+   "name": "SetThreadpoolWaitEx",
+   "ordinal": 1718
+  },
+  {
+   "name": "SetTimeZoneInformation",
+   "ordinal": 1719
+  },
+  {
+   "name": "SetTokenInformation",
+   "ordinal": 1720
+  },
+  {
+   "name": "SetUnhandledExceptionFilter",
+   "ordinal": 1721
+  },
+  {
+   "name": "SetUserGeoID",
+   "ordinal": 1722
+  },
+  {
+   "name": "SetUserGeoName",
+   "ordinal": 1723
+  },
+  {
+   "name": "SetWaitableTimer",
+   "ordinal": 1724
+  },
+  {
+   "name": "SetWaitableTimerEx",
+   "ordinal": 1725
+  },
+  {
+   "name": "SetXStateFeaturesMask",
+   "ordinal": 1726
+  },
+  {
+   "name": "SetupComm",
+   "ordinal": 1727
+  },
+  {
+   "name": "SharedLocalIsEnabled",
+   "ordinal": 1728
+  },
+  {
+   "name": "SignalObjectAndWait",
+   "ordinal": 1729
+  },
+  {
+   "name": "SizeofResource",
+   "ordinal": 1730
+  },
+  {
+   "name": "Sleep",
+   "ordinal": 1731
+  },
+  {
+   "name": "SleepConditionVariableCS",
+   "ordinal": 1732
+  },
+  {
+   "name": "SleepConditionVariableSRW",
+   "ordinal": 1733
+  },
+  {
+   "name": "SleepEx",
+   "ordinal": 1734
+  },
+  {
+   "name": "SpecialMBToWC",
+   "ordinal": 1735
+  },
+  {
+   "name": "StartThreadpoolIo",
+   "ordinal": 1736
+  },
+  {
+   "name": "StrCSpnA",
+   "ordinal": 1737
+  },
+  {
+   "name": "StrCSpnIA",
+   "ordinal": 1738
+  },
+  {
+   "name": "StrCSpnIW",
+   "ordinal": 1739
+  },
+  {
+   "name": "StrCSpnW",
+   "ordinal": 1740
+  },
+  {
+   "name": "StrCatBuffA",
+   "ordinal": 1741
+  },
+  {
+   "name": "StrCatBuffW",
+   "ordinal": 1742
+  },
+  {
+   "name": "StrCatChainW",
+   "ordinal": 1743
+  },
+  {
+   "name": "StrChrA",
+   "ordinal": 1744
+  },
+  {
+   "name": "StrChrA_MB",
+   "ordinal": 1745
+  },
+  {
+   "name": "StrChrIA",
+   "ordinal": 1746
+  },
+  {
+   "name": "StrChrIW",
+   "ordinal": 1747
+  },
+  {
+   "name": "StrChrNIW",
+   "ordinal": 1748
+  },
+  {
+   "name": "StrChrNW",
+   "ordinal": 1749
+  },
+  {
+   "name": "StrChrW",
+   "ordinal": 1750
+  },
+  {
+   "name": "StrCmpCA",
+   "ordinal": 1751
+  },
+  {
+   "name": "StrCmpCW",
+   "ordinal": 1752
+  },
+  {
+   "name": "StrCmpICA",
+   "ordinal": 1753
+  },
+  {
+   "name": "StrCmpICW",
+   "ordinal": 1754
+  },
+  {
+   "name": "StrCmpIW",
+   "ordinal": 1755
+  },
+  {
+   "name": "StrCmpLogicalW",
+   "ordinal": 1756
+  },
+  {
+   "name": "StrCmpNA",
+   "ordinal": 1757
+  },
+  {
+   "name": "StrCmpNCA",
+   "ordinal": 1758
+  },
+  {
+   "name": "StrCmpNCW",
+   "ordinal": 1759
+  },
+  {
+   "name": "StrCmpNIA",
+   "ordinal": 1760
+  },
+  {
+   "name": "StrCmpNICA",
+   "ordinal": 1761
+  },
+  {
+   "name": "StrCmpNICW",
+   "ordinal": 1762
+  },
+  {
+   "name": "StrCmpNIW",
+   "ordinal": 1763
+  },
+  {
+   "name": "StrCmpNW",
+   "ordinal": 1764
+  },
+  {
+   "name": "StrCmpW",
+   "ordinal": 1765
+  },
+  {
+   "name": "StrCpyNW",
+   "ordinal": 1766
+  },
+  {
+   "name": "StrCpyNXA",
+   "ordinal": 1767
+  },
+  {
+   "name": "StrCpyNXW",
+   "ordinal": 1768
+  },
+  {
+   "name": "StrDupA",
+   "ordinal": 1769
+  },
+  {
+   "name": "StrDupW",
+   "ordinal": 1770
+  },
+  {
+   "name": "StrIsIntlEqualA",
+   "ordinal": 1771
+  },
+  {
+   "name": "StrIsIntlEqualW",
+   "ordinal": 1772
+  },
+  {
+   "name": "StrPBrkA",
+   "ordinal": 1773
+  },
+  {
+   "name": "StrPBrkW",
+   "ordinal": 1774
+  },
+  {
+   "name": "StrRChrA",
+   "ordinal": 1775
+  },
+  {
+   "name": "StrRChrIA",
+   "ordinal": 1776
+  },
+  {
+   "name": "StrRChrIW",
+   "ordinal": 1777
+  },
+  {
+   "name": "StrRChrW",
+   "ordinal": 1778
+  },
+  {
+   "name": "StrRStrIA",
+   "ordinal": 1779
+  },
+  {
+   "name": "StrRStrIW",
+   "ordinal": 1780
+  },
+  {
+   "name": "StrSpnA",
+   "ordinal": 1781
+  },
+  {
+   "name": "StrSpnW",
+   "ordinal": 1782
+  },
+  {
+   "name": "StrStrA",
+   "ordinal": 1783
+  },
+  {
+   "name": "StrStrIA",
+   "ordinal": 1784
+  },
+  {
+   "name": "StrStrIW",
+   "ordinal": 1785
+  },
+  {
+   "name": "StrStrNIW",
+   "ordinal": 1786
+  },
+  {
+   "name": "StrStrNW",
+   "ordinal": 1787
+  },
+  {
+   "name": "StrStrW",
+   "ordinal": 1788
+  },
+  {
+   "name": "StrToInt64ExA",
+   "ordinal": 1789
+  },
+  {
+   "name": "StrToInt64ExW",
+   "ordinal": 1790
+  },
+  {
+   "name": "StrToIntA",
+   "ordinal": 1791
+  },
+  {
+   "name": "StrToIntExA",
+   "ordinal": 1792
+  },
+  {
+   "name": "StrToIntExW",
+   "ordinal": 1793
+  },
+  {
+   "name": "StrToIntW",
+   "ordinal": 1794
+  },
+  {
+   "name": "StrTrimA",
+   "ordinal": 1795
+  },
+  {
+   "name": "StrTrimW",
+   "ordinal": 1796
+  },
+  {
+   "name": "SubmitIoRing",
+   "ordinal": 1797
+  },
+  {
+   "name": "SubmitThreadpoolWork",
+   "ordinal": 1798
+  },
+  {
+   "name": "SubscribeEdpEnabledStateChange",
+   "ordinal": 1799
+  },
+  {
+   "name": "SubscribeFeatureUsageFlush",
+   "ordinal": 1800
+  },
+  {
+   "name": "SubscribeStateChangeNotification",
+   "ordinal": 1801
+  },
+  {
+   "name": "SubscribeWdagEnabledStateChange",
+   "ordinal": 1802
+  },
+  {
+   "name": "SuspendThread",
+   "ordinal": 1803
+  },
+  {
+   "name": "SwitchToFiber",
+   "ordinal": 1804
+  },
+  {
+   "name": "SwitchToThread",
+   "ordinal": 1805
+  },
+  {
+   "name": "SystemTimeToFileTime",
+   "ordinal": 1806
+  },
+  {
+   "name": "SystemTimeToTzSpecificLocalTime",
+   "ordinal": 1807
+  },
+  {
+   "name": "SystemTimeToTzSpecificLocalTimeEx",
+   "ordinal": 1808
+  },
+  {
+   "name": "TerminateEnclave",
+   "ordinal": 1809
+  },
+  {
+   "name": "TerminateProcess",
+   "ordinal": 1810
+  },
+  {
+   "name": "TerminateProcessOnMemoryExhaustion",
+   "ordinal": 1811
+  },
+  {
+   "name": "TerminateThread",
+   "ordinal": 1812
+  },
+  {
+   "name": "TestClose",
+   "ordinal": 1813
+  },
+  {
+   "name": "TestControlReporting",
+   "ordinal": 1814
+  },
+  {
+   "name": "TestCreate",
+   "ordinal": 1815
+  },
+  {
+   "name": "TestOpen",
+   "ordinal": 1816
+  },
+  {
+   "name": "TestQueryData",
+   "ordinal": 1817
+  },
+  {
+   "name": "TestRecoverResults",
+   "ordinal": 1818
+  },
+  {
+   "name": "TestReport",
+   "ordinal": 1819
+  },
+  {
+   "name": "TestUnlockData",
+   "ordinal": 1820
+  },
+  {
+   "name": "TlsAlloc",
+   "ordinal": 1821
+  },
+  {
+   "name": "TlsFree",
+   "ordinal": 1822
+  },
+  {
+   "name": "TlsGetValue",
+   "ordinal": 1823
+  },
+  {
+   "name": "TlsGetValue2",
+   "ordinal": 1824
+  },
+  {
+   "name": "TlsSetValue",
+   "ordinal": 1825
+  },
+  {
+   "name": "TraceEvent",
+   "ordinal": 1826
+  },
+  {
+   "name": "TraceMessage",
+   "ordinal": 1827
+  },
+  {
+   "name": "TraceMessageVa",
+   "ordinal": 1828
+  },
+  {
+   "name": "TransactNamedPipe",
+   "ordinal": 1829
+  },
+  {
+   "name": "TransmitCommChar",
+   "ordinal": 1830
+  },
+  {
+   "name": "TryAcquireSRWLockExclusive",
+   "ordinal": 1831
+  },
+  {
+   "name": "TryAcquireSRWLockShared",
+   "ordinal": 1832
+  },
+  {
+   "name": "TryCreatePackageDependency",
+   "ordinal": 1833
+  },
+  {
+   "name": "TryCreatePackageDependency2",
+   "ordinal": 1834
+  },
+  {
+   "name": "TryEnterCriticalSection",
+   "ordinal": 1835
+  },
+  {
+   "name": "TrySubmitThreadpoolCallback",
+   "ordinal": 1836
+  },
+  {
+   "name": "TzSpecificLocalTimeToSystemTime",
+   "ordinal": 1837
+  },
+  {
+   "name": "TzSpecificLocalTimeToSystemTimeEx",
+   "ordinal": 1838
+  },
+  {
+   "name": "UnhandledExceptionFilter",
+   "ordinal": 1839
+  },
+  {
+   "name": "UnlockFile",
+   "ordinal": 1840
+  },
+  {
+   "name": "UnlockFileEx",
+   "ordinal": 1841
+  },
+  {
+   "name": "UnmapViewOfFile",
+   "ordinal": 1842
+  },
+  {
+   "name": "UnmapViewOfFile2",
+   "ordinal": 1843
+  },
+  {
+   "name": "UnmapViewOfFileEx",
+   "ordinal": 1844
+  },
+  {
+   "name": "UnregisterApplicationRestart",
+   "ordinal": 1845
+  },
+  {
+   "name": "UnregisterBadMemoryNotification",
+   "ordinal": 1846
+  },
+  {
+   "name": "UnregisterGPNotificationInternal",
+   "ordinal": 1847
+  },
+  {
+   "name": "UnregisterStateChangeNotification",
+   "ordinal": 1848
+  },
+  {
+   "name": "UnregisterStateLock",
+   "ordinal": 1849
+  },
+  {
+   "name": "UnregisterTraceGuids",
+   "ordinal": 1850
+  },
+  {
+   "name": "UnregisterWaitEx",
+   "ordinal": 1851
+  },
+  {
+   "name": "UnsubscribeEdpEnabledStateChange",
+   "ordinal": 1852
+  },
+  {
+   "name": "UnsubscribeFeatureUsageFlush",
+   "ordinal": 1853
+  },
+  {
+   "name": "UnsubscribeStateChangeNotification",
+   "ordinal": 1854
+  },
+  {
+   "name": "UnsubscribeWdagEnabledStateChange",
+   "ordinal": 1855
+  },
+  {
+   "name": "UpdatePackageStatus",
+   "ordinal": 1856
+  },
+  {
+   "name": "UpdatePackageStatusForUser",
+   "ordinal": 1857
+  },
+  {
+   "name": "UpdatePackageStatusForUserSid",
+   "ordinal": 1858
+  },
+  {
+   "name": "UpdateProcThreadAttribute",
+   "ordinal": 1859
+  },
+  {
+   "name": "UrlApplySchemeA",
+   "ordinal": 1860
+  },
+  {
+   "name": "UrlApplySchemeW",
+   "ordinal": 1861
+  },
+  {
+   "name": "UrlCanonicalizeA",
+   "ordinal": 1862
+  },
+  {
+   "name": "UrlCanonicalizeW",
+   "ordinal": 1863
+  },
+  {
+   "name": "UrlCombineA",
+   "ordinal": 1864
+  },
+  {
+   "name": "UrlCombineW",
+   "ordinal": 1865
+  },
+  {
+   "name": "UrlCompareA",
+   "ordinal": 1866
+  },
+  {
+   "name": "UrlCompareW",
+   "ordinal": 1867
+  },
+  {
+   "name": "UrlCreateFromPathA",
+   "ordinal": 1868
+  },
+  {
+   "name": "UrlCreateFromPathW",
+   "ordinal": 1869
+  },
+  {
+   "name": "UrlEscapeA",
+   "ordinal": 1870
+  },
+  {
+   "name": "UrlEscapeW",
+   "ordinal": 1871
+  },
+  {
+   "name": "UrlFixupW",
+   "ordinal": 1872
+  },
+  {
+   "name": "UrlGetLocationA",
+   "ordinal": 1873
+  },
+  {
+   "name": "UrlGetLocationW",
+   "ordinal": 1874
+  },
+  {
+   "name": "UrlGetPartA",
+   "ordinal": 1875
+  },
+  {
+   "name": "UrlGetPartW",
+   "ordinal": 1876
+  },
+  {
+   "name": "UrlHashA",
+   "ordinal": 1877
+  },
+  {
+   "name": "UrlHashW",
+   "ordinal": 1878
+  },
+  {
+   "name": "UrlIsA",
+   "ordinal": 1879
+  },
+  {
+   "name": "UrlIsNoHistoryA",
+   "ordinal": 1880
+  },
+  {
+   "name": "UrlIsNoHistoryW",
+   "ordinal": 1881
+  },
+  {
+   "name": "UrlIsOpaqueA",
+   "ordinal": 1882
+  },
+  {
+   "name": "UrlIsOpaqueW",
+   "ordinal": 1883
+  },
+  {
+   "name": "UrlIsW",
+   "ordinal": 1884
+  },
+  {
+   "name": "UrlUnescapeA",
+   "ordinal": 1885
+  },
+  {
+   "name": "UrlUnescapeW",
+   "ordinal": 1886
+  },
+  {
+   "name": "VerFindFileA",
+   "ordinal": 1887
+  },
+  {
+   "name": "VerFindFileW",
+   "ordinal": 1888
+  },
+  {
+   "name": "VerLanguageNameA",
+   "ordinal": 1889
+  },
+  {
+   "name": "VerLanguageNameW",
+   "ordinal": 1890
+  },
+  {
+   "name": "VerQueryValueA",
+   "ordinal": 1891
+  },
+  {
+   "name": "VerQueryValueW",
+   "ordinal": 1892
+  },
+  {
+   "name": "VerSetConditionMask",
+   "ordinal": 1893
+  },
+  {
+   "name": "VerifyApplicationUserModelId",
+   "ordinal": 1894
+  },
+  {
+   "name": "VerifyApplicationUserModelIdA",
+   "ordinal": 1895
+  },
+  {
+   "name": "VerifyPackageFamilyName",
+   "ordinal": 1896
+  },
+  {
+   "name": "VerifyPackageFamilyNameA",
+   "ordinal": 1897
+  },
+  {
+   "name": "VerifyPackageFullName",
+   "ordinal": 1898
+  },
+  {
+   "name": "VerifyPackageFullNameA",
+   "ordinal": 1899
+  },
+  {
+   "name": "VerifyPackageId",
+   "ordinal": 1900
+  },
+  {
+   "name": "VerifyPackageIdA",
+   "ordinal": 1901
+  },
+  {
+   "name": "VerifyPackageName",
+   "ordinal": 1902
+  },
+  {
+   "name": "VerifyPackageNameA",
+   "ordinal": 1903
+  },
+  {
+   "name": "VerifyPackagePublisher",
+   "ordinal": 1904
+  },
+  {
+   "name": "VerifyPackagePublisherA",
+   "ordinal": 1905
+  },
+  {
+   "name": "VerifyPackageRelativeApplicationId",
+   "ordinal": 1906
+  },
+  {
+   "name": "VerifyPackageRelativeApplicationIdA",
+   "ordinal": 1907
+  },
+  {
+   "name": "VerifyScripts",
+   "ordinal": 1908
+  },
+  {
+   "name": "VirtualAlloc",
+   "ordinal": 1909
+  },
+  {
+   "name": "VirtualAlloc2",
+   "ordinal": 1910
+  },
+  {
+   "name": "VirtualAlloc2FromApp",
+   "ordinal": 1911
+  },
+  {
+   "name": "VirtualAllocEx",
+   "ordinal": 1912
+  },
+  {
+   "name": "VirtualAllocExNuma",
+   "ordinal": 1913
+  },
+  {
+   "name": "VirtualAllocFromApp",
+   "ordinal": 1914
+  },
+  {
+   "name": "VirtualFree",
+   "ordinal": 1915
+  },
+  {
+   "name": "VirtualFreeEx",
+   "ordinal": 1916
+  },
+  {
+   "name": "VirtualLock",
+   "ordinal": 1917
+  },
+  {
+   "name": "VirtualProtect",
+   "ordinal": 1918
+  },
+  {
+   "name": "VirtualProtectEx",
+   "ordinal": 1919
+  },
+  {
+   "name": "VirtualProtectFromApp",
+   "ordinal": 1920
+  },
+  {
+   "name": "VirtualQuery",
+   "ordinal": 1921
+  },
+  {
+   "name": "VirtualQueryEx",
+   "ordinal": 1922
+  },
+  {
+   "name": "VirtualUnlock",
+   "ordinal": 1923
+  },
+  {
+   "name": "VirtualUnlockEx",
+   "ordinal": 1924
+  },
+  {
+   "name": "WTSGetServiceSessionId",
+   "ordinal": 1925
+  },
+  {
+   "name": "WTSIsServerContainer",
+   "ordinal": 1926
+  },
+  {
+   "name": "WaitCommEvent",
+   "ordinal": 1927
+  },
+  {
+   "name": "WaitForDebugEvent",
+   "ordinal": 1928
+  },
+  {
+   "name": "WaitForDebugEventEx",
+   "ordinal": 1929
+  },
+  {
+   "name": "WaitForMachinePolicyForegroundProcessingInternal",
+   "ordinal": 1930
+  },
+  {
+   "name": "WaitForMultipleObjects",
+   "ordinal": 1931
+  },
+  {
+   "name": "WaitForMultipleObjectsEx",
+   "ordinal": 1932
+  },
+  {
+   "name": "WaitForSingleObject",
+   "ordinal": 1933
+  },
+  {
+   "name": "WaitForSingleObjectEx",
+   "ordinal": 1934
+  },
+  {
+   "name": "WaitForThreadpoolIoCallbacks",
+   "ordinal": 1935
+  },
+  {
+   "name": "WaitForThreadpoolTimerCallbacks",
+   "ordinal": 1936
+  },
+  {
+   "name": "WaitForThreadpoolWaitCallbacks",
+   "ordinal": 1937
+  },
+  {
+   "name": "WaitForThreadpoolWorkCallbacks",
+   "ordinal": 1938
+  },
+  {
+   "name": "WaitForUserPolicyForegroundProcessingInternal",
+   "ordinal": 1939
+  },
+  {
+   "name": "WaitNamedPipeW",
+   "ordinal": 1940
+  },
+  {
+   "name": "WaitOnAddress",
+   "ordinal": 1941
+  },
+  {
+   "name": "WakeAllConditionVariable",
+   "ordinal": 1942
+  },
+  {
+   "name": "WakeByAddressAll",
+   "ordinal": 1943
+  },
+  {
+   "name": "WakeByAddressSingle",
+   "ordinal": 1944
+  },
+  {
+   "name": "WakeConditionVariable",
+   "ordinal": 1945
+  },
+  {
+   "name": "WerGetFlags",
+   "ordinal": 1946
+  },
+  {
+   "name": "WerRegisterAdditionalProcess",
+   "ordinal": 1947
+  },
+  {
+   "name": "WerRegisterAppLocalDump",
+   "ordinal": 1948
+  },
+  {
+   "name": "WerRegisterCustomMetadata",
+   "ordinal": 1949
+  },
+  {
+   "name": "WerRegisterExcludedMemoryBlock",
+   "ordinal": 1950
+  },
+  {
+   "name": "WerRegisterFile",
+   "ordinal": 1951
+  },
+  {
+   "name": "WerRegisterMemoryBlock",
+   "ordinal": 1952
+  },
+  {
+   "name": "WerRegisterRuntimeExceptionModule",
+   "ordinal": 1953
+  },
+  {
+   "name": "WerSetFlags",
+   "ordinal": 1954
+  },
+  {
+   "name": "WerSetMaxProcessHoldMilliseconds",
+   "ordinal": 1955
+  },
+  {
+   "name": "WerUnregisterAdditionalProcess",
+   "ordinal": 1956
+  },
+  {
+   "name": "WerUnregisterAppLocalDump",
+   "ordinal": 1957
+  },
+  {
+   "name": "WerUnregisterCustomMetadata",
+   "ordinal": 1958
+  },
+  {
+   "name": "WerUnregisterExcludedMemoryBlock",
+   "ordinal": 1959
+  },
+  {
+   "name": "WerUnregisterFile",
+   "ordinal": 1960
+  },
+  {
+   "name": "WerUnregisterMemoryBlock",
+   "ordinal": 1961
+  },
+  {
+   "name": "WerUnregisterRuntimeExceptionModule",
+   "ordinal": 1962
+  },
+  {
+   "name": "WerpNotifyLoadStringResource",
+   "ordinal": 1963
+  },
+  {
+   "name": "WerpNotifyUseStringResource",
+   "ordinal": 1964
+  },
+  {
+   "name": "WideCharToMultiByte",
+   "ordinal": 1965
+  },
+  {
+   "name": "WilFailureNotifyWatchers",
+   "ordinal": 1966
+  },
+  {
+   "name": "WilFailureWatcherResume",
+   "ordinal": 1967
+  },
+  {
+   "name": "WilFailureWatcherSubscribe",
+   "ordinal": 1968
+  },
+  {
+   "name": "WilFailureWatcherSuspend",
+   "ordinal": 1969
+  },
+  {
+   "name": "WilFailureWatcherUnsubscribe",
+   "ordinal": 1970
+  },
+  {
+   "name": "Wow64DisableWow64FsRedirection",
+   "ordinal": 1971
+  },
+  {
+   "name": "Wow64EnableWow64FsRedirection",
+   "ordinal": 1972
+  },
+  {
+   "name": "Wow64GetThreadContext",
+   "ordinal": 1973
+  },
+  {
+   "name": "Wow64RevertWow64FsRedirection",
+   "ordinal": 1974
+  },
+  {
+   "name": "Wow64SetThreadContext",
+   "ordinal": 1975
+  },
+  {
+   "name": "Wow64SetThreadDefaultGuestMachine",
+   "ordinal": 1976
+  },
+  {
+   "name": "Wow64SuspendThread",
+   "ordinal": 1977
+  },
+  {
+   "name": "WriteConsoleA",
+   "ordinal": 1978
+  },
+  {
+   "name": "WriteConsoleInputA",
+   "ordinal": 1979
+  },
+  {
+   "name": "WriteConsoleInputW",
+   "ordinal": 1980
+  },
+  {
+   "name": "WriteConsoleOutputA",
+   "ordinal": 1981
+  },
+  {
+   "name": "WriteConsoleOutputAttribute",
+   "ordinal": 1982
+  },
+  {
+   "name": "WriteConsoleOutputCharacterA",
+   "ordinal": 1983
+  },
+  {
+   "name": "WriteConsoleOutputCharacterW",
+   "ordinal": 1984
+  },
+  {
+   "name": "WriteConsoleOutputW",
+   "ordinal": 1985
+  },
+  {
+   "name": "WriteConsoleW",
+   "ordinal": 1986
+  },
+  {
+   "name": "WriteFile",
+   "ordinal": 1987
+  },
+  {
+   "name": "WriteFileEx",
+   "ordinal": 1988
+  },
+  {
+   "name": "WriteFileGather",
+   "ordinal": 1989
+  },
+  {
+   "name": "WriteProcessMemory",
+   "ordinal": 1990
+  },
+  {
+   "name": "WriteStateAtomValue",
+   "ordinal": 1991
+  },
+  {
+   "name": "WriteStateContainerValue",
+   "ordinal": 1992
+  },
+  {
+   "name": "ZombifyActCtx",
+   "ordinal": 1993
+  },
+  {
+   "name": "_AddMUIStringToCache",
+   "ordinal": 1994
+  },
+  {
+   "name": "_GetMUIStringFromCache",
+   "ordinal": 1995
+  },
+  {
+   "name": "_OpenMuiStringCache",
+   "ordinal": 1996
+  },
+  {
+   "name": "__C_specific_handler",
+   "ordinal": 1997
+  },
+  {
+   "name": "__FC_Query_Config",
+   "ordinal": 1998
+  },
+  {
+   "name": "__FC_Query_System",
+   "ordinal": 1999
+  },
+  {
+   "name": "__FC_Report",
+   "ordinal": 2000
+  },
+  {
+   "name": "__FC_Subscribe",
+   "ordinal": 2001
+  },
+  {
+   "name": "__FC_Unsubscribe",
+   "ordinal": 2002
+  },
+  {
+   "name": "__argc",
+   "ordinal": 2003
+  },
+  {
+   "name": "__chkstk",
+   "ordinal": 2004
+  },
+  {
+   "name": "__dllonexit3",
+   "ordinal": 2005
+  },
+  {
+   "name": "__misaligned_access",
+   "ordinal": 2006
+  },
+  {
+   "name": "__wargv",
+   "ordinal": 2007
+  },
+  {
+   "name": "__wgetmainargs",
+   "ordinal": 2008
+  },
+  {
+   "name": "_amsg_exit",
+   "ordinal": 2009
+  },
+  {
+   "name": "_c_exit",
+   "ordinal": 2010
+  },
+  {
+   "name": "_cexit",
+   "ordinal": 2011
+  },
+  {
+   "name": "_exit",
+   "ordinal": 2012
+  },
+  {
+   "name": "_initterm",
+   "ordinal": 2013
+  },
+  {
+   "name": "_initterm_e",
+   "ordinal": 2014
+  },
+  {
+   "name": "_invalid_parameter",
+   "ordinal": 2015
+  },
+  {
+   "name": "_local_unwind",
+   "ordinal": 2016
+  },
+  {
+   "name": "_onexit",
+   "ordinal": 2017
+  },
+  {
+   "name": "_purecall",
+   "ordinal": 2018
+  },
+  {
+   "name": "_time64",
+   "ordinal": 2019
+  },
+  {
+   "name": "atexit",
+   "ordinal": 2020
+  },
+  {
+   "name": "exit",
+   "ordinal": 2021
+  },
+  {
+   "name": "hgets",
+   "ordinal": 2022
+  },
+  {
+   "name": "hwprintf",
+   "ordinal": 2023
+  },
+  {
+   "name": "lstrcmp",
+   "ordinal": 2024
+  },
+  {
+   "name": "lstrcmpA",
+   "ordinal": 2025
+  },
+  {
+   "name": "lstrcmpW",
+   "ordinal": 2026
+  },
+  {
+   "name": "lstrcmpi",
+   "ordinal": 2027
+  },
+  {
+   "name": "lstrcmpiA",
+   "ordinal": 2028
+  },
+  {
+   "name": "lstrcmpiW",
+   "ordinal": 2029
+  },
+  {
+   "name": "lstrcpyn",
+   "ordinal": 2030
+  },
+  {
+   "name": "lstrcpynA",
+   "ordinal": 2031
+  },
+  {
+   "name": "lstrcpynW",
+   "ordinal": 2032
+  },
+  {
+   "name": "lstrlen",
+   "ordinal": 2033
+  },
+  {
+   "name": "lstrlenA",
+   "ordinal": 2034
+  },
+  {
+   "name": "lstrlenW",
+   "ordinal": 2035
+  },
+  {
+   "name": "time",
+   "ordinal": 2036
+  },
+  {
+   "name": "wprintf",
+   "ordinal": 2037
+  }
+ ]
+}

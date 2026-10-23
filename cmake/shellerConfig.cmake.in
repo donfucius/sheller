@@ -1,0 +1,25 @@
+@PACKAGE_INIT@
+
+# CMake package configuration for an installed sheller. A consumer writes
+#   find_package(sheller CONFIG REQUIRED)
+#   target_link_libraries(app PRIVATE sheller::sheller)
+# and needs nothing else: the headers, the runtime layout and the third-party
+# DLLs all arrive in the same prefix (specs/delivery-surface, "安装面自足").
+
+include("${CMAKE_CURRENT_LIST_DIR}/shellerTargets.cmake")
+
+# The consumer-side configuration checks in include/sheller/export.h must read
+# the configuration THIS LIBRARY was built in. A generator expression in an
+# exported interface does not do that - it is re-evaluated in the consumer's own
+# configuration (measured: a Debug consumer against a Release install read the
+# pair as a match, which is the silent-memory-corruption case that check exists
+# to stop). So the exported interface carries no spelling of it at all, and the
+# value arrives from shellerAbiConfig.cmake, written as a literal at install time.
+# The include is deliberately not OPTIONAL: a prefix that lacks that file is not
+# a prefix this build produced, and losing the check quietly is the one outcome
+# worse than failing to configure.
+include("${CMAKE_CURRENT_LIST_DIR}/shellerAbiConfig.cmake")
+set_property(TARGET sheller::sheller APPEND PROPERTY
+  INTERFACE_COMPILE_DEFINITIONS "SHELLER_LIB_ABI_DEBUG=${SHELLER_LIB_ABI_DEBUG_LITERAL}")
+
+check_required_components(sheller)

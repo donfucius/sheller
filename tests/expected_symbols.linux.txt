@@ -1,0 +1,21 @@
+# Expected dynamic export face of libsheller.so - checked in for the
+# export_surface gate (tests/export_surface_gate.cmake). Six entries,
+# one line per demangled symbol, no more and no less; the gate diffs
+# symbol names, it does not count.
+#
+# Regenerate (never hand-edit) from a linux-release build:
+#   nm -D --defined-only libsheller.so.0.1.0 | c++filt | grep ' T '
+#   strip the address and type columns, sort.
+# Spellings are GCC/c++filt's (__cxx11 inline namespaces included); the
+# Windows list is undname's and is not textually comparable: the two
+# demanglers never agree on a spelling (unsigned char vs uint8_t, __cdecl,
+# __ptr64, the inline-namespace form of std::filesystem::path), so each
+# platform keeps its own list and the pair is reconciled by review, with the
+# "exactly six entries" assertion covering the count.
+
+sheller::analyze(std::filesystem::__cxx11::path const&, sheller::AnalysisOptions const&)
+sheller::analyze(std::vector<unsigned char, std::allocator<unsigned char> > const&, sheller::AnalysisOptions const&)
+sheller::capture::run(sheller::capture::Options const&)
+sheller::log::set_sink(std::function<void (sheller::log::level, std::basic_string_view<char, std::char_traits<char> >)>, sheller::log::level)
+sheller::unicorn_version_string()
+sheller::unpack_sample(std::filesystem::__cxx11::path const&, sheller::UnpackOptions const&)

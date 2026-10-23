@@ -1,0 +1,22 @@
+.*/
+openspec/
+
+# Build outputs
+build/
+vcpkg_installed/
+out/
+Testing/
+
+# Snapshot artifacts: real captures carry MS DLL bytes and never enter the
+# repository; the synthetic format-test golden is tracked explicitly.
+*.snap
+!tests/goldens/*.snap
+
+# OS junk
+Thumbs.db
+Desktop.ini
+
+# CI workflows live in a dot-directory - keep them tracked
+!.github/
+__pycache__/
+*.pyc
