@@ -610,8 +610,13 @@ DllMain) with rebuilt imports. The source is `tests/packed_dll_sample.c`
 tests\packed.dll`. Re-test the anchors (packed entry, reference entry,
 import/export directories) after any rebuild and update the acceptance
 test. Suites: `dll_admission` (system-dependency admission + staged-runner
-real-loader smoke) and `dll_e2e` (capture → unpack acceptance + replay
-marker), both WIN32-gated.
+real-loader smoke), `dll_e2e` (capture → unpack acceptance + the xfer=1
+stop face), and `dll_capture_e2e` (the live-capture replay chain:
+--guest-stdout marker, saved-snapshot round trip, esp miss closing the
+run) - all WIN32-gated. `dll_capture_e2e` is excluded from shared CI
+runners: the captured world's per-process entropy crashes the payload's
+CRT init past the OEP on runner hardware (green on the development
+machine; the engine-side normalization is tracked as follow-up work).
 
 Stop-target note for this corpus: the UPX DllMain stub opens with
 argument-shadow stores and a reason branch before its register saves, so

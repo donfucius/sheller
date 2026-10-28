@@ -622,8 +622,7 @@ if(WIN32)
   add_test(NAME dll_admission COMMAND dll_admission_test)
 
   # DLL-input route end-to-end (Windows): the acceptance line - capture →
-  # unpack reproducing the reference entry point, and the replay printing
-  # the DllMain marker through --guest-stdout.
+  # unpack reproducing the reference entry point, and the xfer=1 stop face.
   add_executable(dll_e2e_test dll_e2e_test.cpp)
   target_compile_definitions(dll_e2e_test PRIVATE
     SHELLER_CLI_FILE_NAME="${SHELLER_CLI_FILE_NAME}"
@@ -635,6 +634,24 @@ if(WIN32)
   add_dependencies(dll_e2e_test sheller)
   add_test(NAME dll_e2e COMMAND dll_e2e_test)
   set_tests_properties(dll_e2e PROPERTIES
+    WORKING_DIRECTORY "$<TARGET_FILE_DIR:sheller>")
+
+  # Live-capture replay chain (Windows): DllMain marker through
+  # --guest-stdout, the saved-snapshot round trip, and the esp miss closing
+  # the unpack normally. Excluded from shared CI runners - the captured
+  # world's per-process entropy crashes the payload past the OEP there (same
+  # family as capture_x86_e2e); green on the development machine.
+  add_executable(dll_capture_e2e_test dll_capture_e2e_test.cpp)
+  target_compile_definitions(dll_capture_e2e_test PRIVATE
+    SHELLER_CLI_FILE_NAME="${SHELLER_CLI_FILE_NAME}"
+    SHELLER_SAMPLE_PACKED_DLL_PATH="${CMAKE_CURRENT_SOURCE_DIR}/packed.dll")
+  target_include_directories(dll_capture_e2e_test PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/../include")
+  target_link_libraries(dll_capture_e2e_test PRIVATE GTest::gtest_main)
+  sheller_apply_common(dll_capture_e2e_test)
+  add_dependencies(dll_capture_e2e_test sheller)
+  add_test(NAME dll_capture_e2e COMMAND dll_capture_e2e_test)
+  set_tests_properties(dll_capture_e2e PROPERTIES
     WORKING_DIRECTORY "$<TARGET_FILE_DIR:sheller>")
 endif()
 
