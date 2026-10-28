@@ -420,8 +420,11 @@ bool on_rdtsc_callback(uc_engine* const uc, void* const user_data)
     // loop), so rdtsc-based delay waits complete in bounded emulation time
     // and replays stay host-independent (the host TSC leaked through before).
     const std::uint64_t tsc = state->virtual_tsc;
-    const std::uint32_t low = static_cast<std::uint32_t>(tsc);
-    const std::uint32_t high = static_cast<std::uint32_t>(tsc >> 32);
+    // uc_reg_write reads the full register width from the buffer, so both
+    // halves are zero-extended u64s - a u32 local makes unicorn pull adjacent
+    // host stack into the guest-visible high half (per-process entropy).
+    const std::uint64_t low = tsc & 0xFFFFFFFF;
+    const std::uint64_t high = tsc >> 32;
     uc_reg_write(uc, UC_X86_REG_RAX, &low);
     uc_reg_write(uc, UC_X86_REG_RDX, &high);
     if (state->event_sink) {
@@ -439,9 +442,9 @@ bool on_rdtscp_callback(uc_engine* const uc, void* const user_data)
     auto* state = static_cast<SyscallRunState*>(user_data);
     state->probe_insn_fired = true; // loop-gate evidence, see on_rdtsc_callback
     const std::uint64_t tsc = state->virtual_tsc;
-    const std::uint32_t low = static_cast<std::uint32_t>(tsc);
-    const std::uint32_t high = static_cast<std::uint32_t>(tsc >> 32);
-    const std::uint32_t aux = 0;
+    const std::uint64_t low = tsc & 0xFFFFFFFF;
+    const std::uint64_t high = tsc >> 32;
+    const std::uint64_t aux = 0;
     uc_reg_write(uc, UC_X86_REG_RAX, &low);
     uc_reg_write(uc, UC_X86_REG_RDX, &high);
     uc_reg_write(uc, UC_X86_REG_RCX, &aux);
