@@ -23,6 +23,7 @@
 #endif
 
 #include "test_temp.hpp"
+#include <algorithm>
 #include <cstdlib>
 #include <filesystem>
 #include <format>
@@ -31,6 +32,7 @@
 #include <string>
 #include <string_view>
 #include <system_error>
+#include <vector>
 
 namespace {
 
@@ -120,6 +122,39 @@ TEST(DllCaptureE2E, SavedSnapshotRoundTripReplaysTheSameSemantics)
         "run --from-snapshot \"{}\" --guest-stdout -b 60M --timeout-ms 300000", saved.string()));
     EXPECT_NE(result.find("hello world from dllmain"), std::string::npos) << result;
     EXPECT_NE(result.find("terminated=1 exit=0x5a"), std::string::npos) << result;
+}
+
+// The load-stub runner temp file never outlives the capture: the RAII guard
+// in the CLI removes it on every exit path (the spawned process may hold the
+// image mapped for a moment, so the removal waits for the kernel). After a
+// successful CLI capture no sheller_run_*.exe remains in the system temp
+// directory - and the capture added none even next to a stale leftover from
+// an older crashed run, so the comparison is against the before-set.
+TEST(DllCaptureE2E, RunnerTempFileIsGoneAfterCapture)
+{
+    const auto temp = fs::temp_directory_path();
+    const auto runner_temps = [](const fs::path& dir) {
+        std::vector<std::string> names;
+        for (const auto& entry : fs::directory_iterator(dir)) {
+            const auto name = entry.path().filename().string();
+            if (name.rfind("sheller_run_", 0) == 0 && name.size() > 4 &&
+                name.compare(name.size() - 4, 4, ".exe") == 0) {
+                names.push_back(name);
+            }
+        }
+        std::sort(names.begin(), names.end());
+        return names;
+    };
+    const auto before = runner_temps(temp);
+    const auto dir = sheller_test::temp_path("sheller_dll_capture_cleanup");
+    fs::create_directories(dir);
+    const auto snap = dir / "cleanup.snap";
+    ASSERT_EQ(run_and_capture(
+                  std::format("capture \"{}\" -o \"{}\"", packed_dll().string(), snap.string()))
+                  .substr(0, 1),
+              "0");
+    ASSERT_TRUE(fs::exists(snap));
+    EXPECT_EQ(runner_temps(temp), before);
 }
 
 #endif // _WIN32

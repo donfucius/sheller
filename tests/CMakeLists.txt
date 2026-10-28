@@ -628,8 +628,9 @@ if(WIN32)
     SHELLER_CLI_FILE_NAME="${SHELLER_CLI_FILE_NAME}"
     SHELLER_SAMPLE_PACKED_DLL_PATH="${CMAKE_CURRENT_SOURCE_DIR}/packed.dll")
   target_include_directories(dll_e2e_test PRIVATE
-    "${CMAKE_CURRENT_SOURCE_DIR}/../include")
-  target_link_libraries(dll_e2e_test PRIVATE GTest::gtest_main)
+    "${CMAKE_CURRENT_SOURCE_DIR}/../include"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../src/runtime/capture")
+  target_link_libraries(dll_e2e_test PRIVATE GTest::gtest_main sheller_capture)
   sheller_apply_common(dll_e2e_test)
   add_dependencies(dll_e2e_test sheller)
   add_test(NAME dll_e2e COMMAND dll_e2e_test)
