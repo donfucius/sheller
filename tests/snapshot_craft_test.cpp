@@ -919,9 +919,9 @@ TEST(SnapshotCraft, CraftedDllConstructionIsDeterministic)
 // function of the input. Every guest-visible input of this world is
 // deterministic (synthetic stubs, engine-published KUSD ticks, the virtual
 // TSC), so the pin extends across processes by construction; the captured-
-// world replay has a separate pre-existing per-process entropy source (the
-// payload's __security_cookie) and is pinned only
-// for its statistics elsewhere.
+// world replay has its own cross-process pins (the CLI report in dll_e2e and
+// the artifact chain through det_helper in dll_capture_e2e) over one fixed
+// container.
 TEST(SnapshotCraft, CraftedDllReplayEventStreamIsDeterministic)
 {
     auto crafted =

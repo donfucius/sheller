@@ -140,6 +140,11 @@ that audit.
   or missing dependencies are rejected by name before any process
   exists. Unpack on a packed DLL reproduces the reference entry point
   and rebuilt imports (`tests/packed.dll` vs `tests/packed.dll.unp`).
+  Replaying one fixed container is a pure function of its bytes: two
+  independent processes produce byte-identical reports, raw event streams,
+  dumps and repaired `.unp` images (pinned cross-process in
+  `dll_e2e`/`dll_capture_e2e`; two separate *captures* still drift by
+  design - the live loader world is not a deterministic input).
 * **Shellcode blobs** - `--shellcode` embeds the blob in a generated minimal
   wrapper PE (x64 and x86) and rides the capture route.
 
