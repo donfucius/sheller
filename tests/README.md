@@ -625,4 +625,5 @@ the esp scan finds no contiguous push sequence at the re-armed entry and
 closes normally, unpack completes). `--stop xfer=1` is the usable stop
 face - the stub's post-restore jump to the unpacked entry is the first
 counted transfer (the OEP dump stop); pinned by
-`DllE2E.EspStopIsADocumentedMissAndXfer1IsTheUsableFace`.
+`DllE2E.Xfer1StopsAtTheOepTransfer`, with the miss face pinned by
+`DllCaptureE2E.EspStopMissClosesTheRunNormally`.
