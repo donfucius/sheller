@@ -645,15 +645,27 @@ if(WIN32)
   add_executable(dll_capture_e2e_test dll_capture_e2e_test.cpp)
   target_compile_definitions(dll_capture_e2e_test PRIVATE
     SHELLER_CLI_FILE_NAME="${SHELLER_CLI_FILE_NAME}"
-    SHELLER_SAMPLE_PACKED_DLL_PATH="${CMAKE_CURRENT_SOURCE_DIR}/packed.dll")
+    SHELLER_SAMPLE_PACKED_DLL_PATH="${CMAKE_CURRENT_SOURCE_DIR}/packed.dll"
+    SHELLER_DET_HELPER_PATH="$<TARGET_FILE:det_helper>")
   target_include_directories(dll_capture_e2e_test PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/../include")
   target_link_libraries(dll_capture_e2e_test PRIVATE GTest::gtest_main)
   sheller_apply_common(dll_capture_e2e_test)
-  add_dependencies(dll_capture_e2e_test sheller)
+  add_dependencies(dll_capture_e2e_test sheller det_helper)
   add_test(NAME dll_capture_e2e COMMAND dll_capture_e2e_test)
   set_tests_properties(dll_capture_e2e PROPERTIES
     WORKING_DIRECTORY "$<TARGET_FILE_DIR:sheller>")
+
+  # Resident artifact-chain determinism helper (captured-world-determinism
+  # task 3.2): one replay per invocation - raw event stream to disk, exit
+  # dump, repair into a .unp. The dll_capture_e2e pin drives two independent
+  # helper processes over one container and byte-compares the artifacts.
+  add_executable(det_helper det_helper.cpp)
+  target_include_directories(det_helper PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/../src/api"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../src/engine")
+  target_link_libraries(det_helper PRIVATE sheller_api)
+  sheller_apply_common(det_helper)
 endif()
 
   # Synthetic system modules: the frozen manifests are committed, the

@@ -196,6 +196,43 @@ TEST(DllE2E, Xfer1StopsAtTheOepTransfer)
     EXPECT_TRUE(fs::exists(output)); // the OEP-face dump
 }
 
+// The captured-world replay is a pure function of (container bytes, engine,
+// options): two independent CLI processes replaying one container must write
+// byte-identical reports. This restores the pin withdrawn in the
+// dll-sample-support change's 7.3 investigation, where the per-process
+// entropy leak (adopted into the deterministic answer face by the
+// captured-world-determinism change) flapped it red across ctest rounds. Pin
+// discipline: no wall clock is set (a timeout-driven stop is a
+// nondeterministic abort and the engine never arms one at 0 ms), and the
+// compare runs only after the deterministic termination (terminated=1).
+TEST(DllE2E, ReplayReportIsIdenticalAcrossProcesses)
+{
+    const auto dir = sheller_test::temp_path("sheller_dll_e2e_determinism");
+    fs::create_directories(dir);
+    const auto snap = dir / "packed_dll_v2.snap";
+    ASSERT_EQ(run_and_capture(
+                  std::format("capture \"{}\" -o \"{}\"", packed_dll().string(), snap.string()))
+                  .substr(0, 1),
+              "0");
+    ASSERT_TRUE(fs::exists(snap));
+    const auto replay = [&dir, &snap](const std::string_view tag) {
+        const auto report = dir / std::format("replay_{}.report.json", tag);
+        const auto result =
+            run_and_capture(std::format("run --from-snapshot \"{}\" --report \"{}\" -b 0M"
+                                        " --timeout-ms 0",
+                                        snap.string(), report.string()));
+        EXPECT_EQ(result.substr(0, result.find('|')), "0") << result;
+        EXPECT_NE(result.find("terminated=1"), std::string::npos) << result;
+        return report;
+    };
+    const auto first = replay("a");
+    const auto second = replay("b");
+    ASSERT_TRUE(fs::exists(first));
+    ASSERT_TRUE(fs::exists(second));
+    EXPECT_EQ(read_bytes(first), read_bytes(second))
+        << "cross-process replay reports differ on one container";
+}
+
 #endif // _WIN32
 
 } // namespace
