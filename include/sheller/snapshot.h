@@ -11,6 +11,7 @@
 #include <cstdint>
 #include <expected>
 #include <iosfwd>
+#include <string>
 #include <string_view>
 #include <vector>
 
@@ -20,6 +21,11 @@ namespace sheller::snapshot {
 // golden-file tested. Any change here requires a format version bump.
 inline constexpr std::uint8_t kMagic[8] = {'S', 'H', 'E', 'L', 'L', 'S', 'N', 'P'};
 inline constexpr std::uint32_t kVersion = 1;
+// v2 = v1 layout plus one trailing pending-module block (DLL-input route).
+// v1 readers reject v2 at the header version check - that is the designed
+// refusal channel (a v1 reader stops after region_count regions and would
+// silently ignore trailing bytes otherwise).
+inline constexpr std::uint32_t kVersionV2 = 2;
 inline constexpr std::uint8_t kBitness64 = 64;
 inline constexpr std::uint8_t kBitness32 = 32;
 
@@ -51,6 +57,17 @@ inline constexpr std::size_t kRegionProtectionOffset = 2 * sizeof(std::uint64_t)
 inline constexpr std::size_t kRegionTypeOffset = kRegionProtectionOffset + sizeof(std::uint32_t);
 inline constexpr std::size_t kRegionContentFlagOffset = kRegionTypeOffset + sizeof(std::uint32_t);
 inline constexpr std::size_t kRegionRecordSize = kRegionContentFlagOffset + sizeof(std::uint8_t);
+
+// v2 trailing pending-module block: marker | name_len (u32) | name (UTF-8) |
+// bitness (u8) | 3 reserved | payload_len (u64) | payload bytes. Exactly one
+// block on a v2 file; a v1 file never carries one.
+inline constexpr std::uint8_t kPendingMarker[8] = {'P', 'E', 'N', 'D', 'M', 'O', 'D', '1'};
+inline constexpr std::size_t kPendingNameLenOffset = sizeof kPendingMarker;
+inline constexpr std::size_t kPendingNameOffset = kPendingNameLenOffset + sizeof(std::uint32_t);
+// Bounds keep a corrupt file from driving huge allocations; a real DLL
+// corpus sits far below them.
+inline constexpr std::uint32_t kMaxPendingNameBytes = 260;
+inline constexpr std::uint64_t kMaxPendingModuleBytes = 64ull * 1024 * 1024;
 
 // Canonical x64 GPR order: rax rcx rdx rbx rsp rbp rsi rdi r8..r15.
 enum class Gpr : std::uint8_t {
@@ -133,6 +150,18 @@ struct Region {
     std::vector<std::uint8_t> content{};
 };
 
+// The DLL input route's payload: the sample DLL's raw bytes plus the arrival
+// file name it was given. Carried in the v2 container's trailing block; the
+// engine synthesizes the load inside the emulated world, so the sample never
+// touches a real process.
+struct PendingModule {
+    std::string name{}; // arrival file name, UTF-8
+    std::uint8_t bitness{kBitness64};
+    std::vector<std::uint8_t> bytes{};
+
+    friend constexpr bool operator==(const PendingModule&, const PendingModule&) = default;
+};
+
 enum class Error {
     kNone = 0,
     kIoFailure,          // stream write/read failure
@@ -141,6 +170,7 @@ enum class Error {
     kBitnessMismatch,    // this reader only consumes 64-bit snapshots
     kTruncated,          // stream ended inside a block or payload
     kBadContent,         // content flag is neither absent nor present
+    kBadPending,         // pending-module block invalid or out of place
 };
 
 std::string_view error_message(Error error);
@@ -161,29 +191,42 @@ class Writer {
     // Patches the header's region_count with the number of write_region
     // calls, so the producer can stream without counting regions up front.
     std::expected<void, Error> finalize_region_count();
+    // Appends the pending-module block. Only valid on a header written with
+    // kVersionV2 (a v1 file must keep its exact legacy layout); call once,
+    // after finalize_region_count.
+    std::expected<void, Error> write_pending(const PendingModule& pending);
 
   private:
     std::expected<void, Error> write_bytes(const void* data, std::size_t size);
 
     std::ostream& out_;
     std::uint32_t region_count_{};
+    std::uint32_t header_version_{kVersion}; // write_pending requires kVersionV2
 };
 
 class Reader {
   public:
     explicit Reader(std::istream& in);
 
-    // Validates magic, version and bitness per the format contract.
+    // Validates magic, version and bitness per the format contract. Accepts
+    // both v1 and v2; anything else is kUnsupportedVersion (the v1 reader's
+    // designed refusal channel for v2 files).
     std::expected<Header, Error> read_header();
     std::expected<Registers, Error> read_registers();
     std::expected<Metadata, Error> read_metadata();
     std::expected<Region, Error> read_region();
+    // Reads the trailing pending-module block. v2 files must carry exactly
+    // one: a second call, or the first call on a v1 file, is kBadPending; a
+    // v2 file that ends before the block is kTruncated.
+    std::expected<PendingModule, Error> read_pending();
 
   private:
     Error read_bytes(void* data, std::size_t size);
 
     std::istream& in_;
     std::uint8_t header_bitness{kBitness64}; // captured from read_header
+    std::uint32_t header_version{kVersion};  // captured from read_header
+    bool pending_read_{false};
 };
 
 } // namespace sheller::snapshot

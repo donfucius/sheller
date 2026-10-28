@@ -16,7 +16,10 @@ target_sources(sheller_capture PRIVATE
   capture/snapshot_codec.cpp
   capture/pe_headers.cpp)
 if(WIN32)
-  target_sources(sheller_capture PRIVATE capture/capture.cpp)
+  target_sources(sheller_capture PRIVATE
+    capture/capture.cpp
+    capture/dll_admission.h
+    capture/dll_admission.cpp)
 else()
   target_sources(sheller_capture PRIVATE capture/capture_stub.cpp)
 endif()

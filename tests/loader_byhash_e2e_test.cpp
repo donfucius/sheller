@@ -21,8 +21,10 @@ namespace fs = std::filesystem;
 namespace {
 
 // Advapi32 joined the resident module set (the
-// loader route maps ntdll/kernel32/kernelbase/advapi32 for x64).
-constexpr std::uint32_t kExpectedModuleCount = 5;
+// loader route maps ntdll/kernel32/kernelbase/advapi32 for x64); user32
+// followed later (the packed-DLL corpus's second import
+// module, frozen manifest user32.x64.json).
+constexpr std::uint32_t kExpectedModuleCount = 6;
 
 std::vector<std::uint8_t> read_blob(const char* path)
 {

@@ -11,6 +11,7 @@
 #include <cstdint>
 #include <expected>
 #include <filesystem>
+#include <string>
 #include <string_view>
 
 namespace sheller::engine {
@@ -47,6 +48,10 @@ struct RebuildFailure {
     std::uint32_t unicorn_code{};
     // Partial statistics - filled when the bounded run did execute.
     RebuildStats stats{};
+    // Optional named-failure text (the DLL-input construction names the
+    // rejected dependency or unbuildable runner part); empty means the
+    // consumer should present rebuild_error_message(error) as usual.
+    std::string detail{};
 };
 
 std::string_view rebuild_error_message(RebuildError error);

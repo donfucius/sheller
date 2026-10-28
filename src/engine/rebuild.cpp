@@ -211,7 +211,7 @@ run_pe_file_with_facts(const std::filesystem::path& pe_path, const SyscallRunOpt
     // loader guest: construction is the only producer, replay the only
     // executor.
     auto container = craft_sample_container(pe_path, options.windows_fidelity_dispatch,
-                                           options.synthetic_module_dir);
+                                            options.synthetic_module_dir);
     if (!container) {
         return std::unexpected(run_failure_of(container.error()));
     }

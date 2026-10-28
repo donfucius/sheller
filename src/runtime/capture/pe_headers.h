@@ -11,7 +11,9 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <string>
 #include <string_view>
+#include <vector>
 
 namespace sheller::capture {
 
@@ -160,6 +162,7 @@ enum class PeError {
     kNtHeader,       // missing PE signature or headers truncated
     kOptionalHeader, // neither PE32+ x64 nor PE32 x86
     kBufferTooSmall, // less than a DOS header in the input
+    kBadImports,     // import directory malformed or unmapped
 };
 
 struct PeImageInfo {
@@ -169,6 +172,7 @@ struct PeImageInfo {
     std::uint64_t entry_rva{};
     bool has_tls{};
     std::uint64_t tls_directory_rva{};
+    bool is_dll{}; // IMAGE_FILE_DLL set
 };
 
 // Walks headers from the first bytes of a PE file (mapped view or plain
@@ -177,6 +181,19 @@ struct PeImageInfo {
 PeError parse_pe_headers(const std::uint8_t* data, std::size_t size, PeImageInfo& info);
 
 std::string_view pe_error_message(PeError error);
+
+// One import thunk as written: either by name (the exact referenced symbol)
+// or by ordinal. Module is the dependency DLL name from the descriptor.
+struct PeImportThunk {
+    std::string module;
+    std::string name;        // non-empty for by-name imports
+    std::uint16_t ordinal{}; // meaningful when name is empty
+};
+
+// Walks the import descriptor table from file bytes (bounded: 64 modules,
+// 512 thunks each). Requires the section table to map RVAs to file
+// offsets; a malformed or unmapped directory is kBadImports, not a crash.
+PeError parse_imports(const std::uint8_t* data, std::size_t size, std::vector<PeImportThunk>& out);
 
 } // namespace sheller::capture
 

@@ -12,6 +12,7 @@
 #include <array>
 #include <fstream>
 #include <ranges>
+#include <span>
 #include <string_view>
 #include <utility>
 
@@ -41,27 +42,39 @@ std::optional<std::uint16_t> peek_pe_magic(const std::filesystem::path& path)
     return static_cast<std::uint16_t>(magic[0] | (magic[1] << 8));
 }
 
+void register_module_names(TimelineNameTable& names, const std::size_t module_index,
+                           const engine::mem_region::ModuleImage& image)
+{
+    if (module_index >= TimelineNameTable::kRegionSentinelBase) {
+        return;
+    }
+    if (names.modules.size() <= module_index) {
+        names.modules.resize(module_index + 1);
+    }
+    if (names.sections.size() <= module_index) {
+        names.sections.resize(module_index + 1);
+    }
+    names.modules[module_index] = image.module.name.data();
+    auto& sections = names.sections[module_index];
+    sections.clear();
+    sections.emplace_back("headers");
+    engine::mem_region::ImageLayout layout;
+    if (engine::mem_region::parse_section_table(image.header_bytes.data(),
+                                                image.header_bytes.size(), layout) ==
+        engine::mem_region::PeParseError::kNone) {
+        for (const auto& section : layout.sections) {
+            sections.emplace_back(section.name.data());
+        }
+    }
+}
+
 TimelineNameTable build_timeline_names(const Wiring& wiring)
 {
     TimelineNameTable names;
-    // Names mirror the map's module order: Ldr images first, then the
-    // synthesized unknown images. Ranges stay Ldr-only (the calls-flow
-    // caller attribution scans them; synthesized images keep the existing
-    // sample-origin classification of out-of-range callers).
+    // Keep the snapshot's Ldr/unknown-image indexes. Runtime registrations
+    // extend this table through the fact channel using their actual indexes.
     const auto append_names = [&names](const engine::mem_region::ModuleImage& image) {
-        names.modules.emplace_back(image.module.name.data());
-        engine::mem_region::ImageLayout layout;
-        auto& secs = names.sections.emplace_back();
-        // The wire-grid convention: index 0 is the headers pseudo-section,
-        // real sections ride index si+1 (the engine's section numbering).
-        secs.emplace_back("headers");
-        if (engine::mem_region::parse_section_table(image.header_bytes.data(),
-                                                    image.header_bytes.size(), layout) ==
-            engine::mem_region::PeParseError::kNone) {
-            for (const auto& section : layout.sections) {
-                secs.emplace_back(section.name.data());
-            }
-        }
+        register_module_names(names, names.modules.size(), image);
     };
     for (const auto& image : wiring.images) {
         append_names(image);
@@ -543,7 +556,8 @@ void EventStream::on_stub_call(const std::uint16_t module, const std::string_vie
     }
 }
 
-engine::FactChannel install_behavior_sinks(engine::SyscallRunOptions& run, EventStream& stream)
+engine::FactChannel install_behavior_sinks(engine::SyscallRunOptions& run, EventStream& stream,
+                                           TimelineNameTable* const names)
 {
     // Guest output needs no default here: the engine drops the bytes when the
     // host sets no write_sink, so the facade no longer installs a lambda to
@@ -555,6 +569,12 @@ engine::FactChannel install_behavior_sinks(engine::SyscallRunOptions& run, Event
         return facts;
     }
     if (stream.has_rules()) {
+        if (names != nullptr) {
+            facts.module_sink = [names](const std::size_t index,
+                                        const engine::mem_region::ModuleImage& image) {
+                register_module_names(*names, index, image);
+            };
+        }
         facts.behavior_sink = [&stream](const engine::BehaviorFact& fact) {
             stream.on_behavior_fact(fact);
         };

@@ -31,6 +31,8 @@ std::string_view error_message(const Error error)
         return "snapshot data truncated";
     case Error::kBadContent:
         return "region content flag is invalid";
+    case Error::kBadPending:
+        return "pending-module block is invalid or out of place";
     }
     return "unknown snapshot error";
 }
@@ -56,6 +58,7 @@ std::expected<void, Error> Writer::write_header(const Header& header)
     block[kBitnessOffset] = header.bitness;
     le::store_le32(block.data() + kRegionCountOffset, header.region_count);
     region_count_ = header.region_count;
+    header_version_ = header.version;
     return write_bytes(block.data(), block.size());
 }
 
@@ -127,6 +130,33 @@ std::expected<void, Error> Writer::finalize_region_count()
     });
 }
 
+std::expected<void, Error> Writer::write_pending(const PendingModule& pending)
+{
+    if (header_version_ != kVersionV2) {
+        return std::unexpected(Error::kBadPending);
+    }
+    if (pending.name.empty() || pending.name.size() > kMaxPendingNameBytes ||
+        (pending.bitness != kBitness64 && pending.bitness != kBitness32) || pending.bytes.empty() ||
+        pending.bytes.size() > kMaxPendingModuleBytes) {
+        return std::unexpected(Error::kBadPending);
+    }
+    return write_bytes(kPendingMarker, sizeof kPendingMarker)
+        .and_then([&] {
+            std::array<std::uint8_t, kPendingNameOffset - kPendingNameLenOffset> head{};
+            le::store_le32(head.data(), static_cast<std::uint32_t>(pending.name.size()));
+            return write_bytes(head.data(), head.size());
+        })
+        .and_then([&] { return write_bytes(pending.name.data(), pending.name.size()); })
+        .and_then([&] {
+            // bitness + 3 reserved + payload length
+            std::array<std::uint8_t, 4 + sizeof(std::uint64_t)> tail{};
+            tail[0] = pending.bitness;
+            le::store_le64(tail.data() + 4, static_cast<std::uint64_t>(pending.bytes.size()));
+            return write_bytes(tail.data(), tail.size());
+        })
+        .and_then([&] { return write_bytes(pending.bytes.data(), pending.bytes.size()); });
+}
+
 Reader::Reader(std::istream& in) : in_(in)
 {
 }
@@ -157,13 +187,14 @@ std::expected<Header, Error> Reader::read_header()
         .bitness = block[kBitnessOffset],
         .region_count = le::load_le32(block.data() + kRegionCountOffset),
     };
-    if (header.version != kVersion) {
+    if (header.version != kVersion && header.version != kVersionV2) {
         return std::unexpected(Error::kUnsupportedVersion);
     }
     if (header.bitness != kBitness64 && header.bitness != kBitness32) {
         return std::unexpected(Error::kBitnessMismatch);
     }
     header_bitness = header.bitness;
+    header_version = header.version;
     return header;
 }
 
@@ -224,6 +255,54 @@ std::expected<Region, Error> Reader::read_region()
         }
     }
     return region;
+}
+
+std::expected<PendingModule, Error> Reader::read_pending()
+{
+    if (header_version != kVersionV2 || pending_read_) {
+        return std::unexpected(Error::kBadPending);
+    }
+    std::array<std::uint8_t, sizeof kPendingMarker> marker{};
+    if (const Error error = read_bytes(marker.data(), marker.size()); error != Error::kNone) {
+        return std::unexpected(error);
+    }
+    if (std::memcmp(marker.data(), kPendingMarker, sizeof kPendingMarker) != 0) {
+        return std::unexpected(Error::kBadPending);
+    }
+    std::array<std::uint8_t, sizeof(std::uint32_t)> name_len_block{};
+    if (const Error error = read_bytes(name_len_block.data(), name_len_block.size());
+        error != Error::kNone) {
+        return std::unexpected(error);
+    }
+    const auto name_len = le::load_le32(name_len_block.data());
+    if (name_len == 0 || name_len > kMaxPendingNameBytes) {
+        return std::unexpected(Error::kBadPending);
+    }
+    PendingModule pending;
+    pending.name.resize(name_len);
+    if (const Error error = read_bytes(pending.name.data(), pending.name.size());
+        error != Error::kNone) {
+        return std::unexpected(error);
+    }
+    std::array<std::uint8_t, 4 + sizeof(std::uint64_t)> tail{};
+    if (const Error error = read_bytes(tail.data(), tail.size()); error != Error::kNone) {
+        return std::unexpected(error);
+    }
+    pending.bitness = tail[0];
+    if (pending.bitness != kBitness64 && pending.bitness != kBitness32) {
+        return std::unexpected(Error::kBadPending);
+    }
+    const auto payload_len = le::load_le64(tail.data() + 4);
+    if (payload_len == 0 || payload_len > kMaxPendingModuleBytes) {
+        return std::unexpected(Error::kBadPending);
+    }
+    pending.bytes.resize(static_cast<std::size_t>(payload_len));
+    if (const Error error = read_bytes(pending.bytes.data(), pending.bytes.size());
+        error != Error::kNone) {
+        return std::unexpected(error);
+    }
+    pending_read_ = true;
+    return pending;
 }
 
 } // namespace sheller::snapshot

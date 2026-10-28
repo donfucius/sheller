@@ -12,6 +12,7 @@
 #include <sheller/syscallrun.h>
 
 #include <array>
+#include <cstddef>
 #include <cstdint>
 #include <expected>
 #include <filesystem>
@@ -64,6 +65,14 @@ struct BehaviorFact {
     std::array<std::uint8_t, 15> bytes{};
 };
 
+namespace mem_region {
+struct ModuleImage;
+}
+
+// Module registration is a cold loader operation, before any module code
+// runs. Its consumer may allocate names; instruction fact sinks may not.
+using ModuleImageSink = std::function<void(std::size_t, const mem_region::ModuleImage&)>;
+
 // The fact seam's carrier: passed beside (not inside) the public run options,
 // so SyscallRunOptions carries no fact slot at all. Empty = the engine
 // registers none of the fact hooks (no monitored windows, no per-instruction
@@ -71,6 +80,7 @@ struct BehaviorFact {
 // do IO.
 struct FactChannel {
     std::function<void(const BehaviorFact&)> behavior_sink{};
+    ModuleImageSink module_sink{};
 };
 
 namespace detail {

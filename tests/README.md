@@ -594,3 +594,30 @@ unpack-acceptance corpus fixture: regenerable with UPX, not a real-world
 sample. `packed.exe.unp` is its repaired ground truth (the `iat_repair` /
 `unpack_cli` acceptance compares against it). Real family samples stay out
 of the repository by policy.
+
+## DLL corpus (dll-sample-support)
+
+`tests/packed.dll` (UPX-packed x64 DLL) and `tests/packed.dll.unp` (the
+`upx -d` reference) drive the DLL-input route: `capture` spawns a generated
+load-stub runner and stores the sample bytes as the container's pending
+module; `unpack` reproduces the reference entry point (0x13E4, the real
+DllMain) with rebuilt imports. The source is `tests/packed_dll_sample.c`
+(kernel32 + user32 imports, one export, DllMain/export print markers through
+`kernel32!GetStdHandle`+`WriteFile` - the `--guest-stdout` path). Rebuild:
+`vcvars64 && cl /nologo /W4 /O1 /MT /LD tests\packed_dll_sample.c user32.lib
+/Fe:<tmp>\packed_orig.dll`, then `upx -o tests\packed.dll
+<tmp>\packed_orig.dll` and `upx -d -o tests\packed.dll.unp
+tests\packed.dll`. Re-test the anchors (packed entry, reference entry,
+import/export directories) after any rebuild and update the acceptance
+test. Suites: `dll_admission` (system-dependency admission + staged-runner
+real-loader smoke) and `dll_e2e` (capture → unpack acceptance + replay
+marker), both WIN32-gated.
+
+Stop-target note for this corpus: the UPX DllMain stub opens with
+argument-shadow stores and a reason branch before its register saves, so
+the esp scan finds no contiguous push sequence at the re-armed entry and
+`--stop esp` / `--stop esp+xfer` are a documented silent miss (the run
+closes normally, unpack completes). `--stop xfer=1` is the usable stop
+face - the stub's post-restore jump to the unpacked entry is the first
+counted transfer (the OEP dump stop); pinned by
+`DllE2E.EspStopIsADocumentedMissAndXfer1IsTheUsableFace`.

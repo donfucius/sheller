@@ -586,9 +586,15 @@ bool export_name_for(uc_engine* uc, const mem_region::MemRegionMap& map, std::ui
 
 // Test seam (seh_dispatcher.h): FuncInfo signature first - it covers /MT
 // builds whose handler is a private static-CRT function - then thunk-follow
-// plus export-name resolution for the /MD IAT-thunk shape. Anything else
-// keeps the scope-table semantics (including the self-provided
-// __C_specific_handler of the synthetic SEH corpus).
+// plus export-name resolution for the /MD IAT-thunk shape. The scope-table
+// semantics are the LAST resort and only on a shape-validated table: the
+// first dword must be a sane entry count and the whole table must be
+// readable. Anything else - notably the /MT CRT's private wrapper handlers,
+// whose HandlerData first word is an RVA into their own metadata, not a
+// count - runs as an opaque guest handler (the Cxx path stages the real
+// function; it reads DispatcherContext.HandlerData and dispatches itself).
+// Misreading a wrapper's metadata as a scope count both skipped the real
+// handler and steered the walk into garbage.
 HandlerKind classify_language_handler(uc_engine* uc, const mem_region::MemRegionMap& map,
                                       const std::uint64_t handler_va,
                                       const std::uint64_t handler_data)
@@ -606,7 +612,18 @@ HandlerKind classify_language_handler(uc_engine* uc, const mem_region::MemRegion
         std::string_view(name).starts_with(kCxxHandlerPrefix)) {
         return HandlerKind::Cxx;
     }
-    return HandlerKind::ScopeTable;
+    // Scope-table shape check: count sane, table extent readable. The bound
+    // is generous (real tables carry single-digit counts); anything larger
+    // is not a count.
+    constexpr std::uint32_t kMaxScopeEntries = 4096;
+    std::uint32_t count = 0;
+    if (read_guest(uc, handler_data, count) && count >= 1 && count <= kMaxScopeEntries) {
+        std::array<std::uint32_t, 4> last_scope{};
+        if (read_guest(uc, handler_data + 4 + 16ull * (count - 1), last_scope)) {
+            return HandlerKind::ScopeTable; // shape confirmed: interpret inline
+        }
+    }
+    return HandlerKind::Cxx; // opaque: run the handler, it reads its own data
 }
 
 namespace {

@@ -57,6 +57,14 @@ bool on_mem_write_prot_callback(uc_engine* const uc, const uc_mem_type, const st
         }
     }
     if (protection == 0) {
+        if (const auto region = state->write_ledger->find_region(address); region.has_value()) {
+            sheller::log::warning(std::format(
+                "write-prot: untracked write at 0x{:x} (region 0x{:x} prot=0x{:x} writable={})",
+                address, region->base, region->protection, region->writable));
+        } else {
+            sheller::log::warning(
+                std::format("write-prot: untracked write at 0x{:x} (no region)", address));
+        }
         return false; // read-only or untracked: the invalid-write path applies
     }
     // Writer attribution: only writes by the sample's own code (its image

@@ -2,6 +2,8 @@
 
 #include <unicorn/unicorn.h>
 
+#include <sheller/log.h>
+
 #include <algorithm>
 #include <cstring>
 #include <format>
@@ -511,8 +513,75 @@ void MemRegionMap::sort_intervals()
         if (a.start != b.start) {
             return a.start < b.start;
         }
-        return a.end - a.start < b.end - b.start; // most specific first
+        return a.end - a.start < b.end - a.start; // most specific first
     });
+}
+
+std::size_t MemRegionMap::register_module_image(const ModuleImage& image,
+                                                const std::uint32_t protection)
+{
+    // The span first becomes an infrastructure-issued region record - the
+    // engine maps it, never the sample - then the section refinement rides
+    // on top exactly like the constructor's image pass.
+    register_region(image.module.base, image.module.size, protection, kMemImage, false);
+    const std::size_t owning_region = regions_.size() - 1;
+    const std::size_t module_index = modules_.size();
+    modules_.push_back(image.module);
+
+    ImageLayout layout;
+    if (parse_section_table(image.header_bytes.data(), image.header_bytes.size(), layout) !=
+        PeParseError::kNone) {
+        // Diagnostic: a failed parse leaves the span region-level (the
+        // runtime!runtime rendering) - surface it once per registration.
+        sheller::log::warning(
+            std::format("dll-loader: region-map module {} at 0x{:x} section parse failed",
+                        module_index, image.module.base));
+        return module_index; // the region interval still covers the span
+    }
+    sheller::log::warning(std::format("dll-loader: region-map module {} at 0x{:x} sections={} "
+                                      "size=0x{:x}",
+                                      module_index, image.module.base, layout.sections.size(),
+                                      layout.size_of_image));
+    const auto image_end = image.module.base + image.module.size;
+    const auto clamp = [](const std::uint64_t start, const std::uint64_t span,
+                          const std::uint64_t end) { return (std::min)(start + span, end); };
+    const auto headers_end = (std::min)(image.module.base + layout.size_of_headers, image_end);
+    if (headers_end > image.module.base) {
+        Interval headers_interval{.start = image.module.base,
+                                  .end = headers_end,
+                                  .region_index = owning_region,
+                                  .module_index = module_index,
+                                  .section_index = 0,
+                                  .image = true,
+                                  .protection = 0,
+                                  .type = 0,
+                                  .characteristics = 0,
+                                  .section_name = {}};
+        std::memcpy(headers_interval.section_name.data(), "headers", 8);
+        intervals_.push_back(std::move(headers_interval));
+    }
+    for (std::size_t si = 0; si < layout.sections.size(); ++si) {
+        const auto& section = layout.sections[si];
+        const auto start = image.module.base + section.rva;
+        const auto end = clamp(start, section.span, image_end);
+        if (end <= start) {
+            continue;
+        }
+        Interval interval{.start = start,
+                          .end = end,
+                          .region_index = owning_region,
+                          .module_index = module_index,
+                          .section_index = si + 1,
+                          .image = true,
+                          .protection = 0,
+                          .type = 0,
+                          .characteristics = section.characteristics,
+                          .section_name = {}};
+        std::memcpy(interval.section_name.data(), section.name.data(), kSectionNameBytes - 1);
+        intervals_.push_back(std::move(interval));
+    }
+    sort_intervals();
+    return module_index;
 }
 
 void MemRegionMap::set_region_owner(const std::size_t index)

@@ -19,6 +19,11 @@ namespace sheller::engine {
 
 std::expected<PreparedGuest, RebuildFailure> prepare_guest_stream(std::istream& in);
 
+// DLL-input route: rebuild the loader tables for a photographed-world
+// container that carries a pending-module block (Windows capture route).
+// Construction-attached guests (synthetic route) pass through untouched.
+std::expected<bool, SyscallRunError> attach_resident_world(PreparedGuest& guest);
+
 // The finite base set the synthetic construction actually uses: the three
 // main module bases (always, so a container without the directory is still
 // recognized) plus the extras continuation positions bounded by the module

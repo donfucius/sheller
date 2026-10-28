@@ -18,6 +18,8 @@ target_sources(sheller_engine PRIVATE
   guest_objects.h
   intercept.cpp
   intercept.h
+  dll_loader.cpp
+  dll_loader.h
   loader_route.cpp
   loader_route.h
   log_state.cpp

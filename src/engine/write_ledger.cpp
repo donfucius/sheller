@@ -51,6 +51,11 @@ void MemWriteLedger::set_writable(const std::uint64_t base, const std::uint64_t 
     }
 }
 
+void MemWriteLedger::remove_region(const std::uint64_t base)
+{
+    std::erase_if(regions_, [base](const LedgerRegion& region) { return region.base == base; });
+}
+
 std::optional<MemWriteLedger::RegionView>
 MemWriteLedger::find_region(const std::uint64_t address) const
 {

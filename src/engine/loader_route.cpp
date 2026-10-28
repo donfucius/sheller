@@ -7,7 +7,10 @@
 
 #include <algorithm>
 #include <cstring>
+#include <format>
 #include <fstream>
+
+#include <sheller/log.h>
 
 namespace sheller::engine {
 namespace {
@@ -35,6 +38,11 @@ inline constexpr SystemModuleSpec kSystemModules[] = {
     // interceptions. No frozen advapi32 manifest exists yet - a missing file
     // is skipped (fail-soft).
     {"advapi32.dll", "advapi32.dll"},
+    // Tier 2: user32 hosts the packed-DLL corpus's
+    // second import module. Manifest frozen (user32.x64.json); a missing
+    // file is skipped (fail-soft) - the DLL construction path validates the
+    // modules it needs explicitly.
+    {"user32.dll", "user32.dll"},
 };
 
 std::string module_stem(std::string_view folded_name)
@@ -141,6 +149,24 @@ std::expected<LoadedSnapshot, RebuildFailure> load_snapshot_stream(std::istream&
             return std::unexpected(failure(RebuildError::kBadSnapshot));
         }
         loaded.regions.push_back(std::move(*region));
+    }
+    // v2 carries exactly one pending-module block (the DLL-input route's
+    // sample bytes); a v2 file that ends before it, or a malformed block, is
+    // not a loadable container. A second physical block (or any trailing
+    // byte) after the first is likewise rejected - the format defines one
+    // block per container, and a silent tail would let hand-built doubles
+    // through. v1 files stop at the region table - unchanged behavior.
+    if (loaded.header.version == snapshot::kVersionV2) {
+        auto pending = reader.read_pending();
+        if (!pending) {
+            return std::unexpected(failure(RebuildError::kBadSnapshot));
+        }
+        loaded.pending = std::move(*pending);
+        char trailing = 0;
+        in.read(&trailing, 1);
+        if (in.gcount() != 0) {
+            return std::unexpected(failure(RebuildError::kBadSnapshot));
+        }
     }
     if (loaded.registers.rip != loaded.metadata.entry_address) {
         return std::unexpected(failure(RebuildError::kInconsistent));
@@ -328,9 +354,19 @@ std::expected<PreparedGuest, RebuildFailure> prepare_guest_stream(std::istream& 
         mem_region::synthesize_unknown_images(images, {candidates.data(), candidates.size()});
     images.insert(images.end(), unknown_images.begin(), unknown_images.end());
     mem_region::MemRegionMap map(images, region_records);
-    return PreparedGuest{std::move(unicorn),          mode,
-                         std::move(loaded->metadata), std::move(map),
-                         std::move(images),           std::move(region_records)};
+    PreparedGuest guest{std::move(unicorn),          mode,
+                        std::move(loaded->metadata), std::move(map),
+                        std::move(images),           std::move(region_records)};
+    // v2 containers carry the DLL-input route's pending module: hand it to
+    // the guest and rebuild the loader tables from the photographed world
+    // - the synthetic load consumes both at run time.
+    if (loaded->pending.has_value()) {
+        guest.pending = std::move(loaded->pending);
+        if (const auto attached = attach_resident_world(guest); !attached.has_value()) {
+            return std::unexpected(failure(RebuildError::kBadSnapshot));
+        }
+    }
+    return guest;
 }
 
 // Loader-route API interception:
@@ -470,6 +506,24 @@ load_system_modules(const GuestMode mode, const std::filesystem::path& synthetic
                 load_system_module(plan.extras[i], folded, extra_module_base(mode, i));
             if (!loaded_module) {
                 return std::unexpected(loaded_module.error());
+            }
+        }
+    }
+
+    // Base distinctness gate: a duplicated base would double-map in
+    // unicorn and die as a setup failure far from the cause. The fixed-slot
+    // planner makes collisions structurally impossible (the reserved pair
+    // sits off the ladder); this guard turns a future planner regression
+    // into a named construction failure at the source.
+    for (std::size_t i = 0; i < system_modules.size(); ++i) {
+        for (std::size_t j = i + 1; j < system_modules.size(); ++j) {
+            if (system_modules[i].base == system_modules[j].base) {
+                return std::unexpected(failure(
+                    RebuildError::kBadSnapshot,
+                    std::format("synthetic module base collision: {} and {} both plan at 0x{:x}",
+                                std::string_view(system_modules[i].name.data()),
+                                std::string_view(system_modules[j].name.data()),
+                                system_modules[i].base)));
             }
         }
     }
@@ -1057,6 +1111,9 @@ std::size_t count_synthetic_module_pages(std::span<const mem_region::ModuleImage
     return hits;
 }
 
+// Forward: the shared table rebuild, defined after this function.
+std::expected<void, SyscallRunError> reattach_tables_from_images(PreparedGuest& guest);
+
 std::expected<bool, SyscallRunError>
 reattach_synthetic_world(PreparedGuest& guest, const std::filesystem::path& synthetic_module_dir)
 {
@@ -1076,12 +1133,28 @@ reattach_synthetic_world(PreparedGuest& guest, const std::filesystem::path& synt
     if (synthetic_module_dir.empty()) {
         return std::unexpected(SyscallRunError::kSyntheticModulesMissing);
     }
-    const auto uc = guest.unicorn.get();
     guest.loader_modules.clear();
     guest.loader_exports.clear();
     guest.intercepts.clear();
     guest.ldr_entry_vas.clear();
     guest.tls_callbacks.clear();
+    if (const auto reattached = reattach_tables_from_images(guest); !reattached.has_value()) {
+        return std::unexpected(reattached.error());
+    }
+    guest.loader_route = true;
+    return true;
+}
+
+// The shared table rebuild over the guest's own images: loader modules,
+// export index (with interception registration), Ldr entry VAs and the main
+// image's TLS callbacks. Callers pre-clear the tables and decide the
+// route semantics (synthetic vs resident) themselves.
+std::expected<void, SyscallRunError> reattach_tables_from_images(PreparedGuest& guest)
+{
+    const auto uc = guest.unicorn.get();
+    // Pass 1: byte-complete module views (the forwarder-capable resolver
+    // reads export directories, so the tables need the bytes, not a name
+    // index).
     for (const auto& image : guest.images) {
         if (image.module.synthesized) {
             continue;
@@ -1096,18 +1169,26 @@ reattach_synthetic_world(PreparedGuest& guest, const std::filesystem::path& synt
         if (!loader::index_exports(module).has_value()) {
             return std::unexpected(SyscallRunError::kUnicornFailure);
         }
-        for (const auto& [name, va] : module.exports) {
-            guest.loader_exports.push_back({module.base, va, name});
-            // Forwarder entries carry the forwarder-string RVA, not a
-            // callable VA; the construction never intercepts them either.
-            if (va < module.base || va >= module.base + module.image.size()) {
-                continue;
+        guest.loaded_modules.push_back(std::move(module));
+        guest.loader_modules.push_back(image.module);
+    }
+    // Pass 2: exports resolve through forwarder chains to their final VA -
+    // a GetProcAddress caller must never receive a forwarder-string RVA as
+    // code. The lookup key keeps the owning module (caller-side handle),
+    // the registered VA is the callable endpoint.
+    for (const auto& module : guest.loaded_modules) {
+        for (const auto& [name, unresolvered_va] : module.exports) {
+            static_cast<void>(unresolvered_va);
+            const auto resolved = loader::resolve_export(
+                guest.loaded_modules, std::string_view(module.name.data()), name);
+            if (!resolved.ok || resolved.module == nullptr) {
+                continue; // unresolvable forwarder: not callable, skip
             }
+            guest.loader_exports.push_back({module.base, resolved.va, name});
             if (const auto id = intercept_id_for(name); id.has_value()) {
-                guest.intercepts.emplace_back(va, *id);
+                guest.intercepts.emplace_back(resolved.va, *id);
             }
         }
-        guest.loader_modules.push_back(image.module);
     }
     const auto entries = read_ldr_entries(uc, guest.metadata, guest.guest_mode);
     for (const auto& module : guest.loader_modules) {
@@ -1122,7 +1203,27 @@ reattach_synthetic_world(PreparedGuest& guest, const std::filesystem::path& synt
         guest.ldr_entry_vas.push_back(found->second);
     }
     guest.tls_callbacks = read_tls_callbacks(uc, guest.metadata.image_base);
-    guest.loader_route = true;
+    return {};
+}
+
+// DLL-input route (photographed-world container, Windows capture):
+// arrives with no loader tables - the rebuild fills images only. This
+// rebuilds loader_modules/loader_exports/intercepts/ldr_entry_vas from the
+// photographed world itself, so the run-time assembly (synthetic load,
+// GetProcAddress, heap/Ldr interception) has its substrate. Armed only for
+// containers carrying a pending block; construction-attached guests pass
+// through untouched (false).
+std::expected<bool, SyscallRunError> attach_resident_world(PreparedGuest& guest)
+{
+    if (!guest.pending.has_value() || guest.pending->bytes.empty()) {
+        return false;
+    }
+    if (!guest.loader_modules.empty() || !guest.loader_exports.empty()) {
+        return false; // construction already attached its tables
+    }
+    if (const auto reattached = reattach_tables_from_images(guest); !reattached.has_value()) {
+        return std::unexpected(reattached.error());
+    }
     return true;
 }
 

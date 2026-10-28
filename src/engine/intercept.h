@@ -32,6 +32,38 @@ enum class InterceptId : std::uint32_t {
     kRtlDestroyHeap,
     kRtlSizeHeap,
     kLdrLoadDll,
+    // DLL-input route: the synthetic load's continuation slot - DllMain's
+    // verdict turns into the in-flight LoadLibrary's answer.
+    kDllLoadResume,
+    // DllMain-support family: answered in-engine because their real bodies
+    // walk ntdll internals the emulated world does not provision.
+    kDisableThreadLibraryCalls,
+    kGetStdHandle,
+    // Critical-section family: the CRT init inside real DllMain bodies
+    // enters its own static lock before any sample code runs; the emulated
+    // world has no lock machinery, so the family answers in-engine.
+    kInitializeCriticalSection,
+    kInitializeCriticalSectionAndSpinCount,
+    kEnterCriticalSection,
+    kLeaveCriticalSection,
+    kDeleteCriticalSection,
+    // FLS/TLS family: the CRT init inside real DllMain bodies dynamically
+    // resolves these; their real ntdll bodies walk TEB storage the emulated
+    // world does not provision. Engine-side slot tables answer instead.
+    kFlsAlloc,
+    kFlsFree,
+    kFlsSetValue,
+    kFlsGetValue,
+    kTlsAlloc,
+    kTlsFree,
+    kTlsSetValue,
+    kTlsGetValue,
+    // Vectored handlers: the CRT registers one during DllMain init; letting
+    // the real ntdll registration path run against the emulated world
+    // corrupts the dispatch chain. The in-engine registration keeps the
+    // list empty (CRT diagnostics handlers are not needed for analysis).
+    kAddVectoredExceptionHandler,
+    kRemoveVectoredExceptionHandler,
     // Tier 2 behavior surface: the registry
     // family. A/W share one id - the implementation dispatches on the
     // resolved export name.

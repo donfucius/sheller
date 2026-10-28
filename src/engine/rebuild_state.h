@@ -7,6 +7,7 @@
 #ifndef SHELLER_ENGINE_REBUILD_STATE_H
 #define SHELLER_ENGINE_REBUILD_STATE_H
 
+#include "../loader/imports.h"
 #include "../syscalls/syscall_policy.h"
 #include "behavior_fact.h"
 #include "exception_layout.h"
@@ -27,6 +28,7 @@
 #include <filesystem>
 #include <functional>
 #include <map>
+#include <optional>
 #include <span>
 #include <string>
 #include <utility>
@@ -92,13 +94,32 @@ constexpr const LoaderLayout& layout_for(const GuestMode mode)
     return mode == GuestMode::kX64 ? kLayout64 : kLayout86;
 }
 
-// System module fixed bases, per mode; order ntdll/kernelbase/kernel32
-// matches kSystemModules below. The x86 trio sits in the real SysWOW64
-// range, so HIGHLOW relocations never wrap a 32-bit delta.
-inline constexpr std::uint64_t kBases64[4] = {0x7FF800000000ULL, 0x7FF900000000ULL,
-                                              0x7FFA00000000ULL, 0x7FFB00000000ULL};
-inline constexpr std::uint64_t kBases86[4] = {0x77000000ULL, 0x76000000ULL, 0x75000000ULL,
-                                              0x74000000ULL};
+// System module fixed bases, per mode; order ntdll/kernel32/kernelbase/
+// advapi32/user32 matches kSystemModules below. The x86 trio sits in the
+// real SysWOW64 range, so HIGHLOW relocations never wrap a 32-bit delta.
+// Slots 3-4 (advapi32, user32 - the tier-2 reserved pair) sit on the FAR
+// SIDE of the extras ladder: x64 extras ascend from the third core base
+// (7FFB upward), so the reserved pair sits below the whole core band; x86
+// extras descend from it (74000000 downward), so the pair sits above the
+// highest core base. The ladder can never reach a reserved slot at any
+// extra count: a reserved base on the ladder's path made an extra
+// overwrite the reserved module's mapping (user32's 0x7FFF slot was the
+// ladder's fifth member; advapi32's 0x7FFB its first).
+inline constexpr std::uint64_t kBases64[5] = {
+    0x7FF800000000ULL, 0x7FF900000000ULL, 0x7FFA00000000ULL, 0x7FF600000000ULL, 0x7FF700000000ULL};
+inline constexpr std::uint64_t kBases86[5] = {0x77000000ULL, 0x76000000ULL, 0x75000000ULL,
+                                              0x79000000ULL, 0x78000000ULL};
+// The ladder-independence of the reserved pair is a structural fact: each
+// reserved base sits beyond the ladder's direction of travel and off the
+// trio's slots, so no extra count can ever assign it.
+static_assert(kBases64[3] < kBases64[2] && kBases64[4] < kBases64[2] &&
+                  kBases64[3] != kBases64[0] && kBases64[3] != kBases64[1] &&
+                  kBases64[4] != kBases64[0] && kBases64[4] != kBases64[1],
+              "x64 reserved slots must be unreachable by the ascending extra ladder");
+static_assert(kBases86[3] > kBases86[2] && kBases86[4] > kBases86[2] &&
+                  kBases86[3] != kBases86[0] && kBases86[3] != kBases86[1] &&
+                  kBases86[4] != kBases86[0] && kBases86[4] != kBases86[1],
+              "x86 reserved slots must be unreachable by the descending extra ladder");
 
 inline constexpr std::uint64_t kLoaderAllocBase = 0x310000000ULL; // VirtualAlloc bump base
 inline constexpr std::uint64_t kLoaderAllocEnd = 0x400000000ULL;
@@ -173,11 +194,25 @@ struct LoadedSnapshot {
     snapshot::Registers registers{};
     snapshot::Metadata metadata{};
     std::vector<snapshot::Region> regions{};
+    // Present exactly when the container is v2 (DLL-input route); a v2
+    // container without a complete pending block fails to load.
+    std::optional<snapshot::PendingModule> pending{};
 };
 
 inline RebuildFailure failure(const RebuildError error, const std::uint32_t unicorn_code = 0)
 {
     return {error, unicorn_code, {}};
+}
+
+// Named failure: the detail text replaces the generic rebuild_error_message
+// wording on the consumer side (the DLL-input construction names the
+// rejected dependency).
+inline RebuildFailure failure(const RebuildError error, std::string detail)
+{
+    RebuildFailure out{};
+    out.error = error;
+    out.detail = std::move(detail);
+    return out;
 }
 
 // Fold an export/module name to its lower-case spelling - the canonical
@@ -217,6 +252,15 @@ struct PreparedGuest {
     // real Ldr, whose native resolution path (API set, KnownDll probe, file
     // search) runs against the engine's aligned syscall answers.
     bool loader_route{false};
+    // DLL-input route: the sample's bytes plus arrival name from a v2
+    // container. Empty for every EXE/shellcode input - the synthetic load
+    // never arms.
+    std::optional<snapshot::PendingModule> pending{};
+    // Full module bytes for the resident-world tables (attach_resident_world
+    // fills these alongside loader_exports): the pending module's IAT
+    // resolution follows export forwarders, which needs the export
+    // directories' bytes, not just the name index.
+    std::vector<loader::LoadedModule> loaded_modules{};
 };
 
 // Section objects: the engine plays the object
@@ -321,6 +365,7 @@ struct SyscallRunState {
     std::function<void(const std::uint8_t*, std::size_t)> sink{};
     std::function<void(EventTypeId, const EventPreamble&, std::span<const std::uint8_t>)>
         event_sink{};
+    ModuleImageSink module_sink{}; // runtime module names, delivered at registration
     std::function<void(const BehaviorFact&)> behavior_sink{}; // the internal fact channel's
                                                               // sink (behavior_fact.h), not a
                                                               // public option
@@ -382,6 +427,11 @@ struct SyscallRunState {
         bool directory{};
     };
     std::vector<FileObject> files;
+    // FLS/TLS interception storage: deterministic indices, values keyed by
+    // index (one table serves both families - they never mix indices in
+    // practice, and the CRT only stores opaque pointers).
+    std::map<std::uint32_t, std::uint64_t> tls_slots{};
+    std::uint64_t tls_next_index{1};
     // relative guest paths resolve against the snapshot sample's directory
     // (the replay has no captured CWD; the sample's own directory is the
     // faithful base a real run launched from there would have)
@@ -424,6 +474,41 @@ struct SyscallRunState {
     bool loop_gate_trace{};
     std::vector<std::uint64_t> ldr_entry_vas;      // LdrLoadDll handle source
     std::vector<LoaderExportEntry> loader_exports; // all mapped-module exports
+    // DLL-input synthetic loading (dll_loader.*): the pending module from a
+    // v2 container, zero cost when absent.
+    const snapshot::PendingModule* pending_module{};
+    // Full module bytes behind the resident tables (forwarder-capable IAT
+    // resolution reads export directories, not just the name index).
+    const std::vector<loader::LoadedModule>* loaded_modules{};
+    std::uint64_t dll_resume_slot{}; // continuation-slot intercept VA
+    struct DllLoadState {
+        bool active{};        // armed or completed: name lookups reuse the base
+        bool entered{};       // ATTACH/TLS frames armed (may still be running)
+        bool loaded{};        // DllMain returned TRUE
+        std::uint64_t base{}; // synthesized module base (the handle value)
+        std::uint64_t size{};
+        std::uint64_t entry{};                  // DllMain VA
+        bool has_entry{};                       // false: AddressOfEntryPoint == 0 (no init to run)
+        std::string name;                       // folded arrival name
+        std::vector<std::uint64_t> tls_pending; // absolute VAs, entry-before order
+        std::size_t tls_cursor{};               // next TLS callback to enter
+        // Which frame the resume slot will see next: a TLS callback's return
+        // is void (chain advances); only DllMain's verdict answers the load.
+        enum class Phase { kIdle, kTls, kDllMain } phase{Phase::kIdle};
+        std::uint64_t node_va{}; // guest VA of the LDR node page (rollback)
+        bool image_mapped{};     // resources owned by this load transaction
+        bool node_mapped{};
+        std::array<bool, 3> linked{};
+        bool prev_sample_known{};
+        std::size_t prev_sample_index{};
+        std::vector<std::uint64_t> ledger_bases{}; // per-section ledger regions (rollback)
+        std::uint64_t prev_sample_base{};          // writer-attribution span to restore on rollback
+        std::uint64_t prev_sample_size{};
+        std::uint64_t caller_rip{}; // the intercepted LoadLibrary return site
+        std::uint64_t caller_rsp{};
+        std::uint64_t call_base_rsp{}; // aligned frame base every frame builds from
+        std::size_t module_index{};    // region-map module index of the sample module
+    } dll_load;
     std::uint64_t blocks{};
     std::uint64_t max_blocks{};             // block-count budget; 0 = unlimited
     mem_region::MemRegionMap* region_map{}; // attribution for xfer detection; the

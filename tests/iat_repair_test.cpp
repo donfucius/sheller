@@ -6,6 +6,7 @@
 // repair pipeline are engine-native and portable; the packed acceptance is
 // the only Windows-gated part (it needs the real capture route).
 
+#include "../src/loader/imports.h"
 #include "capture_detail.h"
 #include "log_detail.h"
 #include "repair.h"
@@ -351,7 +352,7 @@ TEST(RepairPieces, ResidualAuditClassifiesRepairedThunks)
 TEST(RepairPieces, ResidualAuditZeroImportTriviallyClean)
 {
     // A PE whose import directory RVA is zero: nothing to walk, trivially
-    // zero residual (the 1.3 zero-import branch).
+    // zero residual (the zero-import branch).
     const auto image = make_import_image({});
     auto audit = unpack::audit_residual_abs_va(image.data(), image.size());
     EXPECT_EQ(audit.residual.size(), 0U);
@@ -703,3 +704,68 @@ TEST(RepairPipeline, PackedSampleRepairsCompletely)
 #endif // _WIN32
 
 } // namespace
+
+TEST(RepairPieces, SplitForwarderHostsBindOnlyTheirOwnIatSlots)
+{
+    auto a = make_export_pe();
+    auto b = a;
+    std::memcpy(b.data() + 0x1090, "other_name", 11);
+    unpack::ExportsMapper mapper;
+    ASSERT_EQ(mapper.add_module("a.dll", 0x60000000, a.data(), a.size()), 1U);
+    ASSERT_EQ(mapper.add_module("b.dll", 0x70000000, b.data(), b.size()), 1U);
+    auto image = make_import_image({0x60001100, 0x70001100, 0x60001100});
+    const auto write32 = [&](std::size_t at, std::uint32_t value) {
+        std::memcpy(image.data() + at, &value, sizeof value);
+    };
+    const auto read32 = [&](std::size_t at) {
+        std::uint32_t value{};
+        std::memcpy(&value, image.data() + at, sizeof value);
+        return value;
+    };
+    const auto read64 = [&](std::size_t at) {
+        std::uint64_t value{};
+        std::memcpy(&value, image.data() + at, sizeof value);
+        return value;
+    };
+    write32(0xD0, 0); // erased directory: exercise address-run reconstruction
+    ASSERT_EQ(unpack::reconstruct_imports(image, mapper).covered_count, 3U);
+    const auto directory = read32(0xD0);
+    for (std::size_t i = 0; i < 3; ++i) {
+        const auto desc = directory + i * 20;
+        const auto ilt = read32(desc);
+        ASSERT_NE(ilt, 0U);
+        ASSERT_LE(ilt + 16, image.size());
+        EXPECT_NE(read64(ilt), 0U);
+        EXPECT_EQ(read64(ilt + 8), 0U);
+        EXPECT_EQ(read32(desc + 16), 0x2150U + i * 8);
+        EXPECT_STREQ(reinterpret_cast<const char*>(image.data() + read32(desc + 12)),
+                     i == 1 ? "b.dll" : "a.dll");
+    }
+    EXPECT_EQ(read32(directory + 3 * 20 + 12), 0U);
+    const auto normalized = unpack::synthesize_name_imports(image, mapper);
+    EXPECT_EQ(normalized.covered_count, 3U);
+    EXPECT_TRUE(normalized.uncovered.empty());
+    const auto residual = unpack::audit_residual_abs_va(image.data(), image.size());
+    EXPECT_EQ(residual.covered_count, 3U);
+    EXPECT_TRUE(residual.residual.empty());
+
+    // Bind using the production loader's descriptor/ILT walk, then check
+    // the fixed payload slots rather than just counting descriptors.
+    sheller::loader::LoadedModule ma, mb;
+    ma.base = 0x60000000;
+    ma.image = a;
+    std::memcpy(ma.name.data(), "a.dll", 6);
+    mb.base = 0x70000000;
+    mb.image = b;
+    std::memcpy(mb.name.data(), "b.dll", 6);
+    ASSERT_TRUE(sheller::loader::index_exports(ma).has_value());
+    ASSERT_TRUE(sheller::loader::index_exports(mb).has_value());
+    const std::vector<sheller::loader::LoadedModule> modules{ma, mb};
+    std::vector<sheller::loader::UnresolvedImport> unresolved;
+    ASSERT_TRUE(sheller::loader::resolve_imports(image, modules, &unresolved).has_value());
+    EXPECT_TRUE(unresolved.empty());
+    EXPECT_EQ(read64(0x2150), 0x60001100U);
+    EXPECT_EQ(read64(0x2158), 0x70001100U);
+    EXPECT_EQ(read64(0x2160), 0x60001100U);
+    EXPECT_EQ(read64(0x2168), 0U);
+}

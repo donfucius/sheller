@@ -2,6 +2,7 @@
 
 #include "avx_shim.h"
 #include "diag_trace.h"
+#include "dll_loader.h"
 #include "dump_writer.h"
 #include "engine_hooks.h"
 #include "esp_target.h"
@@ -105,6 +106,7 @@ std::expected<void, SyscallRunFailure> assemble_run_state(PreparedGuest& guest,
     state.sink = options.write_sink;
     state.event_sink = options.event_sink;
     state.behavior_sink = facts.behavior_sink;
+    state.module_sink = facts.module_sink;
     state.region_map = &guest.map;
     state.relative_base = guest.relative_base;
     // The captured process's own current directory is the faithful base for
@@ -170,6 +172,15 @@ std::expected<void, SyscallRunFailure> assemble_run_state(PreparedGuest& guest,
     for (const auto& [va, id] : guest.intercepts) {
         state.intercept_vas.push_back(va);
         state.intercept_ids.push_back(id);
+    }
+
+    // DLL-input route: the pending module travels into the run state and
+    // the continuation-slot intercept arms (no-op without a pending block -
+    // EXE/shellcode runs pay nothing).
+    if (guest.pending.has_value()) {
+        state.pending_module = &*guest.pending;
+        state.loaded_modules = &guest.loaded_modules;
+        arm_dll_resume_slot(state, guest.unicorn.get());
     }
 
     // Heap-family interception: the loader route points
@@ -1163,7 +1174,10 @@ finish_run(SyscallRunState& state, PreparedGuest& guest, const SyscallRunOptions
                           // preceded is a plain xfer target's and leaves
                           // esp_stop clear.
                           .esp_stop = state.esp_stop_reached ||
-                                      (state.esp_armed_next_xfer && state.xfer_stop_reached)};
+                                      (state.esp_armed_next_xfer && state.xfer_stop_reached),
+                          // DLL-input route: where the synthesized sample
+                          // module landed (0 without a pending module).
+                          .sample_module_base = state.dll_load.active ? state.dll_load.base : 0};
     // Exit-time dump pipeline: the five deterministic stop
     // kinds (normal exit, crash fallback, block budget, xfer target, esp
     // target) all land here; wall-clock timeout does not (non-deterministic,
@@ -1207,11 +1221,12 @@ finish_run(SyscallRunState& state, PreparedGuest& guest, const SyscallRunOptions
             for (const auto b : code_bytes) {
                 hex += std::format("{:02x} ", b);
             }
-            std::uint64_t rsp = 0, rax = 0, rcx = 0, rdx = 0;
+            std::uint64_t rsp = 0, rax = 0, rcx = 0, rdx = 0, rdi = 0;
             uc_reg_read(state.uc, UC_X86_REG_RSP, &rsp);
             uc_reg_read(state.uc, UC_X86_REG_RAX, &rax);
             uc_reg_read(state.uc, UC_X86_REG_RCX, &rcx);
             uc_reg_read(state.uc, UC_X86_REG_RDX, &rdx);
+            uc_reg_read(state.uc, UC_X86_REG_RDI, &rdi);
             for (std::size_t i = 0; i < state.region_map->module_count(); ++i) {
                 if (std::string_view(state.region_map->module(i).name.data()) == "ntdll.dll") {
                     ntdll_base = state.region_map->module(i).base;
@@ -1223,10 +1238,27 @@ finish_run(SyscallRunState& state, PreparedGuest& guest, const SyscallRunOptions
             // own sink installs, which keeps the line reachable there while a host
             // that installed no sink stays silent, and no path writes a standard
             // stream on its own authority.
+            // Probe the unicorn permission of the crashing page: a fetch fault
+            // with bytes present is a permission story, and the probe settles
+            // it in one line.
+            std::string perm_probe;
+            {
+                uc_mem_region* regions = nullptr;
+                std::uint32_t region_count = 0;
+                if (uc_mem_regions(state.uc, &regions, &region_count) == UC_ERR_OK) {
+                    for (std::uint32_t i = 0; i < region_count; ++i) {
+                        if (rip >= regions[i].begin && rip < regions[i].begin + regions[i].end) {
+                            perm_probe = std::format(" page-perm={:#x}", regions[i].perms);
+                            break;
+                        }
+                    }
+                    uc_free(regions);
+                }
+            }
             const auto crash = std::format(
                 "sheller run: unhandled crash rip=0x{:x} rsp=0x{:x} rax=0x{:x} rcx=0x{:x} "
-                "rdx=0x{:x} ntdll=0x{:x} bytes={}",
-                rip, rsp, rax, rcx, rdx, ntdll_base, hex);
+                "rdx=0x{:x} rdi=0x{:x} ntdll=0x{:x}{} bytes={}",
+                rip, rsp, rax, rcx, rdx, rdi, ntdll_base, perm_probe, hex);
             sheller::log::write(sheller::log::level::kWarning, crash);
         }
         return std::unexpected(SyscallRunFailure{SyscallRunError::kUnhandledException, 0, stats});

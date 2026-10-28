@@ -1,6 +1,7 @@
 #include "intercept.h"
 
 #include "diag_trace.h"
+#include "dll_loader.h"
 #include "engine_hooks.h"
 
 #include "../loader/imports.h"
@@ -273,6 +274,29 @@ void intercept_virtual_protect(SyscallRunState& state)
     intercept_return(state, 1, 16); // TRUE
 }
 
+// Resident-module lookup by folded name (API-set reduction first, then the
+// module table). Pure: no load side effects. Shared by the load and handle
+// queries.
+std::uint64_t resident_module_base(const SyscallRunState& state, const std::string& folded)
+{
+    for (const auto& record : state.loader_modules) {
+        if (fold_name(std::string_view(record.name.data())) == folded) {
+            return record.base;
+        }
+    }
+    // API-set request: reduce to the host module (API Set Schema pre-pass,
+    // loader::api_set_host) - the set has no image of its own, and the real
+    // loader answers with the host module's base.
+    if (const auto host = loader::api_set_host(folded); !host.empty()) {
+        for (const auto& record : state.loader_modules) {
+            if (fold_name(std::string_view(record.name.data())) == host) {
+                return record.base;
+            }
+        }
+    }
+    return 0;
+}
+
 void intercept_load_library(SyscallRunState& state, const bool wide)
 {
     const auto name_va = intercept_arg(state, 0);
@@ -290,35 +314,67 @@ void intercept_load_library(SyscallRunState& state, const bool wide)
         name = read_guest_cstring(state, name_va);
     }
     const auto folded = fold_name(name);
-    // match against the region map's modules by folded name
-    // (region map is reachable via the loader module set held in state)
-    std::uint64_t base = 0;
-    for (const auto& record : state.loader_modules) {
-        if (fold_name(std::string_view(record.name.data())) == folded) {
-            base = record.base;
-            break;
-        }
+
+    // Dispatch order: resident modules (with API-set reduction) first; the
+    // pending module second (synthetic load - the DLL-input route); a miss
+    // answers 0 (DLL_NOT_FOUND family).
+    const auto resident = resident_module_base(state, folded);
+    if (resident != 0) {
+        intercept_return(state, resident, 4);
+        return;
     }
-    if (base == 0) {
-        // API-set request: reduce to the host module (API Set Schema
-        // pre-pass, loader::api_set_host) and return its handle - the set
-        // has no image of its own, and the real loader answers with the
-        // host module's base. Not resident: 0 (failure).
-        if (const auto host = loader::api_set_host(folded); !host.empty()) {
-            for (const auto& record : state.loader_modules) {
-                if (fold_name(std::string_view(record.name.data())) == host) {
-                    base = record.base;
-                    break;
-                }
-            }
+    if (state.pending_module != nullptr && folded == fold_name(state.pending_module->name)) {
+        // Record the caller's resume site before the frames take over the
+        // stack; the continuation slot finishes this call. call_base is the
+        // aligned stack base every synthetic frame (TLS/DllMain) builds
+        // from, so a callback's stack use cannot leak into the next frame.
+        std::uint64_t rsp = read_rsp(state.uc);
+        std::uint64_t ret = 0;
+        uc_mem_read(state.uc, rsp, &ret, sizeof ret);
+        state.dll_load.caller_rip = ret;
+        state.dll_load.caller_rsp = rsp + 8;
+        state.dll_load.call_base_rsp = state.dll_load.caller_rsp;
+        if (state.dll_load.active) {
+            // Repeat request: same base, no re-entry - answer directly.
+            intercept_return(state, state.dll_load.base, 4);
+            return;
         }
+        if (const auto failure = synthesize_pending_load(state)) {
+            // Construction failure: answer NULL, name the reason in the log
+            // channel only - the guest sees a plain load failure.
+            state.dll_load = {};
+            intercept_return(state, 0, 4);
+            return;
+        }
+        // Frames armed: hand the leg over (the resume slot completes the
+        // answer with the handle or NULL after DllMain).
+        state.api_resume = true;
+        uc_emu_stop(state.uc);
+        return;
     }
-    intercept_return(state, base, 4);
+    intercept_return(state, 0, 4);
 }
 
 void intercept_get_module_handle(SyscallRunState& state, const bool wide)
 {
-    intercept_load_library(state, wide); // same lookup, no load side effect in MVP
+    // Pure query: resident modules only. A not-yet-loaded pending module
+    // does NOT materialize here (no mapping, no TLS, no DllMain) - that is
+    // the whole point of splitting this from the load path.
+    const auto name_va = intercept_arg(state, 0);
+    std::string name;
+    if (wide) {
+        for (std::size_t i = 0; i < 260; ++i) {
+            std::uint16_t c = 0;
+            uc_mem_read(state.uc, name_va + 2 * i, &c, sizeof c);
+            if (c == 0) {
+                break;
+            }
+            name.push_back(static_cast<char>(c));
+        }
+    } else {
+        name = read_guest_cstring(state, name_va);
+    }
+    intercept_return(state, resident_module_base(state, fold_name(name)), 4);
 }
 
 void intercept_get_proc_address(SyscallRunState& state)
@@ -343,6 +399,102 @@ void intercept_exit_process(SyscallRunState& state)
     state.terminated = true;
     state.exit_code = static_cast<std::uint32_t>(code);
     uc_emu_stop(state.uc);
+}
+
+// DllMain-support family (DLL-input route). DisableThreadLibraryCalls is
+// answered TRUE: thread events were never delivered, so "disabling" them
+// changes nothing. GetStdHandle answers stable pseudo-handles; the write
+// path does not read the handle (the single-sink contract), so the value
+// only needs to be non-zero and distinct per standard stream.
+void intercept_disable_thread_library_calls(SyscallRunState& state)
+{
+    intercept_return(state, 1, 4); // TRUE
+}
+
+void intercept_get_std_handle(SyscallRunState& state)
+{
+    // STD_INPUT_HANDLE (-10) / STD_OUTPUT_HANDLE (-11) / STD_ERROR_HANDLE (-12)
+    constexpr std::uint64_t kStdPseudoBase = 0x5A1200000ULL;
+    const auto which = static_cast<std::int64_t>(intercept_arg(state, 0));
+    std::uint64_t handle = kStdPseudoBase;
+    if (which == -11) {
+        handle = kStdPseudoBase + 1;
+    } else if (which == -12) {
+        handle = kStdPseudoBase + 2;
+    }
+    intercept_return(state, handle, 4);
+}
+
+// Critical-section family: a no-op lock. Initialize writes nothing (the
+// emulated Enter never reads the structure), Enter/Leave are vacuous, and
+// Delete returns void. The spin-count variant answers TRUE.
+void intercept_critical_section(SyscallRunState& state, const InterceptId id)
+{
+    switch (id) {
+    case InterceptId::kInitializeCriticalSection:
+    case InterceptId::kEnterCriticalSection:
+    case InterceptId::kLeaveCriticalSection:
+    case InterceptId::kDeleteCriticalSection:
+        intercept_return(state, 0, 4); // void-shaped: rax value unused
+        break;
+    case InterceptId::kInitializeCriticalSectionAndSpinCount:
+        intercept_return(state, 1, 4); // TRUE
+        break;
+    default:
+        break;
+    }
+}
+
+// FLS/TLS family: engine-side slot tables (deterministic indices, values
+// kept per run state - the same slot answers for the whole run). Win32
+// semantics: out-of-range index is FALSE/0, alloc never fails in practice;
+// a deterministic exhaustion point (0xFFFFFFFF) keeps hostile loops honest.
+void intercept_fls_tls(SyscallRunState& state, const InterceptId id)
+{
+    switch (id) {
+    case InterceptId::kFlsAlloc:   // (callback) -> index
+    case InterceptId::kTlsAlloc: { // () -> index
+        if (state.tls_next_index == 0xFFFFFFFFull) {
+            intercept_return(state, 0xFFFFFFFFull, 4); // TLS_OUT_OF_INDEXES
+            return;
+        }
+        const auto index = state.tls_next_index++;
+        intercept_return(state, index, 4);
+        return;
+    }
+    case InterceptId::kFlsFree:
+    case InterceptId::kTlsFree: // (index) -> BOOL
+        intercept_return(state, 1, 4);
+        return;
+    case InterceptId::kFlsSetValue: // (index, value) -> BOOL
+    case InterceptId::kTlsSetValue: {
+        const auto index = static_cast<std::uint32_t>(intercept_arg(state, 0));
+        const auto value = intercept_arg(state, 1);
+        state.tls_slots[index] = value;
+        intercept_return(state, 1, 4);
+        return;
+    }
+    case InterceptId::kFlsGetValue:
+    case InterceptId::kTlsGetValue: { // (index) -> value (0 on miss)
+        const auto index = static_cast<std::uint32_t>(intercept_arg(state, 0));
+        const auto found = state.tls_slots.find(index);
+        intercept_return(state, found != state.tls_slots.end() ? found->second : 0, 4);
+        return;
+    }
+    case InterceptId::kAddVectoredExceptionHandler: // (first, handler) -> handle
+        // Honest unsupported answer: NULL. The engine's dispatcher owns
+        // exception delivery in this world; a silently dropped handler (a
+        // fake success) would turn a DLL's handled exceptions into
+        // unhandled ones with no observable reason. The CRT's fail-fast
+        // registration tolerates a failed add.
+        intercept_return(state, 0, 4);
+        return;
+    case InterceptId::kRemoveVectoredExceptionHandler: // (handle) -> ULONG
+        intercept_return(state, 0, 4);                 // nothing was ever registered
+        return;
+    default:
+        return;
+    }
 }
 
 void intercept_rtl_allocate_heap(SyscallRunState& state)
@@ -501,6 +653,66 @@ std::optional<std::uint32_t> intercept_id_for(std::string_view name)
         {"GetModuleHandleA", static_cast<std::uint32_t>(InterceptId::kGetModuleHandleA)},
         {"GetModuleHandleW", static_cast<std::uint32_t>(InterceptId::kGetModuleHandleW)},
         {"ExitProcess", static_cast<std::uint32_t>(InterceptId::kExitProcess)},
+        // DLL-input route: DllMain bodies of real corpora call these before
+        // anything else; their real implementations walk ntdll internals the
+        // emulated world does not provision, so they answer in-engine.
+        {"DisableThreadLibraryCalls",
+         static_cast<std::uint32_t>(InterceptId::kDisableThreadLibraryCalls)},
+        {"GetStdHandle", static_cast<std::uint32_t>(InterceptId::kGetStdHandle)},
+        {"InitializeCriticalSection",
+         static_cast<std::uint32_t>(InterceptId::kInitializeCriticalSection)},
+        {"InitializeCriticalSectionAndSpinCount",
+         static_cast<std::uint32_t>(InterceptId::kInitializeCriticalSectionAndSpinCount)},
+        {"EnterCriticalSection", static_cast<std::uint32_t>(InterceptId::kEnterCriticalSection)},
+        {"LeaveCriticalSection", static_cast<std::uint32_t>(InterceptId::kLeaveCriticalSection)},
+        {"DeleteCriticalSection", static_cast<std::uint32_t>(InterceptId::kDeleteCriticalSection)},
+        // The kernel32 critical-section exports are forwarders: IAT binding
+        // follows them to these ntdll entries, so the ntdll-side names need
+        // the same treatment.
+        {"RtlInitializeCriticalSection",
+         static_cast<std::uint32_t>(InterceptId::kInitializeCriticalSection)},
+        {"RtlInitializeCriticalSectionAndSpinCount",
+         static_cast<std::uint32_t>(InterceptId::kInitializeCriticalSectionAndSpinCount)},
+        {"RtlEnterCriticalSection", static_cast<std::uint32_t>(InterceptId::kEnterCriticalSection)},
+        {"RtlLeaveCriticalSection", static_cast<std::uint32_t>(InterceptId::kLeaveCriticalSection)},
+        {"RtlDeleteCriticalSection",
+         static_cast<std::uint32_t>(InterceptId::kDeleteCriticalSection)},
+        // FLS/TLS: the CRT resolves these dynamically during DllMain init
+        // (FlsGetValue2 is the Win11 spelling it probes for). Engine-side
+        // slot tables answer - the real bodies read TEB storage that is not
+        // provisioned.
+        {"FlsAlloc", static_cast<std::uint32_t>(InterceptId::kFlsAlloc)},
+        {"RtlFlsAlloc", static_cast<std::uint32_t>(InterceptId::kFlsAlloc)},
+        {"FlsFree", static_cast<std::uint32_t>(InterceptId::kFlsFree)},
+        {"RtlFlsFree", static_cast<std::uint32_t>(InterceptId::kFlsFree)},
+        {"FlsSetValue", static_cast<std::uint32_t>(InterceptId::kFlsSetValue)},
+        {"RtlFlsSetValue", static_cast<std::uint32_t>(InterceptId::kFlsSetValue)},
+        {"FlsGetValue", static_cast<std::uint32_t>(InterceptId::kFlsGetValue)},
+        {"FlsGetValue2", static_cast<std::uint32_t>(InterceptId::kFlsGetValue)},
+        {"RtlFlsGetValue", static_cast<std::uint32_t>(InterceptId::kFlsGetValue)},
+        {"TlsAlloc", static_cast<std::uint32_t>(InterceptId::kTlsAlloc)},
+        {"RtlTlsAlloc", static_cast<std::uint32_t>(InterceptId::kTlsAlloc)},
+        {"TlsFree", static_cast<std::uint32_t>(InterceptId::kTlsFree)},
+        {"RtlTlsFree", static_cast<std::uint32_t>(InterceptId::kTlsFree)},
+        {"TlsSetValue", static_cast<std::uint32_t>(InterceptId::kTlsSetValue)},
+        {"RtlTlsSetValue", static_cast<std::uint32_t>(InterceptId::kTlsSetValue)},
+        {"TlsGetValue", static_cast<std::uint32_t>(InterceptId::kTlsGetValue)},
+        {"RtlTlsGetValue", static_cast<std::uint32_t>(InterceptId::kTlsGetValue)},
+        // Vectored registration: answered in-engine (stable pseudo-handle);
+        // the real path's ntdll bookkeeping cannot run against the
+        // emulated world.
+        {"AddVectoredExceptionHandler",
+         static_cast<std::uint32_t>(InterceptId::kAddVectoredExceptionHandler)},
+        {"AddVectoredContinueHandler",
+         static_cast<std::uint32_t>(InterceptId::kAddVectoredExceptionHandler)},
+        {"RtlAddVectoredExceptionHandler",
+         static_cast<std::uint32_t>(InterceptId::kAddVectoredExceptionHandler)},
+        {"RemoveVectoredExceptionHandler",
+         static_cast<std::uint32_t>(InterceptId::kRemoveVectoredExceptionHandler)},
+        {"RemoveVectoredContinueHandler",
+         static_cast<std::uint32_t>(InterceptId::kRemoveVectoredExceptionHandler)},
+        {"RtlRemoveVectoredExceptionHandler",
+         static_cast<std::uint32_t>(InterceptId::kRemoveVectoredExceptionHandler)},
         {"RtlAllocateHeap", static_cast<std::uint32_t>(InterceptId::kRtlAllocateHeap)},
         {"RtlFreeHeap", static_cast<std::uint32_t>(InterceptId::kRtlFreeHeap)},
         {"RtlReAllocateHeap", static_cast<std::uint32_t>(InterceptId::kRtlReAllocateHeap)},
@@ -727,6 +939,34 @@ void on_intercept([[maybe_unused]] uc_engine* uc, const std::uint64_t address, c
             case InterceptId::kLoadLibraryA:
             case InterceptId::kLoadLibraryW:
                 intercept_load_library(*state, id == InterceptId::kLoadLibraryW);
+                break;
+            case InterceptId::kDllLoadResume:
+                dll_load_resume(*state);
+                break;
+            case InterceptId::kDisableThreadLibraryCalls:
+                intercept_disable_thread_library_calls(*state);
+                break;
+            case InterceptId::kGetStdHandle:
+                intercept_get_std_handle(*state);
+                break;
+            case InterceptId::kInitializeCriticalSection:
+            case InterceptId::kInitializeCriticalSectionAndSpinCount:
+            case InterceptId::kEnterCriticalSection:
+            case InterceptId::kLeaveCriticalSection:
+            case InterceptId::kDeleteCriticalSection:
+                intercept_critical_section(*state, id);
+                break;
+            case InterceptId::kFlsAlloc:
+            case InterceptId::kFlsFree:
+            case InterceptId::kFlsSetValue:
+            case InterceptId::kFlsGetValue:
+            case InterceptId::kTlsAlloc:
+            case InterceptId::kTlsFree:
+            case InterceptId::kTlsSetValue:
+            case InterceptId::kTlsGetValue:
+            case InterceptId::kAddVectoredExceptionHandler:
+            case InterceptId::kRemoveVectoredExceptionHandler:
+                intercept_fls_tls(*state, id);
                 break;
             case InterceptId::kGetProcAddress:
                 intercept_get_proc_address(*state);

@@ -117,7 +117,7 @@ finish_run(const engine::SyscallRunFailure* engine_failure, AnalysisArtifacts ar
             std::move(artifacts)));
     // The container carries synthetic module pages but the replay was given
     // no directory: a capture-class failure, never a silent un-instrumented
-    // run (design D2).
+    // run.
     case engine::SyscallRunError::kSyntheticModulesMissing:
         artifacts.run_stats = std::nullopt;
         return std::unexpected(capture_failure(capture::Status::kCaptureFailed,
@@ -164,7 +164,8 @@ std::expected<AnalysisArtifacts, AnalysisFailure> run_snapshot(const SnapshotT& 
     engine::SyscallRunOptions run = options.run;
     api::detail::EventStream stream(wiring.rules.get(), tally, collector, ledger.get(),
                                     options.event_observer, options.event_type_mask);
-    const engine::FactChannel facts = api::detail::install_behavior_sinks(run, stream);
+    const engine::FactChannel facts =
+        api::detail::install_behavior_sinks(run, stream, instrumented ? &names : nullptr);
 
     std::string note;
     if (!instrumented) {
@@ -205,10 +206,11 @@ run_crafted_sample(const std::filesystem::path& input, const AnalysisOptions& op
                                                     options.run.synthetic_module_dir);
     if (!container) {
         const auto& failure = container.error();
-        return std::unexpected(
-            capture_failure(capture::Status::kCaptureFailed,
-                            "sample container construction failed: " +
-                                std::string{engine::rebuild_error_message(failure.error)}));
+        return std::unexpected(capture_failure(
+            capture::Status::kCaptureFailed,
+            "sample container construction failed: " +
+                (failure.detail.empty() ? std::string{engine::rebuild_error_message(failure.error)}
+                                        : failure.detail)));
     }
     if (!options.save_snapshot.empty()) {
         std::ofstream out(options.save_snapshot, std::ios::binary | std::ios::trunc);

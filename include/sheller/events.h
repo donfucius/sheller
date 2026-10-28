@@ -63,7 +63,7 @@ enum class EventTypeId : std::uint16_t {
     kExceptionHandlerInstall = 22,
     kLoopSkip = 23,
     kKusdAccess = 24,
-    // The entry stack-restore confirmation (change esp-law-oep, Form A): the
+    // The entry stack-restore confirmation: the
     // engine's esp window saw the completed restore of the entry save area -
     // a pop put the stack pointer back at the entry face with a decoded
     // register pop. Preamble-only (pc is the confirming read's rip); never a

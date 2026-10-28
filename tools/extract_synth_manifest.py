@@ -14,7 +14,8 @@ import sys
 from pathlib import Path
 
 TIER1 = ["ntdll.dll", "kernel32.dll", "kernelbase.dll", "ucrtbase.dll",
-         "msvcp140.dll", "vcruntime140.dll", "vcruntime140_1.dll"]
+         "msvcp140.dll", "vcruntime140.dll", "vcruntime140_1.dll",
+         "user32.dll"]
 
 # canonical Win10+ x64 ntdll syscall stub prefix: mov r10, rcx; mov eax, imm32
 X64_STUB_PREFIX = b"\x4c\x8b\xd1\xb8"

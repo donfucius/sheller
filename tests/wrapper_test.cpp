@@ -141,4 +141,86 @@ TEST(WrapperBlob, X64X86StructureSymmetry)
     EXPECT_EQ(load32(*x86, 0x138 + 0x10), load32(*x64, 0x148 + 0x10));
 }
 
+// --- load-stub runner (DLL-input route) ---
+
+std::vector<std::uint8_t> runner_bytes(const std::vector<sheller::capture::RunnerImport>& imports)
+{
+    sheller::capture::RunnerPlan plan;
+    plan.arch = sheller::capture::WrapArch::kX64;
+    plan.arrival_name = "sample.dll";
+    plan.imports = imports;
+    return *sheller::capture::build_runner(plan);
+}
+
+const std::vector<sheller::capture::RunnerImport> kBasePair{{"kernel32.dll", "LoadLibraryW", 0},
+                                                            {"kernel32.dll", "ExitProcess", 0}};
+
+TEST(WrapperRunner, ProducesLegalPeWithImports)
+{
+    const auto pe = runner_bytes({kBasePair[0], kBasePair[1], {"USER32.dll", "IsCharAlphaA", 0}});
+    ASSERT_GE(pe.size(), 0x200u);
+    EXPECT_EQ(load16(pe, 0), 0x5A4D);           // MZ
+    EXPECT_EQ(load32(pe, 0x40), 0x00004550);    // PE
+    EXPECT_EQ(load16(pe, 0x44), 0x8664);        // x64
+    EXPECT_EQ(load16(pe, 0x58), 0x020B);        // PE32+
+    EXPECT_EQ(load32(pe, 0x58 + 0x10), 0x1000); // entry = section head
+    EXPECT_EQ(load16(pe, 0x44 + 0x12), 0x0022); // EXECUTABLE_IMAGE
+    // import data directory points inside the single RWX section
+    const std::uint32_t import_rva = load32(pe, 0x58 + 0x70 + 8);
+    const std::uint32_t import_size = load32(pe, 0x58 + 0x70 + 12);
+    EXPECT_GT(import_rva, 0x1000u);
+    EXPECT_LT(import_rva, 0x1000u + load32(pe, 0x148 + 0x08));
+    EXPECT_GE(import_size, 2u * 20u + 20u); // two descriptors (kernel32 + USER32) + terminator
+    // section carries CODE|EXECUTE|READ|WRITE (the loader writes the IAT)
+    EXPECT_EQ(load32(pe, 0x148 + 0x24), 0xE00000E0);
+}
+
+TEST(WrapperRunner, DeterministicForSamePlan)
+{
+    const auto plan_imports = std::vector<sheller::capture::RunnerImport>{
+        kBasePair[0], kBasePair[1], {"USER32.dll", "IsCharAlphaA", 0}};
+    // Built twice through independent calls - identical bytes (timestamp and
+    // checksum pinned to zero, no randomness enters the PE).
+    const auto first = runner_bytes(plan_imports);
+    const auto second = runner_bytes(plan_imports);
+    EXPECT_EQ(first, second);
+}
+
+TEST(WrapperRunner, RejectsBadPlans)
+{
+    using sheller::capture::RunnerError;
+    sheller::capture::RunnerPlan plan;
+    plan.arrival_name = "sample.dll";
+    plan.imports = {kBasePair[0], kBasePair[1]};
+
+    plan.arrival_name = "sub\\sample.dll";
+    EXPECT_EQ(sheller::capture::build_runner(plan).error(), RunnerError::kBadArrivalName);
+    plan.arrival_name = "kernel32.dll"; // collides with a planned import
+    EXPECT_EQ(sheller::capture::build_runner(plan).error(), RunnerError::kReservedArrival);
+    plan.arrival_name = "sample.dll";
+    plan.imports = {kBasePair[0]}; // missing ExitProcess
+    EXPECT_EQ(sheller::capture::build_runner(plan).error(), RunnerError::kNoImports);
+    plan.imports = {kBasePair[0], {"somedll.dll", "", 0}}; // neither name nor ordinal
+    EXPECT_EQ(sheller::capture::build_runner(plan).error(), RunnerError::kBadSymbol);
+}
+
+TEST(WrapperRunner, X64X86StubSymmetry)
+{
+    sheller::capture::RunnerPlan plan;
+    plan.arrival_name = "sample.dll";
+    plan.imports = {kBasePair[0], kBasePair[1]};
+    plan.arch = sheller::capture::WrapArch::kX64;
+    const auto x64 = sheller::capture::build_runner(plan);
+    plan.arch = sheller::capture::WrapArch::kX86;
+    const auto x86 = sheller::capture::build_runner(plan);
+    ASSERT_TRUE(x64.has_value());
+    ASSERT_TRUE(x86.has_value());
+
+    EXPECT_EQ(load16(*x86, 0x44), 0x014C);        // machine x86
+    EXPECT_EQ(load16(*x86, 0x58), 0x010B);        // PE32
+    EXPECT_EQ(load32(*x86, 0x58 + 0x10), 0x1000); // entry = section head
+    // PE32 data directory[1] sits at opt+0x68 (vs 0x70 on PE32+)
+    EXPECT_EQ(load32(*x86, 0x58 + 0x68 + 12), load32(*x64, 0x58 + 0x70 + 12));
+}
+
 } // namespace
