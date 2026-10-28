@@ -85,6 +85,17 @@ add_dependencies(analysis_facade_test synth_modules container_size_bound)
 
 add_test(NAME analysis_facade COMMAND analysis_facade_test)
 
+# Full-container copy regression: static linkage makes operator new interposition
+# available on Windows as well as POSIX without changing the shipped library.
+add_executable(analysis_memory_test analysis_memory_test.cpp)
+target_include_directories(analysis_memory_test PRIVATE
+  "${CMAKE_CURRENT_SOURCE_DIR}/../src/api"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../src/engine")
+target_link_libraries(analysis_memory_test PRIVATE GTest::gtest_main sheller_api)
+sheller_apply_common(analysis_memory_test)
+add_test(NAME analysis_memory COMMAND analysis_memory_test)
+
+
 add_executable(self_contained_analysis self_contained_analysis.cpp)
 target_include_directories(self_contained_analysis PRIVATE
   "${CMAKE_CURRENT_SOURCE_DIR}/../include")
@@ -506,6 +517,15 @@ sheller_apply_common(write_ledger_test)
 
 add_test(NAME write_ledger COMMAND write_ledger_test)
 
+# Synthetic DLL load transactions: no host process or system DLL fixtures.
+add_executable(dll_loader_test dll_loader_test.cpp)
+target_include_directories(dll_loader_test PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../src/engine")
+target_include_directories(dll_loader_test SYSTEM PRIVATE ${SHELLER_UNICORN_INCLUDE_DIR})
+target_link_libraries(dll_loader_test PRIVATE GTest::gtest_main sheller_engine)
+sheller_apply_common(dll_loader_test)
+add_test(NAME dll_loader COMMAND dll_loader_test)
+
+
 # Behavior rules: signal synthesis over synthetic fact sequences -
 # portable by design (the layer never touches unicorn).
 add_executable(behavior_rules_test behavior_rules_test.cpp)
@@ -589,6 +609,52 @@ add_test(NAME capture_cli COMMAND capture_cli_test)
 set_tests_properties(capture_cli PROPERTIES
   WORKING_DIRECTORY "$<TARGET_FILE_DIR:sheller>")
 
+# DLL-input admission (Windows): the system-dependency contract plus the
+# staged-runner real-loader smoke.
+if(WIN32)
+  add_executable(dll_admission_test dll_admission_test.cpp)
+  target_compile_definitions(dll_admission_test PRIVATE
+    SHELLER_SAMPLE_PACKED_DLL_PATH="${CMAKE_CURRENT_SOURCE_DIR}/packed.dll")
+  target_include_directories(dll_admission_test PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/../src/runtime/capture")
+  target_link_libraries(dll_admission_test PRIVATE GTest::gtest_main sheller_capture)
+  sheller_apply_common(dll_admission_test)
+  add_test(NAME dll_admission COMMAND dll_admission_test)
+
+  # DLL-input route end-to-end (Windows): the acceptance line - capture →
+  # unpack reproducing the reference entry point, and the xfer=1 stop face.
+  add_executable(dll_e2e_test dll_e2e_test.cpp)
+  target_compile_definitions(dll_e2e_test PRIVATE
+    SHELLER_CLI_FILE_NAME="${SHELLER_CLI_FILE_NAME}"
+    SHELLER_SAMPLE_PACKED_DLL_PATH="${CMAKE_CURRENT_SOURCE_DIR}/packed.dll")
+  target_include_directories(dll_e2e_test PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/../include")
+  target_link_libraries(dll_e2e_test PRIVATE GTest::gtest_main)
+  sheller_apply_common(dll_e2e_test)
+  add_dependencies(dll_e2e_test sheller)
+  add_test(NAME dll_e2e COMMAND dll_e2e_test)
+  set_tests_properties(dll_e2e PROPERTIES
+    WORKING_DIRECTORY "$<TARGET_FILE_DIR:sheller>")
+
+  # Live-capture replay chain (Windows): DllMain marker through
+  # --guest-stdout, the saved-snapshot round trip, and the esp miss closing
+  # the unpack normally. Excluded from shared CI runners - the captured
+  # world's per-process entropy crashes the payload past the OEP there (same
+  # family as capture_x86_e2e); green on the development machine.
+  add_executable(dll_capture_e2e_test dll_capture_e2e_test.cpp)
+  target_compile_definitions(dll_capture_e2e_test PRIVATE
+    SHELLER_CLI_FILE_NAME="${SHELLER_CLI_FILE_NAME}"
+    SHELLER_SAMPLE_PACKED_DLL_PATH="${CMAKE_CURRENT_SOURCE_DIR}/packed.dll")
+  target_include_directories(dll_capture_e2e_test PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/../include")
+  target_link_libraries(dll_capture_e2e_test PRIVATE GTest::gtest_main)
+  sheller_apply_common(dll_capture_e2e_test)
+  add_dependencies(dll_capture_e2e_test sheller)
+  add_test(NAME dll_capture_e2e COMMAND dll_capture_e2e_test)
+  set_tests_properties(dll_capture_e2e PROPERTIES
+    WORKING_DIRECTORY "$<TARGET_FILE_DIR:sheller>")
+endif()
+
   # Synthetic system modules: the frozen manifests are committed, the
   # deterministic PEs are generated into the build dir at configure/build time
   # (python3 stdlib only). The engine's synthetic-mode option reads them.
@@ -607,7 +673,7 @@ set_tests_properties(capture_cli PROPERTIES
   add_custom_target(synth_modules ALL
     DEPENDS "${SYNTH_MODULE_DIR}/.generated")
 
-  # Container size bound (design D5): derived from the generated modules,
+  # Container size bound: derived from the generated modules,
   # the test sample and the engine reserves by tools/container_size_bound.py.
   # The generated header is the only source of the threshold - tests never
   # spell the number themselves.
@@ -635,8 +701,10 @@ set_tests_properties(capture_cli PROPERTIES
     ${SHELLER_UNICORN_INCLUDE_DIR})
   target_include_directories(synth_modules_test PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/../src/loader"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../src/engine"
     "${CMAKE_CURRENT_SOURCE_DIR}/../src/runtime/capture"
-    "${CMAKE_CURRENT_SOURCE_DIR}/../src/syscalls")
+    "${CMAKE_CURRENT_SOURCE_DIR}/../src/syscalls"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../include")
   target_compile_definitions(synth_modules_test PRIVATE
     SYNTH_GEN_SCRIPT="${CMAKE_CURRENT_SOURCE_DIR}/../tools/gen_synth_modules.py"
     SYNTH_MANIFEST_DIR="${SYNTH_MANIFEST_DIR}"
@@ -661,12 +729,32 @@ set_tests_properties(capture_cli PROPERTIES
     "${CMAKE_BINARY_DIR}")
   target_compile_definitions(snapshot_craft_test PRIVATE
     SYNTH_MODULE_DIR="${SYNTH_MODULE_DIR}"
-    SHELLER_SAMPLE_PACKED_PATH="${CMAKE_SOURCE_DIR}/tests/packed.exe")
+    SHELLER_SAMPLE_PACKED_PATH="${CMAKE_SOURCE_DIR}/tests/packed.exe"
+    SHELLER_SAMPLE_PACKED_DLL_PATH="${CMAKE_SOURCE_DIR}/tests/packed.dll")
   target_link_libraries(snapshot_craft_test
     PRIVATE GTest::gtest_main sheller_engine sheller_capture)
   sheller_apply_common(snapshot_craft_test)
   add_dependencies(snapshot_craft_test synth_modules container_size_bound)
   add_test(NAME snapshot_craft COMMAND snapshot_craft_test)
+
+  # DLL fixture semantics: the hand-built TLS + push-prefix
+  # DllMain fixture through the crafted runner world - ATTACH frame arguments,
+  # TLS directory order, IAT-bound calls, TRUE/FALSE continuations, and the
+  # esp/esp+xfer stop faces at the re-armed DllMain window.
+  add_executable(dll_fixture_semantics_test dll_fixture_semantics_test.cpp)
+  target_include_directories(dll_fixture_semantics_test PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/../src/engine"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../src/runtime/capture"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../src/syscalls"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../include"
+    "${CMAKE_BINARY_DIR}")
+  target_compile_definitions(dll_fixture_semantics_test PRIVATE
+    SYNTH_MODULE_DIR="${SYNTH_MODULE_DIR}")
+  target_link_libraries(dll_fixture_semantics_test
+    PRIVATE GTest::gtest_main sheller_engine sheller_capture)
+  sheller_apply_common(dll_fixture_semantics_test)
+  add_dependencies(dll_fixture_semantics_test synth_modules)
+  add_test(NAME dll_fixture_semantics COMMAND dll_fixture_semantics_test)
 
   # Linux packed e2e: the packed.exe snapshot (captured on a Windows
   # host) is replayed on the Linux engine, the dump is repaired and the .unp
@@ -1258,7 +1346,7 @@ add_test(NAME engine_trace_quiet COMMAND engine_trace_test
 add_test(NAME engine_trace_nosink COMMAND engine_trace_test --traces-on --no-sink
          "--gtest_filter=EngineTraceNoSink.*")
 
-# Static-side concurrency (tasks 7.4): four threads inside the analysis and unpack
+# Static-side concurrency: four threads inside the analysis and unpack
 # entries at once, over the static core. Portable by design - the analysis half drives
 # a crafted snapshot, the unpack half uses the packed corpus, whose route differs by
 # platform (see the TU comments for what each platform can therefore assert).
@@ -1274,3 +1362,4 @@ sheller_apply_common(concurrency_test)
 add_dependencies(concurrency_test synth_modules)
 
 add_test(NAME concurrency COMMAND concurrency_test)
+

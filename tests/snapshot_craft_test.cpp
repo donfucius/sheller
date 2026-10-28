@@ -29,6 +29,7 @@
 #include <filesystem>
 #include <fstream>
 #include <iterator>
+#include <map>
 #include <optional>
 #include <span>
 #include <spanstream>
@@ -45,7 +46,7 @@ namespace engine = sheller::engine;
 namespace snapshot = sheller::snapshot;
 
 constexpr std::uint64_t kSampleMappedBase = 0x400000;
-constexpr std::size_t kModulesInSynthDir = 7;
+constexpr std::size_t kModulesInSynthDir = 8; // ...user32 joined later
 
 fs::path synth_dir()
 {
@@ -72,6 +73,7 @@ struct ParsedContainer {
     snapshot::Registers registers{};
     snapshot::Metadata metadata{};
     std::vector<snapshot::Region> regions;
+    std::optional<snapshot::PendingModule> pending{};
     std::size_t bytes{};
 };
 
@@ -106,6 +108,13 @@ ParsedContainer parse_container(const std::vector<std::uint8_t>& bytes)
             return parsed;
         }
         parsed.regions.push_back(std::move(*region));
+    }
+    if (parsed.header.version == snapshot::kVersionV2) {
+        auto pending = reader.read_pending();
+        EXPECT_TRUE(pending.has_value());
+        if (pending.has_value()) {
+            parsed.pending = std::move(*pending);
+        }
     }
     parsed.bytes = bytes.size();
     return parsed;
@@ -222,6 +231,133 @@ struct CodeBuilder {
         }
     }
 };
+
+// ---- DLL-input fixtures (the craft DLL branch) --------------------------
+
+namespace capture = sheller::capture;
+
+// A minimal PE with the IMAGE_FILE_DLL flag and a static import directory
+// naming the given modules/symbols. x64 (PE32+) carries 8-byte thunks; the
+// x86 rejection fixture only needs headers valid enough to reach the
+// bitness refusal, so it shares the layout shape with 4-byte thunks.
+std::vector<std::uint8_t>
+make_dll_pe(const std::vector<std::pair<std::string, std::vector<std::string>>>& imports,
+            const bool x64 = true)
+{
+    std::vector<std::uint8_t> image(0x4000, std::uint8_t{0});
+    auto* const base = image.data();
+    const auto at = [&](const std::uint32_t rva) { return base + rva; };
+    const auto put16 = [&](const std::uint32_t rva, const std::uint16_t value) {
+        at(rva)[0] = static_cast<std::uint8_t>(value);
+        at(rva)[1] = static_cast<std::uint8_t>(value >> 8);
+    };
+    const auto put32 = [&](const std::uint32_t rva, const std::uint32_t value) {
+        for (unsigned i = 0; i < 4; ++i) {
+            at(rva)[i] = static_cast<std::uint8_t>(value >> (8 * i));
+        }
+    };
+    const auto put64 = [&](const std::uint32_t rva, const std::uint64_t value) {
+        for (unsigned i = 0; i < 8; ++i) {
+            at(rva)[i] = static_cast<std::uint8_t>(value >> (8 * i));
+        }
+    };
+    const auto put_str = [&](const std::uint32_t rva, const std::string_view text) {
+        std::memcpy(at(rva), text.data(), text.size());
+        at(rva + static_cast<std::uint32_t>(text.size()))[0] = 0;
+    };
+
+    auto& dos = *reinterpret_cast<capture::DosHeader*>(base);
+    dos.e_magic = capture::kMzSignature;
+    dos.e_lfanew = 0x80;
+    const std::uint32_t nt = static_cast<std::uint32_t>(dos.e_lfanew);
+    put32(nt, capture::kPeSignature);
+    put16(nt + 4, x64 ? capture::kMachineAmd64 : capture::kMachineI386);
+    put16(nt + 6, 1);                  // one section
+    put16(nt + 20, x64 ? 240u : 224u); // size_of_optional_header
+    put16(nt + 22, 0x2002);            // EXECUTABLE_IMAGE | IMAGE_FILE_DLL
+
+    const std::uint32_t opt = nt + 24;
+    put16(opt, x64 ? capture::kPe32PlusMagic : capture::kPe32Magic);
+    put32(opt + 16, 0x1000); // address_of_entry_point
+    put32(opt + 20, 0x1000); // base_of_code
+    if (x64) {
+        put64(opt + 24, 0x140000000); // image_base
+    } else {
+        put32(opt + 28, 0x400000); // image_base
+    }
+    put32(opt + 32, 0x1000);           // section_alignment
+    put32(opt + 36, 0x1000);           // file_alignment
+    put32(opt + 56, 0x4000);           // size_of_image
+    put32(opt + 60, 0x1000);           // size_of_headers
+    put16(opt + 68, 3);                // subsystem console
+    put32(opt + (x64 ? 108 : 92), 16); // number_of_rva_and_sizes
+
+    // one RWX section at RVA 0x1000 (file offset 0x1000)
+    const std::uint32_t sect = opt + (x64 ? 240u : 224u);
+    put_str(sect, ".rdata");
+    put32(sect + 8, 0x2000);  // virtual_size
+    put32(sect + 12, 0x1000); // virtual_address
+    put32(sect + 16, 0x2000); // size_of_raw_data
+    put32(sect + 20, 0x1000); // pointer_to_raw_data
+    put32(sect + 36, 0xE0000040);
+
+    // Import directory inside the section: descriptors, thunk arrays,
+    // module names and hint/name entries. All RVAs (the section fold makes
+    // RVA == file offset there).
+    constexpr std::uint32_t kDescRva = 0x1000;
+    constexpr std::uint32_t kOftRva = 0x1100;
+    constexpr std::uint32_t kFtRva = 0x1200;
+    constexpr std::uint32_t kNameRva = 0x1400;
+    constexpr std::uint32_t kHintRva = 0x1600;
+    const std::size_t thunk_width = x64 ? 8u : 4u;
+    const std::uint64_t ordinal_flag = x64 ? (1ULL << 63) : (1ULL << 31);
+
+    std::uint32_t name_cursor = kNameRva;
+    std::uint32_t hint_cursor = kHintRva;
+    for (std::size_t m = 0; m <= imports.size(); ++m) {
+        const std::uint32_t desc = kDescRva + static_cast<std::uint32_t>(20 * m);
+        if (m == imports.size()) {
+            break; // the null terminator stays zeroed
+        }
+        const auto& [module, symbols] = imports[m];
+        const std::uint32_t oft = kOftRva + static_cast<std::uint32_t>(thunk_width * 8 * m);
+        const std::uint32_t ft = kFtRva + static_cast<std::uint32_t>(thunk_width * 8 * m);
+        put32(desc + 12, name_cursor); // Name
+        put_str(name_cursor, module);
+        name_cursor += static_cast<std::uint32_t>(module.size() + 1);
+        put32(desc, oft);     // OriginalFirstThunk
+        put32(desc + 16, ft); // FirstThunk
+        for (std::size_t s = 0; s < symbols.size(); ++s) {
+            const std::uint32_t entry = oft + static_cast<std::uint32_t>(thunk_width * s);
+            const std::uint32_t mirror = ft + static_cast<std::uint32_t>(thunk_width * s);
+            put16(hint_cursor, 0); // hint
+            put_str(hint_cursor + 2, symbols[s]);
+            const std::uint64_t by_name = hint_cursor;
+            hint_cursor += static_cast<std::uint32_t>(2 + symbols[s].size() + 1);
+            if (x64) {
+                put64(entry, by_name);
+                put64(mirror, by_name);
+            } else {
+                put32(entry, static_cast<std::uint32_t>(by_name));
+                put32(mirror, static_cast<std::uint32_t>(by_name));
+            }
+        }
+        const std::uint32_t tail = static_cast<std::uint32_t>(thunk_width * symbols.size());
+        if (x64) {
+            put64(oft + tail, ordinal_flag);
+            put64(ft + tail, ordinal_flag);
+        } else {
+            put32(oft + tail, static_cast<std::uint32_t>(ordinal_flag));
+            put32(ft + tail, static_cast<std::uint32_t>(ordinal_flag));
+        }
+    }
+    const std::uint32_t dirs = opt + (x64 ? 112u : 96u);
+    put32(dirs + 8, kDescRva); // DataDirectory[1] = imports
+    put32(dirs + 12, 20 * static_cast<std::uint32_t>(imports.size() + 1));
+    put32(dirs + 13 * 8, kFtRva); // DataDirectory[13] = IAT
+    put32(dirs + 13 * 8 + 4, static_cast<std::uint32_t>(thunk_width * 8 * imports.size()));
+    return image;
+}
 
 } // namespace
 
@@ -460,10 +596,21 @@ TEST(SnapshotCraft, SyntheticWorldPredicateIsExactEquality)
     };
     // Congruent with the series step but not a member: zero hits even in
     // pairs - the exact-equality rule and the two-hit floor are separate
-    // gates, and neither can be satisfied by the other's input.
+    // gates, and neither can be satisfied by the other's input. The
+    // counterexamples are derived from the FINAL base set (min - step,
+    // max + step) and ASSERTED non-members first - a base extension
+    // made the old hardcoded 0x7FFF a member, so future extensions must
+    // re-derive, not assume.
+    const auto step = 0x100000000ULL;
+    const auto lo = *std::min_element(with_dir.begin(), with_dir.end());
+    const auto hi = *std::max_element(with_dir.begin(), with_dir.end());
+    const std::uint64_t below = lo - step;
+    const std::uint64_t above = hi + step;
+    EXPECT_EQ(std::find(with_dir.begin(), with_dir.end(), below), with_dir.end());
+    EXPECT_EQ(std::find(with_dir.begin(), with_dir.end(), above), with_dir.end());
     const std::array<engine::mem_region::ModuleImage, 2> congruent{
-        image(0x7FF700000000ULL), // one step below the main trio: congruent, not a member
-        image(0x7FFF00000000ULL), // above the extras range: congruent, not a member
+        image(below), // one step below the lowest base: congruent, not a member
+        image(above), // one step above the highest base: congruent, not a member
     };
     EXPECT_EQ(engine::count_synthetic_module_pages(congruent, with_dir), 0U);
     // A single exact hit is the capture-replay noise floor, not the
@@ -717,6 +864,235 @@ TEST(SnapshotCraft, ReplayedLdrLoadDllAnswersNotFoundForResidentMiss)
     ASSERT_TRUE(result.stats.has_value());
     EXPECT_TRUE(result.stats->terminated);
     EXPECT_EQ(result.stats->exit_code, 0xC0000135U); // STATUS_DLL_NOT_FOUND
+}
+
+// ---- DLL-input construction ---------------------------------------------
+
+TEST(SnapshotCraft, CraftedDllContainerCarriesThePendingBlockAndRunnerWorld)
+{
+    const auto sample = read_file(SHELLER_SAMPLE_PACKED_DLL_PATH);
+    ASSERT_FALSE(sample.empty());
+    auto container =
+        engine::craft_sample_container(SHELLER_SAMPLE_PACKED_DLL_PATH, false, synth_dir());
+    ASSERT_TRUE(container.has_value()) << (container.has_value() ? "" : container.error().detail);
+
+    const auto parsed = parse_container(*container);
+    EXPECT_EQ(parsed.header.version, snapshot::kVersionV2);
+    ASSERT_TRUE(parsed.pending.has_value());
+    EXPECT_EQ(parsed.pending->name, "packed.dll");
+    EXPECT_EQ(parsed.pending->bitness, snapshot::kBitness64);
+    EXPECT_EQ(parsed.pending->bytes, sample);
+    // The world is the runner's: the registered entry is the load stub, the
+    // sample bytes ride the block alone.
+    EXPECT_EQ(parsed.registers.rip, parsed.metadata.entry_address);
+    EXPECT_NE(parsed.metadata.image_base, 0U);
+
+    // No region of the constructed world carries a page of the sample: the
+    // sample header bytes (64 bytes of the MZ block) appear nowhere.
+    for (const auto& region : parsed.regions) {
+        if (region.header.content != snapshot::kContentPresent) {
+            continue;
+        }
+        EXPECT_EQ(std::search(region.content.begin(), region.content.end(), sample.begin(),
+                              sample.begin() + 64),
+                  region.content.end())
+            << "sample header page inside the runner world at " << std::hex
+            << region.header.base_address;
+    }
+}
+
+TEST(SnapshotCraft, CraftedDllConstructionIsDeterministic)
+{
+    const auto first =
+        engine::craft_sample_container(SHELLER_SAMPLE_PACKED_DLL_PATH, false, synth_dir());
+    const auto second =
+        engine::craft_sample_container(SHELLER_SAMPLE_PACKED_DLL_PATH, false, synth_dir());
+    ASSERT_TRUE(first.has_value());
+    ASSERT_TRUE(second.has_value());
+    ASSERT_EQ(first->size(), second->size());
+    EXPECT_TRUE(std::equal(first->begin(), first->end(), second->begin()));
+}
+
+// Determinism: the same crafted container replayed twice produces
+// byte-identical raw event streams - the whole synthetic-load chain (map,
+// relocations, IAT, Ldr, TLS, ATTACH, DllMain verdict, ExitProcess) is a
+// function of the input. Every guest-visible input of this world is
+// deterministic (synthetic stubs, engine-published KUSD ticks, the virtual
+// TSC), so the pin extends across processes by construction; the captured-
+// world replay has a separate pre-existing per-process entropy source (the
+// payload's __security_cookie) and is pinned only
+// for its statistics elsewhere.
+TEST(SnapshotCraft, CraftedDllReplayEventStreamIsDeterministic)
+{
+    auto crafted =
+        engine::craft_sample_container(SHELLER_SAMPLE_PACKED_DLL_PATH, false, synth_dir());
+    ASSERT_TRUE(crafted.has_value());
+    const auto container = *crafted;
+    using Sink = std::vector<std::vector<std::uint8_t>>;
+    const auto make = [](Sink& sink) {
+        engine::SyscallRunOptions options;
+        options.max_blocks = 6000000;
+        options.event_sink = [&sink](const sheller::EventTypeId type,
+                                     const sheller::EventPreamble& preamble,
+                                     const std::span<const std::uint8_t> payload) {
+            std::vector<std::uint8_t> record;
+            record.push_back(static_cast<std::uint8_t>(type));
+            const auto* seq = reinterpret_cast<const std::uint8_t*>(&preamble.seq);
+            record.insert(record.end(), seq, seq + sizeof preamble.seq);
+            const auto* pc = reinterpret_cast<const std::uint8_t*>(&preamble.pc);
+            record.insert(record.end(), pc, pc + sizeof preamble.pc);
+            record.insert(record.end(), payload.begin(), payload.end());
+            sink.push_back(std::move(record));
+        };
+        return options;
+    };
+    Sink first;
+    Sink second;
+    const auto a = run_container(container, make(first));
+    const auto b = run_container(container, make(second));
+    ASSERT_EQ(a.has_value(), b.has_value());
+    ASSERT_TRUE(a.has_value()) << static_cast<int>(a.error().error);
+    ASSERT_EQ(first.size(), second.size());
+    for (std::size_t i = 0; i < first.size(); ++i) {
+        EXPECT_EQ(first[i], second[i]) << "event " << i;
+        if (first[i] != second[i]) {
+            break; // one diff is enough to fail; keep the log short
+        }
+    }
+}
+
+TEST(SnapshotCraft, CraftedDllReplayReachesTheRunnerFinishLine)
+{
+    auto container =
+        engine::craft_sample_container(SHELLER_SAMPLE_PACKED_DLL_PATH, false, synth_dir());
+    ASSERT_TRUE(container.has_value());
+    engine::SyscallRunOptions options;
+    options.max_blocks = 6000000;
+    const auto stats = run_container(*container, options);
+    ASSERT_TRUE(stats.has_value()) << static_cast<int>(stats.error().error);
+    // the designed finish: the runner stub's ExitProcess after a TRUE return
+    EXPECT_TRUE(stats->terminated);
+    EXPECT_EQ(stats->exit_code, 0x5aU);
+}
+
+// (The packed stub's esp/esp+xfer faces are a documented silent miss in both
+// worlds: its DllMain opens with argument-shadow stores and a reason branch,
+// so the contiguous-prefix scan finds no pushes at the entry. xfer=1 is the
+// usable stop face there; the esp faces need a scan that tolerates the
+// prologue.)
+
+// Wiring regression: the same container with the pending block
+// stripped and rewritten as v1 replays as a plain EXE world - the runner's
+// LoadLibraryW misses (no pending module), no DllMain output reaches the
+// sink, and the run still finishes its designed way. The block's presence is
+// the only delta between the two executors; the v2 side's DllMain marker is
+// pinned by the dll e2e suite's replay tests.
+TEST(SnapshotCraft, StrippedBlockReplaysAsAPlainExeWorld)
+{
+    auto v2 = engine::craft_sample_container(SHELLER_SAMPLE_PACKED_DLL_PATH, false, synth_dir());
+    ASSERT_TRUE(v2.has_value());
+    const auto parsed = parse_container(*v2);
+    ASSERT_TRUE(parsed.pending.has_value());
+    auto stripped = parsed;
+    stripped.header.version = snapshot::kVersion;
+    stripped.pending.reset();
+    const auto v1 = serialize_container(stripped);
+
+    std::string output;
+    engine::SyscallRunOptions options;
+    options.max_blocks = 20000000;
+    options.synthetic_system_modules = true;
+    options.synthetic_module_dir = synth_dir();
+    options.timeout_ms = 300000;
+    options.write_sink = [&output](const std::uint8_t* data, const std::size_t size) {
+        output.append(reinterpret_cast<const char*>(data), size);
+    };
+    const engine::FactChannel facts;
+    const auto stats = engine::detail::run_snapshot_syscalls_with_facts(v1, options, facts);
+    ASSERT_TRUE(stats.has_value()) << static_cast<int>(stats.error().error);
+    EXPECT_TRUE(stats->terminated);
+    EXPECT_EQ(stats->exit_code, 0x5aU);
+    EXPECT_EQ(output.find("hello world from dllmain"), std::string::npos)
+        << "the stripped world must not run the sample";
+}
+
+// Admission negative faces: a missing module, an unknown export and an
+// unresolvable x86 image each fail by name; nothing is pulled from outside
+// the trusted directory.
+TEST(SnapshotCraft, CraftedDllNamesAMissingSyntheticDependency)
+{
+    const auto dir = sheller_test::temp_path("sheller_snapshot_craft_dll");
+    fs::create_directories(dir);
+    const auto dll_path = dir / "needs_private.dll";
+    write_file(dll_path,
+               make_dll_pe({{"kernel32.dll", {"ExitProcess"}}, {"nosuchmod.dll", {"Whatever"}}}));
+
+    const auto missing = engine::craft_sample_container(dll_path, false, synth_dir());
+    ASSERT_FALSE(missing.has_value());
+    EXPECT_EQ(missing.error().error, engine::RebuildError::kBadSnapshot);
+    EXPECT_NE(missing.error().detail.find("nosuchmod.dll"), std::string::npos)
+        << missing.error().detail;
+
+    // An export that the frozen module does not carry fails by name. The
+    // admission picks ONE verifiable symbol per module (the Windows rule);
+    // the rest of the sample's IAT is the synthetic loader's named failure
+    // at run time - so the fixture references only the bogus symbol.
+    const auto bad_export = dir / "needs_export.dll";
+    write_file(bad_export, make_dll_pe({{"USER32.dll", {"NotAUser32Export"}}}));
+    const auto export_failure = engine::craft_sample_container(bad_export, false, synth_dir());
+    ASSERT_FALSE(export_failure.has_value());
+    EXPECT_NE(export_failure.error().detail.find("USER32.dll"), std::string::npos)
+        << export_failure.error().detail;
+}
+
+TEST(SnapshotCraft, CraftedDllRejectsX86Input)
+{
+    const auto dir = sheller_test::temp_path("sheller_snapshot_craft_dll_x86");
+    fs::create_directories(dir);
+    const auto dll_path = dir / "x86_sample.dll";
+    write_file(dll_path, make_dll_pe({{"kernel32.dll", {"ExitProcess"}}}, /*x64=*/false));
+
+    const auto refused = engine::craft_sample_container(dll_path, false, synth_dir());
+    ASSERT_FALSE(refused.has_value());
+    EXPECT_EQ(refused.error().error, engine::RebuildError::kBitnessUnsupported);
+}
+
+// Determinism, dump clause: the same container run twice writes
+// byte-identical dumps - the write ledger behind the exit-time dump is a
+// function of the input. This test runs on every host with the synthetic
+// directory, so the non-Windows path keeps the pin when CI runs it (the
+// Windows unpack CLI re-captures per run and its live-loader noise sits
+// upstream of the replay).
+TEST(SnapshotCraft, CraftedDllDumpIsDeterministic)
+{
+    auto crafted =
+        engine::craft_sample_container(SHELLER_SAMPLE_PACKED_DLL_PATH, false, synth_dir());
+    ASSERT_TRUE(crafted.has_value());
+    const auto container = *crafted;
+    const auto dir = sheller_test::temp_path("sheller_snapshot_craft_dll_dump");
+    fs::remove_all(dir);
+    std::vector<std::map<std::string, std::vector<std::uint8_t>>> dumps;
+    for (const unsigned run : {1u, 2u}) {
+        const auto dump_dir = dir / std::to_string(run);
+        engine::SyscallRunOptions options;
+        options.max_blocks = 6000000;
+        options.dump_directory = dump_dir;
+        const auto stats = run_container(container, options);
+        ASSERT_TRUE(stats.has_value()) << static_cast<int>(stats.error().error);
+        EXPECT_TRUE(stats->terminated);
+        std::map<std::string, std::vector<std::uint8_t>> files;
+        for (const auto& entry : fs::directory_iterator(dump_dir)) {
+            files[entry.path().filename().string()] = read_file(entry.path());
+        }
+        ASSERT_FALSE(files.empty());
+        dumps.push_back(std::move(files));
+    }
+    ASSERT_EQ(dumps[0].size(), dumps[1].size());
+    for (const auto& [name, bytes] : dumps[0]) {
+        const auto other = dumps[1].find(name);
+        ASSERT_NE(other, dumps[1].end()) << name;
+        EXPECT_EQ(bytes, other->second) << name;
+    }
 }
 
 // ---- machine-derived size bound ----------------------------------------

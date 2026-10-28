@@ -1586,3 +1586,82 @@ TEST(AnalysisFacade, UnpackTimelineAndSaveSnapshotDeliver)
     EXPECT_EQ(magic_view, "SHELLSNP");
 }
 #endif
+
+TEST(UnpackSelection, RequiresDllCoverageAndKeepsSamplePartial)
+{
+    using sheller::unpack::RegionRepairReport;
+    using sheller::unpack::RepairVerdict;
+    std::vector<RegionRepairReport> regions{{.base = 0x180000000,
+                                             .size = 0x2000,
+                                             .verdict = RepairVerdict::kPartial,
+                                             .uncovered = {},
+                                             .residual_abs_va = {},
+                                             .detail = {}},
+                                            {.base = 0x7ff000000000,
+                                             .size = 0x2000,
+                                             .verdict = RepairVerdict::kComplete,
+                                             .uncovered = {},
+                                             .residual_abs_va = {},
+                                             .detail = {}}};
+    EXPECT_EQ(facade::select_unpack_region(regions, 0x180000000, true), &regions[0]);
+    regions[0].verdict = RepairVerdict::kFailed;
+    EXPECT_EQ(facade::select_unpack_region(regions, 0x180000000, true), nullptr);
+    EXPECT_EQ(facade::select_unpack_region(regions, 0x180000000, false), &regions[1]);
+    EXPECT_EQ(facade::select_unpack_region({}, 0x180000000, true), nullptr);
+}
+
+TEST(NameTableAttribution, RuntimeRegistrationsRenderTransfersAcrossRetryIndexes)
+{
+    sheller::TimelineNameTable names;
+    names.modules.emplace_back("runner.exe");
+    names.sections.push_back({"headers"});
+    facade::SemanticCollector collector(names);
+    sheller::behavior::EventTally tally;
+    sheller::behavior::BehaviorRules rules(sheller::behavior::BehaviorRulesParams{});
+    facade::EventStream stream(&rules, tally, collector, nullptr, {}, ~std::uint64_t{0});
+    sheller::engine::SyscallRunOptions run;
+    const auto facts = facade::install_behavior_sinks(run, stream, &names);
+    ASSERT_TRUE(facts.module_sink);
+    sheller::engine::mem_region::ModuleImage image;
+    std::memcpy(image.module.name.data(), "arrived.dll", 12);
+    image.module.base = 0x180000000;
+    image.module.size = 0x3000;
+    image.header_bytes.resize(0x400);
+    const auto w16 = [&](std::size_t at, std::uint16_t v) {
+        std::memcpy(image.header_bytes.data() + at, &v, sizeof v);
+    };
+    const auto w32 = [&](std::size_t at, std::uint32_t v) {
+        std::memcpy(image.header_bytes.data() + at, &v, sizeof v);
+    };
+    w16(0, 0x5A4D);
+    w32(0x3C, 0x40);
+    w32(0x40, 0x4550);
+    w16(0x46, 1);
+    w16(0x54, 0xF0);
+    w16(0x58, 0x20B);
+    w32(0x78, 0x1000);
+    w32(0x90, 0x3000);
+    w32(0x94, 0x400);
+    std::memcpy(image.header_bytes.data() + 0x148, ".text", 6);
+    w32(0x150, 0x1000);
+    w32(0x154, 0x1000);
+    w32(0x158, 0x1000);
+    w32(0x16C, 0x60000020);
+    for (std::uint8_t index : std::array<std::uint8_t, 2>{12, 13}) {
+        image.module.base += 0x10000;
+        facts.module_sink(index, image);
+        const std::array<std::uint8_t, 8> fields{index, 0, 1, 0, index, 0, 1, 0};
+        run.event_sink(sheller::EventTypeId::kXfer, {}, fields);
+    }
+    const auto events = collector.take();
+    ASSERT_EQ(events.size(), 2U);
+    for (const auto& event : events) {
+        EXPECT_EQ(event.from_module, "arrived.dll");
+        EXPECT_EQ(event.to_module, "arrived.dll");
+        EXPECT_EQ(event.from_section, ".text");
+        EXPECT_EQ(event.to_section, ".text");
+    }
+    EXPECT_EQ(names.modules[0], "runner.exe");
+    EXPECT_EQ(names.modules[12], "arrived.dll");
+    EXPECT_EQ(names.modules[13], "arrived.dll");
+}

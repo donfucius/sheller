@@ -146,8 +146,11 @@ bool prolog_total(uc_engine* uc, std::uint64_t info_va, std::uint32_t count_of_c
 
 // The language-handler classification the walk routes on: FuncInfo signature
 // or exported __CxxFrameHandler{,2,3,4} means the C++ protocol (the real
-// handler runs; the engine never interprets handler_data); anything else
-// keeps the __C_specific_handler scope-table semantics.
+// handler runs; the engine never interprets handler_data); a shape-validated
+// {count, entries} table keeps the __C_specific_handler scope-table
+// semantics; anything else (private wrapper handlers whose HandlerData is
+// metadata, not a count) also runs as a guest handler - the real function
+// reads DispatcherContext.HandlerData and dispatches itself.
 enum class HandlerKind { ScopeTable, Cxx };
 HandlerKind classify_language_handler(uc_engine* uc, const mem_region::MemRegionMap& map,
                                       std::uint64_t handler_va, std::uint64_t handler_data);

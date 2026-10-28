@@ -197,7 +197,11 @@ IatAudit audit_imports(const std::uint8_t* image, const std::size_t size,
         if (name_rva == 0 && first_thunk == 0) {
             break; // null terminator descriptor
         }
+        const auto original_thunk = read_u32(desc);
         for (std::size_t index = 0; index * thunk_size + thunk_size <= size; ++index) {
+            if (original_thunk != 0 && read_u64(original_thunk + index * thunk_size) == 0) {
+                break; // this descriptor's ILT ends before the adjacent IAT slice
+            }
             const std::size_t thunk_rva = first_thunk + index * thunk_size;
             const auto bound_va = thunk_size == 4 ? read_u32(thunk_rva) : read_u64(thunk_rva);
             if (bound_va == 0) {
@@ -236,11 +240,14 @@ auto looks_like_name_record(const std::vector<std::uint8_t>& image, const std::u
 }
 
 // One reconstructed import: the thunk's RVA in the dump image plus the
-// (module, function) the mapper attributed to its runtime value.
+// (module, function) the mapper attributed to its runtime value. An ordinal
+// import keeps the ILT ordinal-flag form instead of a name.
 struct ReconstructedImport {
     std::size_t thunk_rva{};
     std::string module;
     std::string function;
+    bool by_ordinal{};
+    std::uint16_t ordinal{};
 };
 
 // Scans the image for runs of consecutive thunks whose values are absolute
@@ -285,32 +292,158 @@ find_resolved_iat_runs(std::vector<std::uint8_t>& image, const ExportsMapper& ma
 
 } // namespace
 
+// First-chance reconstruction from the dump's own import directory. An
+// unpacking stub that restores the payload's original import table leaves
+// the ground truth in the image: DataDirectory[1] descriptors carry each
+// dependency's real name and - through the OriginalFirstThunk - the ORIGINAL
+// referenced symbol per slot, forwarders included. Rebuilding from those
+// identities keeps every (DLL, name) pair resolvable: kernel32 exports
+// EnterCriticalSection as a forwarder, so the pair survives even though the
+// bound slot address landed in ntdll. The address-run reconstruction below
+// stays as the fallback for images whose directory was wiped (the packed
+// EXE corpus shape). Returns false when no usable directory exists.
+bool reconstruct_from_original_directory(std::vector<std::uint8_t>& image,
+                                         const ExportsMapper& mapper, IatAudit& audit,
+                                         std::vector<std::vector<ReconstructedImport>>& groups)
+{
+    const auto size = image.size();
+    const auto e_lfanew = static_cast<std::size_t>(image[kDosHeaderELfanewOffset]) |
+                          (static_cast<std::size_t>(image[0x3D]) << 8) |
+                          (static_cast<std::size_t>(image[0x3E]) << 16) |
+                          (static_cast<std::size_t>(image[0x3F]) << 24);
+    const std::size_t dir_entry = e_lfanew + kOptionalHeaderOffset +
+                                  kOptionalHeaderDataDirectoryBase64 +
+                                  kDataDirectoryImport * kDataDirectoryEntrySize;
+    if (dir_entry + 8 > size) {
+        return false;
+    }
+    const auto dir_rva = static_cast<std::size_t>(image[dir_entry]) |
+                         (static_cast<std::size_t>(image[dir_entry + 1]) << 8) |
+                         (static_cast<std::size_t>(image[dir_entry + 2]) << 16) |
+                         (static_cast<std::size_t>(image[dir_entry + 3]) << 24);
+    if (dir_rva == 0 || dir_rva + 20 > size) {
+        return false;
+    }
+    const auto read_u64 = [&](const std::size_t rva) {
+        std::uint64_t value = 0;
+        for (std::size_t i = 0; i < 8 && rva + i < size; ++i) {
+            value |= static_cast<std::uint64_t>(image[rva + i]) << (i * 8);
+        }
+        return value;
+    };
+    const auto read_u32 = [&](const std::size_t rva) {
+        return static_cast<std::uint32_t>(image[rva]) |
+               (static_cast<std::uint32_t>(image[rva + 1]) << 8) |
+               (static_cast<std::uint32_t>(image[rva + 2]) << 16) |
+               (static_cast<std::uint32_t>(image[rva + 3]) << 24);
+    };
+    constexpr std::size_t kThunk = 8;
+    for (std::size_t d = 0; d < 64; ++d) {
+        const std::size_t desc = dir_rva + d * 20;
+        if (desc + 20 > size) {
+            return false;
+        }
+        const auto name_rva = read_u32(desc + 12);
+        const auto first_thunk = read_u32(desc + 16);
+        if (name_rva == 0 && first_thunk == 0) {
+            break; // terminator
+        }
+        if (name_rva == 0 || name_rva >= size || first_thunk == 0 || first_thunk + kThunk > size) {
+            return false; // malformed: caller falls back
+        }
+        std::string module;
+        for (std::size_t i = name_rva; i < size && image[i] != 0 && module.size() < 64; ++i) {
+            module.push_back(static_cast<char>(image[i]));
+        }
+        if (module.empty()) {
+            return false;
+        }
+        const auto int_rva = read_u32(desc); // OriginalFirstThunk: the original names
+        std::vector<ReconstructedImport> imports;
+        for (std::size_t t = 0; t < 512; ++t) {
+            const std::uint64_t original = int_rva != 0 ? read_u64(int_rva + t * kThunk) : 0;
+            if (original == 0) {
+                break; // terminator
+            }
+            ReconstructedImport imp;
+            imp.thunk_rva = first_thunk + t * kThunk;
+            imp.module = module;
+            if ((original >> 63) != 0) {
+                imp.by_ordinal = true;
+                imp.ordinal = static_cast<std::uint16_t>(original & 0xFFFF);
+            } else {
+                const auto hint_rva = static_cast<std::size_t>(original & 0x7FFFFFFFULL);
+                if (hint_rva + 3 > size) {
+                    return false;
+                }
+                for (std::size_t i = hint_rva + 2;
+                     i < size && image[i] != 0 && imp.function.size() < 128; ++i) {
+                    imp.function.push_back(static_cast<char>(image[i]));
+                }
+                if (imp.function.empty()) {
+                    return false;
+                }
+            }
+            // Sanity: the slot's bound runtime value should still resolve to
+            // some known module; unresolvable slots mean this directory is
+            // not a restored payload table - fall back.
+            const auto bound = read_u64(imp.thunk_rva);
+            if (bound < size || !mapper.resolve(bound).has_value()) {
+                return false;
+            }
+            imports.push_back(std::move(imp));
+        }
+        if (imports.empty()) {
+            return false;
+        }
+        audit.covered_count += imports.size();
+        groups.push_back(std::move(imports));
+    }
+    return !groups.empty();
+}
+
 IatAudit reconstruct_imports(std::vector<std::uint8_t>& image, const ExportsMapper& mapper)
 {
     IatAudit audit;
-    const auto runs = find_resolved_iat_runs(image, mapper);
+    std::vector<std::vector<ReconstructedImport>> runs;
+    if (reconstruct_from_original_directory(image, mapper, audit, runs)) {
+        return audit; // groups hold the original identities; shared rebuild below
+    }
+    audit = IatAudit{};
+    // Do not replace a declared, partially unresolved IAT with only the
+    // resolvable runs: that would erase evidence and turn partial into complete.
+    if (!audit_imports(image.data(), image.size(), mapper).uncovered.empty()) {
+        return audit;
+    }
+    runs = find_resolved_iat_runs(image, mapper);
     if (runs.empty()) {
         return audit;
     }
 
-    // One descriptor per run: a run is one contiguous zero-free stretch of
-    // the payload's original per-DLL IAT array, so the loader's walk from
-    // the descriptor's FirstThunk sees exactly this run and terminates at
-    // the original zero. Merging runs into one descriptor would strand the
-    // imports behind an intermediate zero. The DLL is named after the
-    // first slot's attributed module: the original import table grouped
-    // each DLL's functions into one array, so every slot in the run
-    // resolves through that DLL (forwarded exports resolve inside it).
+    // One descriptor per RESOLVED module within each run: forwarded
+    // slots resolve into their final host DLL, and a (kernel32, Rtl*)
+    // pair is unresolvable for the Windows loader - so the run splits
+    // into consecutive sub-groups, each with its own descriptor and its
+    // own fresh ILT in the blob. Slot positions never move (the code
+    // references fixed IAT slots); the loader binds each descriptor's
+    // slots from that descriptor's ILT, which terminates in the blob.
     struct Group {
         std::string module;
         std::vector<const ReconstructedImport*> imports;
     };
     std::vector<Group> groups;
     for (const auto& run : runs) {
-        groups.push_back({run.front().module, {}});
-        for (const auto& imp : run) {
-            groups.back().imports.push_back(&imp);
+        std::string current_module = run.front().module;
+        std::vector<const ReconstructedImport*> current_imports{&run.front()};
+        for (std::size_t i = 1; i < run.size(); ++i) {
+            if (run[i].module != current_module) {
+                groups.push_back({current_module, std::move(current_imports)});
+                current_module = run[i].module;
+                current_imports.clear();
+            }
+            current_imports.push_back(&run[i]);
         }
+        groups.push_back({current_module, std::move(current_imports)});
     }
 
     // Build the reconstruction blob: hint/name records, then the DLL name
@@ -346,6 +479,12 @@ IatAudit reconstruct_imports(std::vector<std::uint8_t>& image, const ExportsMapp
     std::vector<std::uint32_t> name_rvas;
     for (const auto& group : groups) {
         for (const auto* imp : group.imports) {
+            if (imp->by_ordinal) {
+                // Ordinal imports have no hint/name record: the thunk value
+                // is the ordinal-flagged ILT form, filled in at rewrite.
+                name_rvas.push_back(0);
+                continue;
+            }
             const std::string& function = imp->function;
             const auto at = reserve(2 + function.size() + 1);
             blob[at] = 0;
@@ -359,6 +498,13 @@ IatAudit reconstruct_imports(std::vector<std::uint8_t>& image, const ExportsMapp
         const auto at = reserve(group.module.size() + 1);
         std::memcpy(blob.data() + at, group.module.c_str(), group.module.size() + 1);
         dll_rvas.push_back(static_cast<std::uint32_t>(section_rva + at));
+    }
+    // Each descriptor reads its own terminated lookup table. Its IAT slice
+    // remains adjacent to the next module's slice in the original image.
+    cursor = (cursor + 7) & ~std::size_t{7};
+    std::vector<std::size_t> ilt_offsets;
+    for (const auto& group : groups) {
+        ilt_offsets.push_back(reserve((group.imports.size() + 1) * 8));
     }
     const std::size_t desc_at = reserve((groups.size() + 1) * 20);
     const std::size_t blob_used = cursor;
@@ -386,17 +532,21 @@ IatAudit reconstruct_imports(std::vector<std::uint8_t>& image, const ExportsMapp
 
     // All checks passed - commit: rewrite the thunks to the new records.
     std::size_t name_index = 0;
-    for (const auto& group : groups) {
-        for (const auto* imp : group.imports) {
-            const auto value = static_cast<std::uint64_t>(name_rvas[name_index]);
+    for (std::size_t g = 0; g < groups.size(); ++g) {
+        std::size_t slot = ilt_offsets[g];
+        for (const auto* imp : groups[g].imports) {
+            const std::uint64_t value =
+                imp->by_ordinal ? (0x8000000000000000ull | static_cast<std::uint64_t>(imp->ordinal))
+                                : static_cast<std::uint64_t>(name_rvas[name_index]);
             std::memcpy(image.data() + imp->thunk_rva, &value, sizeof value);
+            std::memcpy(blob.data() + slot, &value, sizeof value);
+            slot += sizeof value;
             ++audit.covered_count;
             ++name_index;
         }
     }
 
     // Fill the descriptor array in the blob.
-    std::size_t name_index2 = 0;
     const auto put32_blob = [&](const std::size_t at, const std::uint32_t value) {
         blob[at] = static_cast<std::uint8_t>(value);
         blob[at + 1] = static_cast<std::uint8_t>(value >> 8);
@@ -405,14 +555,12 @@ IatAudit reconstruct_imports(std::vector<std::uint8_t>& image, const ExportsMapp
     };
     for (std::size_t g = 0; g < groups.size(); ++g) {
         const std::size_t desc = desc_at + g * 20;
-        put32_blob(desc, 0);                // OriginalFirstThunk: none (IAT = name table)
+        put32_blob(desc, static_cast<std::uint32_t>(section_rva + ilt_offsets[g]));
         put32_blob(desc + 4, 0);            // TimeDateStamp
         put32_blob(desc + 8, 0);            // ForwarderChain
         put32_blob(desc + 12, dll_rvas[g]); // Name
         put32_blob(desc + 16, static_cast<std::uint32_t>(groups[g].imports.front()->thunk_rva));
-        // the thunks themselves were already rewritten in place (the run
-        // lives in the payload's original .rdata IAT arrays)
-        name_index2 += groups[g].imports.size();
+        // FirstThunk preserves the addresses referenced by the payload.
     }
     // The null terminator descriptor stays zero (blob was zero-initialized).
 
@@ -529,7 +677,11 @@ IatAudit synthesize_name_imports(std::vector<std::uint8_t>& image, const Exports
         if (name_rva == 0 && first_thunk == 0) {
             break; // null terminator descriptor
         }
+        const auto original_thunk = read_u32(desc);
         for (std::size_t index = 0; index * thunk_size + thunk_size <= size; ++index) {
+            if (original_thunk != 0 && read_u64(original_thunk + index * thunk_size) == 0) {
+                break; // this descriptor's ILT ends before the adjacent IAT slice
+            }
             const std::size_t thunk_rva = first_thunk + index * thunk_size;
             const auto bound_va = thunk_size == 4 ? read_u32(thunk_rva) : read_u64(thunk_rva);
             if (bound_va == 0) {
@@ -669,7 +821,11 @@ ResidualAudit audit_residual_abs_va(const std::uint8_t* image, std::size_t size)
         if (name_rva == 0 && first_thunk == 0) {
             break; // null terminator descriptor
         }
+        const auto original_thunk = read_u32(desc);
         for (std::size_t index = 0; index * thunk_size + thunk_size <= size; ++index) {
+            if (original_thunk != 0 && read_u64(original_thunk + index * thunk_size) == 0) {
+                break; // this descriptor's ILT ends before the adjacent IAT slice
+            }
             const std::size_t thunk_rva = first_thunk + index * thunk_size;
             const auto bound_va = read_u64(thunk_rva);
             if (bound_va == 0) {

@@ -55,6 +55,47 @@ bool looks_like_pe(std::span<const std::uint8_t> bytes);
 std::expected<std::vector<std::uint8_t>, WrapError> wrap_blob(WrapArch arch,
                                                               std::span<const std::uint8_t> blob);
 
+// --- load-stub runner (DLL-input route) ---
+//
+// A deterministic byte-construction function in the wrapper family: the
+// entry stub calls LoadLibraryW on the sample's arrival file name, then
+// exits through ExitProcess with a fixed code - that exit is the DLL
+// route's designed finish line, not a fallback. The import table is
+// variable-length: the two kernel32 base entries plus every verified
+// system dependency of the pending sample (see the admission step in the
+// capture path), so the real loader initializes all of them into the
+// captured world. Same bitness/arrival name/dependency plan must produce
+// byte-identical output; no prebuilt asset, no runtime compilation.
+
+struct RunnerImport {
+    std::string module;      // dependency DLL name as verified (ASCII, e.g. "USER32.dll")
+    std::string symbol;      // by-name import when non-empty (exact referenced name)
+    std::uint16_t ordinal{}; // by-ordinal import when symbol is empty
+
+    friend constexpr bool operator==(const RunnerImport&, const RunnerImport&) = default;
+};
+
+struct RunnerPlan {
+    WrapArch arch{WrapArch::kX64};
+    std::string arrival_name;            // sample file name, UTF-8 (the stub's path string)
+    std::vector<RunnerImport> imports{}; // base pair first, then verified system deps
+};
+
+enum class RunnerError {
+    kNone = 0,
+    kBadArrivalName,  // empty, path separators, or not representable
+    kReservedArrival, // collides with a planned import's module name
+    kNoImports,       // plan lacks the base LoadLibraryW/ExitProcess pair
+    kTooManyImports,  // plan exceeds the bounded import capacity
+    kBadSymbol,       // by-name and by-ordinal both empty, or name too long
+};
+
+std::string_view runner_error_message(RunnerError error);
+
+inline constexpr std::size_t kMaxRunnerImports = 96;
+
+std::expected<std::vector<std::uint8_t>, RunnerError> build_runner(const RunnerPlan& plan);
+
 } // namespace sheller::capture
 
 #endif // SHELLER_CAPTURE_WRAPPER_H

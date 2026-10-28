@@ -9,6 +9,7 @@
 // target has no unicorn include path).
 
 #include "capture_detail.h"
+#include "dll_admission.h"
 #include "pe_headers.h"
 #include "wrapper.h"
 #include <memory>
@@ -355,7 +356,8 @@ std::expected<PeImageInfo, std::string> read_sample_headers(const std::filesyste
 // into the in-place spin and zero its TLS callback array. On success the
 // sample has executed zero instructions of its own.
 std::expected<SpawnedSample, Result> spawn_sample(const Options& options,
-                                                  const PeImageInfo& headers)
+                                                  const PeImageInfo& headers,
+                                                  const std::filesystem::path& controlled_cwd = {})
 {
     ProcThreadAttributeList attribute_list{1};
     auto creation_flags = DWORD{CREATE_SUSPENDED};
@@ -381,10 +383,16 @@ std::expected<SpawnedSample, Result> spawn_sample(const Options& options,
         command += L" ";
         command += std::wstring(options.sample_args.begin(), options.sample_args.end());
     }
+    // Controlled working directory (DLL-input route): the runner is spawned
+    // with its own empty temp directory as CWD, so nothing in the analyst's
+    // directory influences the loader's search path.
+    const std::wstring controlled_cwd_w =
+        controlled_cwd.empty() ? std::wstring{} : controlled_cwd.wstring();
+    const wchar_t* const cwd = controlled_cwd_w.empty() ? nullptr : controlled_cwd_w.c_str();
     PROCESS_INFORMATION process_info{};
-    const auto created =
-        CreateProcessW(options.sample_path.c_str(), command.data(), nullptr, nullptr, FALSE,
-                       creation_flags, nullptr, nullptr, &startup_info.StartupInfo, &process_info);
+    const auto created = CreateProcessW(
+        options.sample_path.c_str(), command.data(), nullptr, nullptr, FALSE, creation_flags,
+        nullptr, const_cast<LPWSTR>(cwd), &startup_info.StartupInfo, &process_info);
     if (created == 0) {
         return std::unexpected(
             fail(Status::kSpawnFailed,
@@ -571,8 +579,10 @@ std::expected<void, Result> wait_for_entry_spin(SpawnedSample& sample,
 }
 
 // Phase 3: photograph registers, TEB and all committed regions into the
-// writer; returns the summary line for the CLI.
-std::expected<std::string, Result> capture_state(SpawnedSample& sample, snapshot::Writer& writer)
+// writer; returns the summary line for the CLI. A non-null pending module
+// (the DLL-input route) switches the container to v2.
+std::expected<std::string, Result> capture_state(SpawnedSample& sample, snapshot::Writer& writer,
+                                                 const snapshot::PendingModule* pending = nullptr)
 {
     // Register photograph follows the sampled world: WOW64 threads give
     // their 32-bit context only through the Wow64 API pair (the 64-bit
@@ -663,8 +673,9 @@ std::expected<std::string, Result> capture_state(SpawnedSample& sample, snapshot
         return fail(Status::kWriteFailed, std::string(snapshot::error_message(error)));
     };
     const auto snapshot_bitness = sample.is_wow64 ? snapshot::kBitness32 : snapshot::kBitness64;
-    if (const auto written = writer.write_header(
-            snapshot::Header{.version = snapshot::kVersion, .bitness = snapshot_bitness});
+    if (const auto written = writer.write_header(snapshot::Header{
+            .version = pending != nullptr ? snapshot::kVersionV2 : snapshot::kVersion,
+            .bitness = snapshot_bitness});
         !written) {
         return std::unexpected(write_fail(written.error()));
     }
@@ -785,14 +796,72 @@ class TempFileGuard {
 
 // Input normalization: a bare shellcode blob -
 // auto-detected by the missing MZ, or forced by the flag - is wrapped into
-// a minimal PE and the capture proceeds against that temp file. The guard
-// lives in the caller's run scope: the spawned process maps the temp image
-// until the capture is done, so deletion must wait for it.
+// a minimal PE and the capture proceeds against that temp file. A DLL
+// input takes its own route: the system-dependency admission produces a
+// load-stub runner (the sample's dependencies preload through the runner's
+// own import table), the runner is what gets spawned, and the sample bytes
+// ride beside the snapshot as the pending module. The guard lives in the
+// caller's run scope: the spawned process maps the temp image until the
+// capture is done, so deletion must wait for it.
 struct EffectiveCapture {
     Options options{};
     std::unique_ptr<TempFileGuard> wrapper;
     WrapError wrap_error{WrapError::kNone}; // blob and temp-directory failures
+    // DLL-input route (empty for EXE/blob inputs):
+    std::optional<snapshot::PendingModule> pending{}; // sample bytes + arrival name
+    std::optional<Result> admission_failure{};        // named pre-spawn rejection
 };
+
+// DLL-input route. Returns true when the route took over (either the
+// pending module is armed or a named admission failure is set); false
+// means "not a DLL input, continue with EXE passthrough".
+bool normalize_dll_input(const Options& options, const std::vector<std::uint8_t>& bytes,
+                         EffectiveCapture& effective)
+{
+    PeImageInfo info;
+    if (parse_pe_headers(bytes.data(), bytes.size(), info) != PeError::kNone || !info.is_dll) {
+        return false;
+    }
+    if (info.bitness != 64) {
+        effective.admission_failure =
+            fail(Status::kNotX64Pe, "DLL input is only supported for x64 images");
+        return true;
+    }
+    const std::string arrival_name = options.sample_path.filename().string();
+    const auto plan = admit_dll_sample(bytes, arrival_name);
+    if (!plan) {
+        effective.admission_failure =
+            fail(Status::kNotX64Pe, std::format("DLL input rejected: {}", plan.error()));
+        return true;
+    }
+    const auto runner = build_runner(*plan);
+    if (!runner) {
+        effective.admission_failure =
+            fail(Status::kCaptureFailed, std::string(runner_error_message(runner.error())));
+        return true;
+    }
+    thread_local std::mt19937_64 generator{std::random_device{}()};
+    char name[32] = {};
+    std::snprintf(name, sizeof name, "sheller_run_%llx.exe",
+                  static_cast<unsigned long long>(generator()));
+    std::error_code temp_ec;
+    const auto temp_dir = std::filesystem::temp_directory_path(temp_ec);
+    if (temp_ec) {
+        effective.wrap_error = WrapError::kTempDirUnavailable;
+        return true;
+    }
+    effective.wrapper = std::make_unique<TempFileGuard>(temp_dir / name, *runner);
+    if (!effective.wrapper->ok()) {
+        effective.wrapper.reset();
+        effective.wrap_error = WrapError::kTempDirUnavailable;
+        return true;
+    }
+    effective.options = options;
+    effective.options.sample_path = effective.wrapper->path();
+    effective.pending = snapshot::PendingModule{
+        .name = arrival_name, .bitness = snapshot::kBitness64, .bytes = bytes};
+    return true;
+}
 
 EffectiveCapture normalize_input(const Options& options)
 {
@@ -807,6 +876,9 @@ EffectiveCapture normalize_input(const Options& options)
         std::vector<std::uint8_t> bytes{std::istreambuf_iterator<char>(in),
                                         std::istreambuf_iterator<char>()};
         if (looks_like_pe(bytes)) {
+            if (normalize_dll_input(options, bytes, effective)) {
+                return effective; // DLL route handled (pending armed or named failure)
+            }
             effective.options = options; // standard PE input: pass through
             return effective;
         }
@@ -846,7 +918,8 @@ EffectiveCapture normalize_input(const Options& options)
     return effective;
 }
 
-std::expected<SpawnedSample, Result> start_capture(const Options& options)
+std::expected<SpawnedSample, Result> start_capture(const Options& options,
+                                                   const std::filesystem::path& controlled_cwd = {})
 {
     std::error_code ec;
     if (!std::filesystem::exists(options.sample_path, ec) || ec) {
@@ -858,7 +931,7 @@ std::expected<SpawnedSample, Result> start_capture(const Options& options)
     if (!headers) {
         return std::unexpected(fail(Status::kNotX64Pe, headers.error()));
     }
-    auto sample = spawn_sample(options, *headers);
+    auto sample = spawn_sample(options, *headers, controlled_cwd);
     if (!sample) {
         return sample;
     }
@@ -881,7 +954,12 @@ Result run_impl(const Options& options)
         return fail(wrap_status(effective.wrap_error),
                     std::string(wrap_error_message(effective.wrap_error)));
     }
-    auto sample = start_capture(effective.options);
+    if (effective.admission_failure) {
+        return *effective.admission_failure; // named pre-spawn rejection
+    }
+    auto sample =
+        start_capture(effective.options, effective.pending ? effective.wrapper->path().parent_path()
+                                                           : std::filesystem::path{});
     if (!sample) {
         return sample.error();
     }
@@ -892,12 +970,19 @@ Result run_impl(const Options& options)
                     std::format("cannot open output: {}", options.output_path.string()));
     }
     snapshot::Writer writer{out};
-    const auto captured = capture_state(*sample, writer);
+    const auto captured =
+        capture_state(*sample, writer, effective.pending ? &*effective.pending : nullptr);
     if (!captured) {
         return captured.error();
     }
     if (const auto finalized = writer.finalize_region_count(); !finalized) {
         return fail(Status::kWriteFailed, std::string(snapshot::error_message(finalized.error())));
+    }
+    if (effective.pending) {
+        if (const auto written = writer.write_pending(*effective.pending); !written) {
+            return fail(Status::kWriteFailed,
+                        std::string(snapshot::error_message(written.error())));
+        }
     }
     out.flush();
     if (!out) {
@@ -915,19 +1000,31 @@ Result run_to_buffer(const Options& options, std::vector<std::uint8_t>& snapshot
         return fail(wrap_status(effective.wrap_error),
                     std::string(wrap_error_message(effective.wrap_error)));
     }
-    auto sample = start_capture(effective.options);
+    if (effective.admission_failure) {
+        return *effective.admission_failure; // named pre-spawn rejection
+    }
+    auto sample =
+        start_capture(effective.options, effective.pending ? effective.wrapper->path().parent_path()
+                                                           : std::filesystem::path{});
     if (!sample) {
         return sample.error();
     }
 
     std::ostringstream out(std::ios::binary);
     snapshot::Writer writer{out};
-    const auto captured = capture_state(*sample, writer);
+    const auto captured =
+        capture_state(*sample, writer, effective.pending ? &*effective.pending : nullptr);
     if (!captured) {
         return captured.error();
     }
     if (const auto finalized = writer.finalize_region_count(); !finalized) {
         return fail(Status::kWriteFailed, std::string(snapshot::error_message(finalized.error())));
+    }
+    if (effective.pending) {
+        if (const auto written = writer.write_pending(*effective.pending); !written) {
+            return fail(Status::kWriteFailed,
+                        std::string(snapshot::error_message(written.error())));
+        }
     }
     const std::string bytes = out.str();
     snapshot.assign(bytes.begin(), bytes.end());

@@ -423,8 +423,7 @@ int run_snapshot(const std::string& input, const std::vector<std::string>& rejec
         if (failure.artifacts.run_stats.has_value()) {
             const auto& stats = *failure.artifacts.run_stats;
             const auto limit =
-                failure.kind == sheller::AnalysisFailure::Kind::kRun
-                        && failure.run.has_value()
+                failure.kind == sheller::AnalysisFailure::Kind::kRun && failure.run.has_value()
                     ? limit_first_of(failure.run->error)
                     : LimitFirst::kNone;
             std::cout << std::format("sheller run: terminated={} exit={:#x} syscalls={} "
@@ -735,8 +734,7 @@ int main(int argc, char* argv[])
             run_input, reject_specs, run_dump_dir,
             EngineBounds{.max_instructions = run_budget,
                          .timeout_ms = run_timeout_ms,
-                         .xfer_number =
-                             stop.has_value() && stop->xfer_goal ? stop->xfer_number : 0,
+                         .xfer_number = stop.has_value() && stop->xfer_goal ? stop->xfer_number : 0,
                          .esp_stop_goal =
                              stop.has_value() ? stop->esp : sheller::engine::EspStopGoal::kNone},
             run_report_path, event_level_of(event_level), run_from_snapshot, run_save_snapshot,
@@ -831,8 +829,7 @@ int main(int argc, char* argv[])
             event_level_of(event_level),
             EngineBounds{.max_instructions = unpack_budget,
                          .timeout_ms = unpack_timeout_ms,
-                         .xfer_number =
-                             stop.has_value() && stop->xfer_goal ? stop->xfer_number : 0,
+                         .xfer_number = stop.has_value() && stop->xfer_goal ? stop->xfer_number : 0,
                          .esp_stop_goal =
                              stop.has_value() ? stop->esp : sheller::engine::EspStopGoal::kNone},
             unpack_report_path, unpack_save_snapshot);

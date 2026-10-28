@@ -14,6 +14,7 @@
 
 #include <sheller/analysis.h>
 #include <sheller/events.h>
+#include <sheller/unpack.h>
 
 #include "../behavior/api_descriptions.h"
 #include "../behavior/behavior_rules.h"
@@ -39,6 +40,11 @@
 #include <vector>
 
 namespace sheller::api::detail {
+
+// DLL outputs must cover the runtime sample base; EXE keeps its fallback.
+const unpack::RegionRepairReport*
+select_unpack_region(std::span<const unpack::RegionRepairReport> regions, std::uint64_t image_base,
+                     bool require_cover);
 
 // Non-Windows sample route (construct container + replay) shared failure
 // text: the two conditions are distinct on purpose, in wording and in
@@ -189,6 +195,8 @@ template <typename SnapshotT> Wiring wire_behavior(const SnapshotT& snapshot)
 // Module/section/syscall/parameter name tables for the renders and the
 // semantic resolution.
 TimelineNameTable build_timeline_names(const Wiring& wiring);
+void register_module_names(TimelineNameTable& names, std::size_t module_index,
+                           const engine::mem_region::ModuleImage& image);
 
 // Semantic-tier collector: a straight event_sink tap into
 // std::vector<SemanticEvent> - no count cap, the ledger ring is never
@@ -323,7 +331,8 @@ class EventStream {
 // engine registers no fact hooks. The host observer rides along behind its
 // type mask and throw guard; an un-instrumented run suppresses the internal
 // tiers but never the host subscription.
-engine::FactChannel install_behavior_sinks(engine::SyscallRunOptions& run, EventStream& stream);
+engine::FactChannel install_behavior_sinks(engine::SyscallRunOptions& run, EventStream& stream,
+                                           TimelineNameTable* names = nullptr);
 
 // Assembles the artifacts block shared by the success and failure paths
 // (failure still carries artifacts). A timeline codec error is reported

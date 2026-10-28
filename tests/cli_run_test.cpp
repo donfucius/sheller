@@ -166,9 +166,9 @@ TEST(RunCli, XferStopPrintsTheStopAndWritesTheDump)
     std::filesystem::remove_all(dir);
     std::filesystem::create_directories(dir);
     const auto dump = dir / "dump";
-    const auto result = run_and_capture(
-        std::format("run \"{}\" --from-snapshot --stop xfer=1 --dump \"{}\"",
-                    captured_xfer_snapshot(), dump.string()));
+    const auto result =
+        run_and_capture(std::format("run \"{}\" --from-snapshot --stop xfer=1 --dump \"{}\"",
+                                    captured_xfer_snapshot(), dump.string()));
     EXPECT_EQ(exit_code_of(result), "0") << result;
     EXPECT_NE(result.find("xfer target reached (xfers=1)"), std::string::npos) << result;
     EXPECT_NE(result.find("terminated=0"), std::string::npos) << result;
@@ -221,8 +221,7 @@ TEST(RunCli, XferGoalIsReachableOnTheDefaults)
     if (!std::filesystem::exists(sample)) {
         GTEST_SKIP() << "packed sample not present on this host";
     }
-    const auto result =
-        run_and_capture(std::format("run \"{}\" --stop xfer=1", sample.string()));
+    const auto result = run_and_capture(std::format("run \"{}\" --stop xfer=1", sample.string()));
     EXPECT_EQ(exit_code_of(result), "0") << result;
     EXPECT_NE(result.find("xfer target reached (xfers=1)"), std::string::npos) << result;
     EXPECT_EQ(result.find("instruction budget exhausted"), std::string::npos) << result;
@@ -230,9 +229,8 @@ TEST(RunCli, XferGoalIsReachableOnTheDefaults)
 
 TEST(RunCli, XferWallClockArrivingFirstIsATimeoutWithHint)
 {
-    const auto result =
-        run_and_capture(std::format("run \"{}\" --stop xfer=1 -b 0M --timeout-ms 200",
-                                    std::string(SHELLER_SAMPLE_SPIN_PATH)));
+    const auto result = run_and_capture(std::format(
+        "run \"{}\" --stop xfer=1 -b 0M --timeout-ms 200", std::string(SHELLER_SAMPLE_SPIN_PATH)));
     EXPECT_NE(exit_code_of(result), "0") << result;
     EXPECT_NE(result.find("xfer target 1 not reached (xfers=0)"), std::string::npos) << result;
     EXPECT_NE(result.find("; wall clock arrived first"), std::string::npos) << result;
@@ -746,8 +744,8 @@ TEST(RunCli, StopXferZeroLeavesTheRunAlone)
     }
     const auto via_off = run_and_capture(std::format(
         "run \"{}\" --from-snapshot --stop xfer=0 -b 0M --timeout-ms 200", snapshot.string()));
-    const auto no_goal = run_and_capture(std::format(
-        "run \"{}\" --from-snapshot -b 0M --timeout-ms 200", snapshot.string()));
+    const auto no_goal = run_and_capture(
+        std::format("run \"{}\" --from-snapshot -b 0M --timeout-ms 200", snapshot.string()));
     EXPECT_EQ(exit_code_of(via_off), exit_code_of(no_goal)) << via_off << "\n---\n" << no_goal;
     EXPECT_EQ(via_off.find("xfer target"), std::string::npos) << via_off;
 }
@@ -780,7 +778,7 @@ TEST(RunCli, EspHitStopsWithDumpAndExitZero)
     EXPECT_NE(result.find("terminated=0"), std::string::npos) << result;
     EXPECT_NE(result.find("syscalls=0"), std::string::npos) << result;
     EXPECT_TRUE(fs::exists(dump / "manifest.txt")) << result;
-    // Form A: the confirmation emits the passive event before the stop takes
+    // The confirmation emits the passive event before the stop takes
     // the run down - exactly one stack-restore in counts and detail.
     const auto json = read_file(report);
     EXPECT_NE(json.find("\"stack-restore\":1"), std::string::npos) << json;
@@ -920,7 +918,7 @@ TEST(RunCli, RelocatedStackIsASilentEspMiss)
 
 TEST(RunCli, PassiveStackRestoreFiresWithoutAnyGoal)
 {
-    // Form A: the observation is on by default. The hit corpus with no stop
+    // The observation is on by default. The hit corpus with no stop
     // option runs to its own terminate and still carries exactly one
     // stack-restore event - no esp stop line, no miss hint (no goal was
     // requested), exit code the run's own.

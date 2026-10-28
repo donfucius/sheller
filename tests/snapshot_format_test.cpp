@@ -255,4 +255,179 @@ TEST(SnapshotFormat, GoldenFileMatchesLayout)
            "version and regenerate the golden";
 }
 
+// --- v2: the pending-module block (DLL-input route) ---
+
+snapshot::PendingModule test_pending()
+{
+    snapshot::PendingModule pending;
+    pending.name = "sample.dll";
+    pending.bitness = snapshot::kBitness64;
+    pending.bytes = {0x4D, 0x5A, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05};
+    return pending;
+}
+
+// Canonical v2 container: same body as the v1 canonical plus one trailing
+// pending block, written through the streaming path.
+std::string canonical_v2_snapshot()
+{
+    std::ostringstream out;
+    snapshot::Writer writer{out};
+    if (!writer.write_header(
+            snapshot::Header{.version = snapshot::kVersionV2, .bitness = snapshot::kBitness64}) ||
+        !writer.write_registers(test_registers()) || !writer.write_metadata(test_metadata()) ||
+        !writer.write_region(region_with_content(), region_content().data()) ||
+        !writer.write_region(region_without_content(), nullptr) ||
+        !writer.finalize_region_count() || !writer.write_pending(test_pending())) {
+        ADD_FAILURE() << "canonical v2 snapshot serialization failed";
+    }
+    return out.str();
+}
+
+TEST(SnapshotFormat, V2PendingRoundTrip)
+{
+    std::istringstream in(canonical_v2_snapshot());
+    snapshot::Reader reader{in};
+    const auto header = reader.read_header();
+    ASSERT_TRUE(header.has_value());
+    EXPECT_EQ(header->version, snapshot::kVersionV2);
+    ASSERT_TRUE(reader.read_registers().has_value());
+    ASSERT_TRUE(reader.read_metadata().has_value());
+    for (std::uint32_t i = 0; i < header->region_count; ++i) {
+        ASSERT_TRUE(reader.read_region().has_value());
+    }
+    const auto pending = reader.read_pending();
+    ASSERT_TRUE(pending.has_value()) << snapshot::error_message(pending.error());
+    EXPECT_EQ(*pending, test_pending());
+    // exactly one block per container
+    const auto again = reader.read_pending();
+    ASSERT_FALSE(again.has_value());
+    EXPECT_EQ(again.error(), snapshot::Error::kBadPending);
+}
+
+TEST(SnapshotFormat, V2HeaderPatchKeepsV1BodyIdentical)
+{
+    // The v2 container is the v1 body byte-for-byte (same registers,
+    // metadata and regions) plus the version word and the trailing block.
+    const auto v1 = canonical_snapshot();
+    auto v2 = canonical_v2_snapshot();
+    ASSERT_GT(v2.size(), v1.size());
+    // Normalize the version word back to v1: the rest of the first
+    // v1.size() bytes must be identical.
+    v2[snapshot::kVersionOffset] = static_cast<char>(snapshot::kVersion);
+    EXPECT_EQ(v2.compare(0, v1.size(), v1), 0);
+    EXPECT_NE(v1.substr(snapshot::kVersionOffset, 4),
+              canonical_v2_snapshot().substr(snapshot::kVersionOffset, 4));
+}
+
+TEST(SnapshotFormat, V2ReaderAcceptsV1Container)
+{
+    std::istringstream in(canonical_snapshot());
+    snapshot::Reader reader{in};
+    const auto header = reader.read_header();
+    ASSERT_TRUE(header.has_value());
+    EXPECT_EQ(header->version, snapshot::kVersion);
+    ASSERT_TRUE(reader.read_registers().has_value());
+    ASSERT_TRUE(reader.read_metadata().has_value());
+    const auto regions = read_all_regions(in, header->region_count);
+    ASSERT_TRUE(regions.has_value());
+    // v1 files carry no pending block: the call is out of place, not a read
+    EXPECT_EQ(reader.read_pending().error(), snapshot::Error::kBadPending);
+}
+
+TEST(SnapshotFormat, V2WithoutPendingIsTruncated)
+{
+    const auto v2 = canonical_v2_snapshot();
+    // Cut the stream just after the last region - before the pending marker.
+    const auto v1_body = snapshot::kHeaderSize + snapshot::kRegistersSize +
+                         snapshot::kMetadataSize + 2 * snapshot::kRegionRecordSize + 16;
+    std::istringstream in(v2.substr(0, v1_body));
+    snapshot::Reader reader{in};
+    ASSERT_TRUE(reader.read_header().has_value());
+    ASSERT_TRUE(reader.read_registers().has_value());
+    ASSERT_TRUE(reader.read_metadata().has_value());
+    ASSERT_TRUE(reader.read_region().has_value());
+    ASSERT_TRUE(reader.read_region().has_value());
+    EXPECT_EQ(reader.read_pending().error(), snapshot::Error::kTruncated);
+}
+
+TEST(SnapshotFormat, V2TruncatedPendingPayloadIsRejected)
+{
+    const auto v2 = canonical_v2_snapshot();
+    std::istringstream in(v2.substr(0, v2.size() - 3));
+    snapshot::Reader reader{in};
+    ASSERT_TRUE(reader.read_header().has_value());
+    ASSERT_TRUE(reader.read_registers().has_value());
+    ASSERT_TRUE(reader.read_metadata().has_value());
+    ASSERT_TRUE(reader.read_region().has_value());
+    ASSERT_TRUE(reader.read_region().has_value());
+    EXPECT_EQ(reader.read_pending().error(), snapshot::Error::kTruncated);
+}
+
+TEST(SnapshotFormat, V2CorruptPendingMarkerIsRejected)
+{
+    auto v2 = canonical_v2_snapshot();
+    // The pending block starts right after the v1 body; corrupt its marker.
+    const auto v1_body = snapshot::kHeaderSize + snapshot::kRegistersSize +
+                         snapshot::kMetadataSize + 2 * snapshot::kRegionRecordSize + 16;
+    ASSERT_EQ(v2.compare(v1_body, sizeof snapshot::kPendingMarker,
+                         reinterpret_cast<const char*>(snapshot::kPendingMarker),
+                         sizeof snapshot::kPendingMarker),
+              0);
+    v2[v1_body] = 'X';
+    std::istringstream in(v2);
+    snapshot::Reader reader{in};
+    ASSERT_TRUE(reader.read_header().has_value());
+    ASSERT_TRUE(reader.read_registers().has_value());
+    ASSERT_TRUE(reader.read_metadata().has_value());
+    ASSERT_TRUE(reader.read_region().has_value());
+    ASSERT_TRUE(reader.read_region().has_value());
+    EXPECT_EQ(reader.read_pending().error(), snapshot::Error::kBadPending);
+}
+
+TEST(SnapshotFormat, WritePendingRequiresV2Header)
+{
+    std::ostringstream out;
+    snapshot::Writer writer{out};
+    ASSERT_TRUE(writer.write_header(
+        snapshot::Header{.version = snapshot::kVersion, .bitness = snapshot::kBitness64}));
+    EXPECT_EQ(writer.write_pending(test_pending()).error(), snapshot::Error::kBadPending);
+}
+
+TEST(SnapshotFormat, UnknownFutureVersionStillRejected)
+{
+    auto bytes = canonical_v2_snapshot();
+    bytes[snapshot::kVersionOffset] = 3; // beyond kVersionV2
+    std::istringstream in(bytes);
+    snapshot::Reader reader{in};
+    EXPECT_EQ(reader.read_header().error(), snapshot::Error::kUnsupportedVersion);
+}
+
+// A second PHYSICAL pending block appended after the first is rejected
+// by the container read close-out - the format defines one block per v2
+// file, and a silent tail would let hand-built doubles through.
+TEST(SnapshotFormat, V2DuplicatePhysicalBlockRejected)
+{
+    const auto v2 = canonical_v2_snapshot();
+    // Append a full second block (marker .. payload) to the container.
+    const auto v1_body = snapshot::kHeaderSize + snapshot::kRegistersSize +
+                         snapshot::kMetadataSize + 2 * snapshot::kRegionRecordSize + 16;
+    std::string doubled = v2;
+    doubled.append(v2, v1_body, v2.size() - v1_body);
+    ASSERT_GT(doubled.size(), v2.size());
+
+    std::istringstream in(doubled);
+    snapshot::Reader reader{in};
+    ASSERT_TRUE(reader.read_header().has_value());
+    ASSERT_TRUE(reader.read_registers().has_value());
+    ASSERT_TRUE(reader.read_metadata().has_value());
+    ASSERT_TRUE(reader.read_region().has_value());
+    ASSERT_TRUE(reader.read_region().has_value());
+    ASSERT_TRUE(reader.read_pending().has_value()); // first block reads fine
+    // The engine close-out (load_snapshot_stream) rejects the trailing
+    // bytes; the codec-level proof is that the stream still has them.
+    char extra = 0;
+    in.get(extra);
+    EXPECT_TRUE(!in.eof()) << "fixture must actually carry a trailing block";
+}
+
 } // namespace

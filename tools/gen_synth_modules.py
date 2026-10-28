@@ -54,6 +54,11 @@ def emit_module(manifest):
             body = b"\x31\xc0"  # xor eax, eax
             if x86:
                 body += b"\xc2" + struct.pack("<H", entry.get("stdcall_cleanup", 0))
+            else:
+                # U3: the stub must return to its caller - a bare xor with
+                # NOP padding runs off into the export directory when the
+                # engine does not intercept the symbol (IsCharAlphaA).
+                body += b"\xc3"  # ret
         stubs += body + b"\x90" * (STUB_STRIDE - len(body))
         cursor += STUB_STRIDE
     assert not is_ntdll or cursor - SECTION_RVA <= NTDLL_TEXT_SPAN, \

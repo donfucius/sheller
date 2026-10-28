@@ -10,8 +10,9 @@ Formula (design D5):
   (sum of module SizeOfImage + kEnvBlockSize + sample SizeOfImage
    + stack + heap + KUSER page) * 1.25
 
-x64 module sum is pinned to 1,892,352 by design.md; a mismatch fails the
-generation so a manifest drift cannot silently widen the threshold.
+The x64 module sum is pinned by the EXPECTED_MODULE_BYTES_X64 constant below;
+a mismatch fails the generation so a manifest drift cannot silently widen the
+threshold (the frozen eight-module directory sums to 2,162,688).
 """
 
 import argparse
@@ -23,7 +24,7 @@ import sys
 SCALE_NUM = 5
 SCALE_DEN = 4
 
-EXPECTED_MODULE_BYTES_X64 = 1892352
+EXPECTED_MODULE_BYTES_X64 = 2162688
 
 
 def read_le32(data, offset):

@@ -66,6 +66,14 @@ is never observed). Targets never lift the limit defaults (`run` 3M instructions
 their reach. The confirmed restore itself is a passive `stack-restore` event in
 every instrumented run - the stop is only ever the goal's.
 
+Exception for DLL inputs: UPX-class DllMain stubs open their entry with
+argument-shadow stores and a reason branch before the register saves, so the
+esp scan finds no contiguous push sequence there and `esp` / `esp+xfer` are a
+documented silent miss - the run closes normally and the unpack still
+completes. The usable stop face on a packed DLL is `--stop xfer=1`: the
+stub's post-restore jump to the unpacked entry is the first counted transfer,
+which is the OEP dump stop (see docs/cli.md, "Stop targets").
+
 ## Example runs
 
 The packed.exe corpus unpacked with `--stop esp+xfer`: the report's counts line
@@ -118,11 +126,20 @@ that audit.
   the capture reads the 32-bit PEB/TEB and the replay runs in 32-bit guest
   mode. The Linux sample route refuses PE32 with a named failure (32-bit
   container replay is a tracked backlog item).
-* **DLLs** - not supported as direct input: a DLL is not a process image, so
-  the capture spawn fails with `CreateProcessW failed (Win32 error 193)`
-  (BAD_EXE_FORMAT). There is no rundll32-style host either - the capture
-  photographs a process before any of its code runs, so a DLL loaded by a
-  host EXE is not in the snapshot.
+* **DLLs** - supported as x64 direct input on Windows (and for replaying
+  an already-captured v2 container anywhere): the capture spawns a
+  generated load-stub runner - base imports `kernel32!LoadLibraryW` and
+  `ExitProcess`, plus one import per verified system dependency so they
+  initialize normally under the real loader - and the sample bytes travel
+  beside the snapshot as a pending module; the load happens inside the
+  emulator - synthetic map, relocations, IAT resolution, Ldr entry, TLS
+  callbacks, DllMain `DLL_PROCESS_ATTACH` - so the sample never executes
+  in a real process. One sample DLL per run; dependencies are admitted
+  by system-source verification (including `user32` - a same-named file
+  outside the system directory does not pass), and private, path-shaped,
+  or missing dependencies are rejected by name before any process
+  exists. Unpack on a packed DLL reproduces the reference entry point
+  and rebuilt imports (`tests/packed.dll` vs `tests/packed.dll.unp`).
 * **Shellcode blobs** - `--shellcode` embeds the blob in a generated minimal
   wrapper PE (x64 and x86) and rides the capture route.
 

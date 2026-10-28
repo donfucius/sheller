@@ -134,7 +134,7 @@ void on_esp_read(uc_engine* const uc, const uc_mem_type, const std::uint64_t add
     if (address + size != state->esp_window_hi) {
         return; // an intermediate pop of the restore: keep reading
     }
-    // Form A: the passive event rides the confirmation on every instrumented
+    // The passive event rides the confirmation on every instrumented
     // run, goal or no goal - the stop (when a goal asked for one) rides the
     // same read, after the event, like every other engine stop.
     if (state->event_sink) {
@@ -162,14 +162,13 @@ void on_esp_read(uc_engine* const uc, const uc_mem_type, const std::uint64_t add
     state->xfer_number = state->xfers + 1;
 }
 
-} // namespace
-
-void install(uc_engine* const uc, const PreparedGuest& guest, SyscallRunState& state)
+// Shared arm core: window_hi = the live rsp, extent scanned at entry_va.
+void arm_window(uc_engine* const uc, const std::uint64_t entry_va, SyscallRunState& state)
 {
-    const bool x64 = guest.guest_mode == GuestMode::kX64;
-    state.esp_slot_width = x64 ? 8 : 4;
+    state.esp_slot_width = state.guest_mode == GuestMode::kX64 ? 8 : 4;
     state.esp_window_hi = read_rsp(uc);
-    const std::uint64_t extent = scan_save_extent(uc, guest.metadata.entry_address, x64);
+    const std::uint64_t extent =
+        scan_save_extent(uc, entry_va, state.guest_mode == GuestMode::kX64);
     if (extent == 0 || state.esp_window_hi < extent) {
         return; // the entry saves nothing: monitor not established, silent miss
     }
@@ -183,6 +182,33 @@ void install(uc_engine* const uc, const PreparedGuest& guest, SyscallRunState& s
         return;
     }
     state.esp_monitor_armed = true;
+}
+
+} // namespace
+
+void install(uc_engine* const uc, const PreparedGuest& guest, SyscallRunState& state)
+{
+    arm_window(uc, guest.metadata.entry_address, state);
+}
+
+// DLL-input route: re-arms the monitor at the synthesized module's
+// DllMain entry once the synthetic load has armed its frame - the world's
+// starting registers belong to the runner here, and the unpack-relevant
+// entry scene is DllMain's. Deletes the runner-entry hook first; a goal
+// that was never requested stays a no-op.
+void reinstall_at(uc_engine* const uc, const std::uint64_t entry_va, SyscallRunState& state)
+{
+    // The passive monitor migrates with the sample identity
+    // regardless of any stop goal - whether to STOP stays in on_esp_read's
+    // goal branches, exactly like the runner-entry install.
+    if (state.esp_monitor_armed && state.esp_read_hook != 0) {
+        uc_hook_del(uc, state.esp_read_hook);
+        state.esp_read_hook = 0;
+    }
+    state.esp_monitor_armed = false;
+    state.esp_window_lo = 0;
+    state.esp_window_hi = 0;
+    arm_window(uc, entry_va, state);
 }
 
 } // namespace sheller::engine::esp_target

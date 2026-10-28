@@ -376,6 +376,12 @@ class MemRegionMap {
     // same sequence, same map.
     void register_region(std::uint64_t base, std::uint64_t size, std::uint32_t protection,
                          std::uint32_t type, bool sample_issued);
+    // Run-time registration of a synthesized module image (the DLL-input
+    // route's synthetic load): the span becomes a MEM_IMAGE region record
+    // (infrastructure-issued - the engine maps it, not the sample) refined
+    // by the module's section intervals. Returns the new module's index.
+    std::size_t register_module_image(const ModuleImage& image,
+                                      std::uint32_t protection = kPageExecuteReadwrite);
     // Page-granular protection update: the covered part of every region
     // interval is carved into a NEW region record (new protection, inherited
     // origin and runtime flag) and the interval re-pointed there; uncovered

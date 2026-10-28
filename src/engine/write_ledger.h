@@ -112,6 +112,27 @@ class MemWriteLedger {
     void add_region(std::uint64_t base, std::uint64_t size, std::uint32_t protection,
                     std::uint32_t type);
 
+    // Re-homes the writer-attribution span (DLL-input route): the
+    // synthesized module becomes the sample image at load time, so writes
+    // from its body count as sample code from that moment on. EXE routes
+    // never call this - the construction span stays.
+    void set_sample_span(std::uint64_t base, std::uint64_t size)
+    {
+        sample_image_base_ = base;
+        sample_image_size_ = size;
+    }
+
+    // Load-transaction rollback (DLL route's FALSE/mid-construction path):
+    // drops every tracked region at exactly this base. Base order holds.
+    void remove_region(std::uint64_t base);
+
+    // The current writer-attribution span (saved by the DLL load transaction
+    // so a rollback can restore it).
+    [[nodiscard]] std::pair<std::uint64_t, std::uint64_t> sample_span() const
+    {
+        return {sample_image_base_, sample_image_size_};
+    }
+
     [[nodiscard]] std::size_t region_count() const
     {
         return regions_.size();

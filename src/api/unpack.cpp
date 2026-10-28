@@ -94,6 +94,41 @@ std::filesystem::path generate_work_dir(std::error_code& ec)
 
 namespace api::detail {
 
+const unpack::RegionRepairReport*
+select_unpack_region(const std::span<const unpack::RegionRepairReport> regions,
+                     const std::uint64_t image_base_for_selection, const bool require_cover)
+{
+    const unpack::RegionRepairReport* best = nullptr;
+    bool best_covers = false;
+    for (const auto& region : regions) {
+        if (region.verdict != unpack::RepairVerdict::kComplete &&
+            region.verdict != unpack::RepairVerdict::kPartial) {
+            continue;
+        }
+        const bool region_covers = image_base_for_selection >= region.base &&
+                                   image_base_for_selection < region.base + region.size;
+        // A covering candidate outranks any non-covering one outright -
+        // a later incidental complete system image must never displace the
+        // sample's own (possibly partial) region. Within the same coverage
+        // class, complete wins over partial.
+        if (best == nullptr) {
+            best = &region;
+            best_covers = region_covers;
+            continue;
+        }
+        if (region_covers && !best_covers) {
+            best = &region;
+            best_covers = true;
+            continue;
+        }
+        if (region_covers == best_covers && best->verdict == unpack::RepairVerdict::kPartial &&
+            region.verdict == unpack::RepairVerdict::kComplete) {
+            best = &region;
+        }
+    }
+    return require_cover && !best_covers ? nullptr : best;
+}
+
 // The one-shot unpack entry under its internal name: the public
 // sheller::unpack_sample signature is defined once, in src/shared/api.cpp, and
 // forwards here.
@@ -203,7 +238,9 @@ UnpackOutcome unpack_sample_impl(const std::filesystem::path& sample, const Unpa
         artifacts.instrumented = false;
         return fail(AnalysisFailure::Kind::kCapture,
                     "sample container construction failed: " +
-                        std::string{engine::rebuild_error_message(container.error().error)},
+                        (container.error().detail.empty()
+                             ? std::string{engine::rebuild_error_message(container.error().error)}
+                             : container.error().detail),
                     std::move(artifacts), std::nullopt, capture::Status::kCaptureFailed);
     }
     snapshot = std::move(*container);
@@ -248,7 +285,8 @@ UnpackOutcome unpack_sample_impl(const std::filesystem::path& sample, const Unpa
     run.synthetic_module_dir = options.synthetic_module_dir;
 #endif
     api::detail::EventStream stream(wiring.rules.get(), tally, collector, ledger.get(), {}, 0);
-    const engine::FactChannel facts = api::detail::install_behavior_sinks(run, stream);
+    const engine::FactChannel facts =
+        api::detail::install_behavior_sinks(run, stream, instrumented ? &names : nullptr);
 
     // One execution entry on every host: the container the capture produced
     // or the construction serialized.
@@ -294,10 +332,12 @@ UnpackOutcome unpack_sample_impl(const std::filesystem::path& sample, const Unpa
     outcome.oep_va = summary->oep_va;
     outcome.oep_rva = summary->oep_rva;
 
-    // The repair target covers the sample's own image (the container
-    // metadata's image base); other written spans (e.g. a fully dumped
-    // ntdll) are incidental. Metadata read straight from the executed
-    // container's bytes - the repair and the run describe one world.
+    // The repair target covers the sample's own image; other written spans
+    // (e.g. a fully dumped ntdll) are incidental. Metadata read straight
+    // from the executed container's bytes - the repair and the run describe
+    // one world. DLL-input containers (v2): the main image is the runner
+    // and the sample is the synthesized module - the run stats carry its
+    // runtime base, and that anchors the selection instead.
     std::ispanstream snapshot_in(std::span<char>{
         reinterpret_cast<char*>(const_cast<std::uint8_t*>(snapshot.data())), snapshot.size()});
     snapshot::Reader snapshot_reader{snapshot_in};
@@ -306,23 +346,24 @@ UnpackOutcome unpack_sample_impl(const std::filesystem::path& sample, const Unpa
         return fail(AnalysisFailure::Kind::kRun, "snapshot metadata unreadable",
                     std::move(artifacts));
     }
-    const auto image_base_for_selection = metadata->image_base;
-
-    const unpack::RegionRepairReport* best = nullptr;
-    for (const auto& region : summary->regions) {
-        if (region.verdict != unpack::RepairVerdict::kComplete &&
-            region.verdict != unpack::RepairVerdict::kPartial) {
-            continue;
-        }
-        const bool covers_image_base = image_base_for_selection >= region.base &&
-                                       image_base_for_selection < region.base + region.size;
-        if (best == nullptr || covers_image_base ||
-            (best->verdict == unpack::RepairVerdict::kPartial &&
-             region.verdict == unpack::RepairVerdict::kComplete)) {
-            best = &region;
-        }
+    auto image_base_for_selection = metadata->image_base;
+    const auto sample_base_for_selection =
+        result.has_value() ? result->sample_module_base : result.error().stats.sample_module_base;
+    if (sample_base_for_selection != 0) {
+        image_base_for_selection = sample_base_for_selection;
     }
+
+    const auto* best = select_unpack_region(summary->regions, image_base_for_selection,
+                                            sample_base_for_selection != 0);
     if (best == nullptr) {
+        // DLL route: a synthesized sample that produced no repairable region
+        // is a distinct, honest failure - an incidental system image must
+        // not stand in for it.
+        if (sample_base_for_selection != 0) {
+            return fail(AnalysisFailure::Kind::kRun,
+                        "the sample image produced no repairable region in the dump",
+                        std::move(artifacts));
+        }
         return fail(AnalysisFailure::Kind::kRun, "no repairable image region in the dump",
                     std::move(artifacts));
     }

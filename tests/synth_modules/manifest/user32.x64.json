@@ -1,0 +1,4208 @@
+{
+ "name": "user32.dll",
+ "arch": "x64",
+ "machine": "0x8664",
+ "export_count": 1050,
+ "exports": [
+  {
+   "name": "GetPointerFrameArrivalTimes",
+   "ordinal": 1503
+  },
+  {
+   "name": "QuerySendMessage",
+   "ordinal": 1504
+  },
+  {
+   "name": "ActivateKeyboardLayout",
+   "ordinal": 1505
+  },
+  {
+   "name": "AddClipboardFormatListener",
+   "ordinal": 1506
+  },
+  {
+   "name": "AddVisualIdentifier",
+   "ordinal": 1507
+  },
+  {
+   "name": "AdjustWindowRect",
+   "ordinal": 1508
+  },
+  {
+   "name": "AdjustWindowRectEx",
+   "ordinal": 1509
+  },
+  {
+   "name": "AdjustWindowRectExForDpi",
+   "ordinal": 1510
+  },
+  {
+   "name": "AlignRects",
+   "ordinal": 1511
+  },
+  {
+   "name": "AllowForegroundActivation",
+   "ordinal": 1512
+  },
+  {
+   "name": "AllowSetForegroundWindow",
+   "ordinal": 1513
+  },
+  {
+   "name": "AnimateWindow",
+   "ordinal": 1514
+  },
+  {
+   "name": "AnyPopup",
+   "ordinal": 1515
+  },
+  {
+   "name": "AppendMenuA",
+   "ordinal": 1516
+  },
+  {
+   "name": "AppendMenuW",
+   "ordinal": 1517
+  },
+  {
+   "name": "AreDpiAwarenessContextsEqual",
+   "ordinal": 1518
+  },
+  {
+   "name": "ArrangeIconicWindows",
+   "ordinal": 1519
+  },
+  {
+   "name": "AttachThreadInput",
+   "ordinal": 1520
+  },
+  {
+   "name": "BeginDeferWindowPos",
+   "ordinal": 1521
+  },
+  {
+   "name": "BeginPaint",
+   "ordinal": 1522
+  },
+  {
+   "name": "BlockInput",
+   "ordinal": 1523
+  },
+  {
+   "name": "BringWindowToTop",
+   "ordinal": 1524
+  },
+  {
+   "name": "BroadcastSystemMessage",
+   "ordinal": 1525
+  },
+  {
+   "name": "BroadcastSystemMessageA",
+   "ordinal": 1526
+  },
+  {
+   "name": "BroadcastSystemMessageExA",
+   "ordinal": 1527
+  },
+  {
+   "name": "BroadcastSystemMessageExW",
+   "ordinal": 1528
+  },
+  {
+   "name": "BroadcastSystemMessageW",
+   "ordinal": 1529
+  },
+  {
+   "name": "BuildReasonArray",
+   "ordinal": 1530
+  },
+  {
+   "name": "CalcMenuBar",
+   "ordinal": 1531
+  },
+  {
+   "name": "CalculatePopupWindowPosition",
+   "ordinal": 1532
+  },
+  {
+   "name": "CallMsgFilter",
+   "ordinal": 1533
+  },
+  {
+   "name": "CallMsgFilterA",
+   "ordinal": 1534
+  },
+  {
+   "name": "CallMsgFilterW",
+   "ordinal": 1535
+  },
+  {
+   "name": "CallNextHookEx",
+   "ordinal": 1536
+  },
+  {
+   "name": "CallWindowProcA",
+   "ordinal": 1537
+  },
+  {
+   "name": "CallWindowProcW",
+   "ordinal": 1538
+  },
+  {
+   "name": "CancelShutdown",
+   "ordinal": 1539
+  },
+  {
+   "name": "CascadeChildWindows",
+   "ordinal": 1540
+  },
+  {
+   "name": "CascadeWindows",
+   "ordinal": 1541
+  },
+  {
+   "name": "ChangeClipboardChain",
+   "ordinal": 1542
+  },
+  {
+   "name": "ChangeDisplaySettingsA",
+   "ordinal": 1543
+  },
+  {
+   "name": "ChangeDisplaySettingsExA",
+   "ordinal": 1544
+  },
+  {
+   "name": "ChangeDisplaySettingsExW",
+   "ordinal": 1545
+  },
+  {
+   "name": "ChangeDisplaySettingsW",
+   "ordinal": 1546
+  },
+  {
+   "name": "ChangeMenuA",
+   "ordinal": 1547
+  },
+  {
+   "name": "ChangeMenuW",
+   "ordinal": 1548
+  },
+  {
+   "name": "ChangeWindowMessageFilter",
+   "ordinal": 1549
+  },
+  {
+   "name": "DwmGetDxRgn",
+   "ordinal": 1553
+  },
+  {
+   "name": "ChangeWindowMessageFilterEx",
+   "ordinal": 1555
+  },
+  {
+   "name": "CharLowerA",
+   "ordinal": 1556
+  },
+  {
+   "name": "CharLowerBuffA",
+   "ordinal": 1557
+  },
+  {
+   "name": "CharLowerBuffW",
+   "ordinal": 1558
+  },
+  {
+   "name": "CharLowerW",
+   "ordinal": 1559
+  },
+  {
+   "name": "CharNextA",
+   "ordinal": 1560
+  },
+  {
+   "name": "CharNextExA",
+   "ordinal": 1561
+  },
+  {
+   "name": "CharNextW",
+   "ordinal": 1562
+  },
+  {
+   "name": "CharPrevA",
+   "ordinal": 1563
+  },
+  {
+   "name": "CharPrevExA",
+   "ordinal": 1564
+  },
+  {
+   "name": "CharPrevW",
+   "ordinal": 1565
+  },
+  {
+   "name": "CharToOemA",
+   "ordinal": 1566
+  },
+  {
+   "name": "CharToOemBuffA",
+   "ordinal": 1567
+  },
+  {
+   "name": "CharToOemBuffW",
+   "ordinal": 1568
+  },
+  {
+   "name": "CharToOemW",
+   "ordinal": 1569
+  },
+  {
+   "name": "CharUpperA",
+   "ordinal": 1570
+  },
+  {
+   "name": "CharUpperBuffA",
+   "ordinal": 1571
+  },
+  {
+   "name": "CharUpperBuffW",
+   "ordinal": 1572
+  },
+  {
+   "name": "CharUpperW",
+   "ordinal": 1573
+  },
+  {
+   "name": "CheckBannedOneCoreTransformApi",
+   "ordinal": 1574
+  },
+  {
+   "name": "CheckDBCSEnabledExt",
+   "ordinal": 1575
+  },
+  {
+   "name": "CheckDlgButton",
+   "ordinal": 1576
+  },
+  {
+   "name": "CheckMenuItem",
+   "ordinal": 1577
+  },
+  {
+   "name": "CheckMenuRadioItem",
+   "ordinal": 1578
+  },
+  {
+   "name": "CheckProcessForClipboardAccess",
+   "ordinal": 1579
+  },
+  {
+   "name": "CheckProcessSession",
+   "ordinal": 1580
+  },
+  {
+   "name": "CheckRadioButton",
+   "ordinal": 1581
+  },
+  {
+   "name": "CheckWindowThreadDesktop",
+   "ordinal": 1582
+  },
+  {
+   "name": "ChildWindowFromPoint",
+   "ordinal": 1583
+  },
+  {
+   "name": "ChildWindowFromPointEx",
+   "ordinal": 1584
+  },
+  {
+   "name": "CliImmSetHotKey",
+   "ordinal": 1585
+  },
+  {
+   "name": "ClientThreadSetup",
+   "ordinal": 1586
+  },
+  {
+   "name": "ClientToScreen",
+   "ordinal": 1587
+  },
+  {
+   "name": "ClipCursor",
+   "ordinal": 1588
+  },
+  {
+   "name": "CloseClipboard",
+   "ordinal": 1589
+  },
+  {
+   "name": "CloseDesktop",
+   "ordinal": 1590
+  },
+  {
+   "name": "CloseGestureInfoHandle",
+   "ordinal": 1591
+  },
+  {
+   "name": "CloseTouchInputHandle",
+   "ordinal": 1592
+  },
+  {
+   "name": "CloseWindow",
+   "ordinal": 1593
+  },
+  {
+   "name": "CloseWindowStation",
+   "ordinal": 1594
+  },
+  {
+   "name": "ConsoleControl",
+   "ordinal": 1595
+  },
+  {
+   "name": "ControlMagnification",
+   "ordinal": 1596
+  },
+  {
+   "name": "CopyAcceleratorTableA",
+   "ordinal": 1597
+  },
+  {
+   "name": "CopyAcceleratorTableW",
+   "ordinal": 1598
+  },
+  {
+   "name": "CopyIcon",
+   "ordinal": 1599
+  },
+  {
+   "name": "CopyImage",
+   "ordinal": 1600
+  },
+  {
+   "name": "CopyRect",
+   "ordinal": 1601
+  },
+  {
+   "name": "CountClipboardFormats",
+   "ordinal": 1602
+  },
+  {
+   "name": "CreateAcceleratorTableA",
+   "ordinal": 1603
+  },
+  {
+   "name": "CreateAcceleratorTableW",
+   "ordinal": 1604
+  },
+  {
+   "name": "CreateCaret",
+   "ordinal": 1605
+  },
+  {
+   "name": "CreateCursor",
+   "ordinal": 1606
+  },
+  {
+   "name": "CreateDCompositionHwndTarget",
+   "ordinal": 1607
+  },
+  {
+   "name": "CreateDesktopA",
+   "ordinal": 1608
+  },
+  {
+   "name": "CreateDesktopExA",
+   "ordinal": 1609
+  },
+  {
+   "name": "CreateDesktopExW",
+   "ordinal": 1610
+  },
+  {
+   "name": "CreateDesktopW",
+   "ordinal": 1611
+  },
+  {
+   "name": "CreateDialogIndirectParamA",
+   "ordinal": 1612
+  },
+  {
+   "name": "CreateDialogIndirectParamAorW",
+   "ordinal": 1613
+  },
+  {
+   "name": "CreateDialogIndirectParamW",
+   "ordinal": 1614
+  },
+  {
+   "name": "CreateDialogParamA",
+   "ordinal": 1615
+  },
+  {
+   "name": "CreateDialogParamW",
+   "ordinal": 1616
+  },
+  {
+   "name": "CreateIcon",
+   "ordinal": 1617
+  },
+  {
+   "name": "CreateIconFromResource",
+   "ordinal": 1618
+  },
+  {
+   "name": "CreateIconFromResourceEx",
+   "ordinal": 1619
+  },
+  {
+   "name": "CreateIconIndirect",
+   "ordinal": 1620
+  },
+  {
+   "name": "CreateMDIWindowA",
+   "ordinal": 1621
+  },
+  {
+   "name": "CreateMDIWindowW",
+   "ordinal": 1622
+  },
+  {
+   "name": "CreateMenu",
+   "ordinal": 1623
+  },
+  {
+   "name": "CreatePopupMenu",
+   "ordinal": 1624
+  },
+  {
+   "name": "CreateSyntheticPointerDevice",
+   "ordinal": 1625
+  },
+  {
+   "name": "CreateSystemThreads",
+   "ordinal": 1626
+  },
+  {
+   "name": "CreateWindowExA",
+   "ordinal": 1627
+  },
+  {
+   "name": "CreateWindowExW",
+   "ordinal": 1628
+  },
+  {
+   "name": "CreateWindowInBand",
+   "ordinal": 1629
+  },
+  {
+   "name": "CreateWindowInBandEx",
+   "ordinal": 1630
+  },
+  {
+   "name": "CreateWindowIndirect",
+   "ordinal": 1631
+  },
+  {
+   "name": "CreateWindowStationA",
+   "ordinal": 1632
+  },
+  {
+   "name": "CreateWindowStationW",
+   "ordinal": 1633
+  },
+  {
+   "name": "CsrBroadcastSystemMessageExW",
+   "ordinal": 1634
+  },
+  {
+   "name": "CtxInitUser32",
+   "ordinal": 1635
+  },
+  {
+   "name": "DdeAbandonTransaction",
+   "ordinal": 1636
+  },
+  {
+   "name": "DdeAccessData",
+   "ordinal": 1637
+  },
+  {
+   "name": "DdeAddData",
+   "ordinal": 1638
+  },
+  {
+   "name": "DdeClientTransaction",
+   "ordinal": 1639
+  },
+  {
+   "name": "DdeCmpStringHandles",
+   "ordinal": 1640
+  },
+  {
+   "name": "DdeConnect",
+   "ordinal": 1641
+  },
+  {
+   "name": "DdeConnectList",
+   "ordinal": 1642
+  },
+  {
+   "name": "DdeCreateDataHandle",
+   "ordinal": 1643
+  },
+  {
+   "name": "DdeCreateStringHandleA",
+   "ordinal": 1644
+  },
+  {
+   "name": "DdeCreateStringHandleW",
+   "ordinal": 1645
+  },
+  {
+   "name": "DdeDisconnect",
+   "ordinal": 1646
+  },
+  {
+   "name": "DdeDisconnectList",
+   "ordinal": 1647
+  },
+  {
+   "name": "DdeEnableCallback",
+   "ordinal": 1648
+  },
+  {
+   "name": "DdeFreeDataHandle",
+   "ordinal": 1649
+  },
+  {
+   "name": "DdeFreeStringHandle",
+   "ordinal": 1650
+  },
+  {
+   "name": "DdeGetData",
+   "ordinal": 1651
+  },
+  {
+   "name": "DdeGetLastError",
+   "ordinal": 1652
+  },
+  {
+   "name": "DdeGetQualityOfService",
+   "ordinal": 1653
+  },
+  {
+   "name": "DdeImpersonateClient",
+   "ordinal": 1654
+  },
+  {
+   "name": "DdeInitializeA",
+   "ordinal": 1655
+  },
+  {
+   "name": "DdeInitializeW",
+   "ordinal": 1656
+  },
+  {
+   "name": "DdeKeepStringHandle",
+   "ordinal": 1657
+  },
+  {
+   "name": "DdeNameService",
+   "ordinal": 1658
+  },
+  {
+   "name": "DdePostAdvise",
+   "ordinal": 1659
+  },
+  {
+   "name": "DdeQueryConvInfo",
+   "ordinal": 1660
+  },
+  {
+   "name": "DdeQueryNextServer",
+   "ordinal": 1661
+  },
+  {
+   "name": "DdeQueryStringA",
+   "ordinal": 1662
+  },
+  {
+   "name": "DdeQueryStringW",
+   "ordinal": 1663
+  },
+  {
+   "name": "DdeReconnect",
+   "ordinal": 1664
+  },
+  {
+   "name": "DdeSetQualityOfService",
+   "ordinal": 1665
+  },
+  {
+   "name": "DdeSetUserHandle",
+   "ordinal": 1666
+  },
+  {
+   "name": "DdeUnaccessData",
+   "ordinal": 1667
+  },
+  {
+   "name": "DdeUninitialize",
+   "ordinal": 1668
+  },
+  {
+   "name": "DefDlgProcA",
+   "ordinal": 1669
+  },
+  {
+   "name": "DefDlgProcW",
+   "ordinal": 1670
+  },
+  {
+   "name": "DefFrameProcA",
+   "ordinal": 1671
+  },
+  {
+   "name": "DefFrameProcW",
+   "ordinal": 1672
+  },
+  {
+   "name": "DefMDIChildProcA",
+   "ordinal": 1673
+  },
+  {
+   "name": "DefMDIChildProcW",
+   "ordinal": 1674
+  },
+  {
+   "name": "DefRawInputProc",
+   "ordinal": 1675
+  },
+  {
+   "name": "DefWindowProcA",
+   "ordinal": 1676
+  },
+  {
+   "name": "DefWindowProcW",
+   "ordinal": 1677
+  },
+  {
+   "name": "DeferWindowPos",
+   "ordinal": 1678
+  },
+  {
+   "name": "DeferWindowPosAndBand",
+   "ordinal": 1679
+  },
+  {
+   "name": "DeleteMenu",
+   "ordinal": 1680
+  },
+  {
+   "name": "DeregisterShellHookWindow",
+   "ordinal": 1681
+  },
+  {
+   "name": "DestroyAcceleratorTable",
+   "ordinal": 1682
+  },
+  {
+   "name": "DestroyCaret",
+   "ordinal": 1683
+  },
+  {
+   "name": "DestroyCursor",
+   "ordinal": 1684
+  },
+  {
+   "name": "DestroyDCompositionHwndTarget",
+   "ordinal": 1685
+  },
+  {
+   "name": "DestroyIcon",
+   "ordinal": 1686
+  },
+  {
+   "name": "DestroyMenu",
+   "ordinal": 1687
+  },
+  {
+   "name": "DestroyReasons",
+   "ordinal": 1688
+  },
+  {
+   "name": "DestroySyntheticPointerDevice",
+   "ordinal": 1689
+  },
+  {
+   "name": "DestroyWindow",
+   "ordinal": 1690
+  },
+  {
+   "name": "DialogBoxIndirectParamA",
+   "ordinal": 1691
+  },
+  {
+   "name": "DialogBoxIndirectParamAorW",
+   "ordinal": 1692
+  },
+  {
+   "name": "DialogBoxIndirectParamW",
+   "ordinal": 1693
+  },
+  {
+   "name": "DialogBoxParamA",
+   "ordinal": 1694
+  },
+  {
+   "name": "DialogBoxParamW",
+   "ordinal": 1695
+  },
+  {
+   "name": "DisableProcessWindowsGhosting",
+   "ordinal": 1696
+  },
+  {
+   "name": "DispatchMessageA",
+   "ordinal": 1697
+  },
+  {
+   "name": "DispatchMessageW",
+   "ordinal": 1698
+  },
+  {
+   "name": "DisplayConfigGetDeviceInfo",
+   "ordinal": 1699
+  },
+  {
+   "name": "DisplayConfigSetDeviceInfo",
+   "ordinal": 1700
+  },
+  {
+   "name": "DisplayExitWindowsWarnings",
+   "ordinal": 1701
+  },
+  {
+   "name": "DlgDirListA",
+   "ordinal": 1702
+  },
+  {
+   "name": "DlgDirListComboBoxA",
+   "ordinal": 1703
+  },
+  {
+   "name": "DlgDirListComboBoxW",
+   "ordinal": 1704
+  },
+  {
+   "name": "DlgDirListW",
+   "ordinal": 1705
+  },
+  {
+   "name": "DlgDirSelectComboBoxExA",
+   "ordinal": 1706
+  },
+  {
+   "name": "DlgDirSelectComboBoxExW",
+   "ordinal": 1707
+  },
+  {
+   "name": "DlgDirSelectExA",
+   "ordinal": 1708
+  },
+  {
+   "name": "DlgDirSelectExW",
+   "ordinal": 1709
+  },
+  {
+   "name": "DoSoundConnect",
+   "ordinal": 1710
+  },
+  {
+   "name": "DoSoundDisconnect",
+   "ordinal": 1711
+  },
+  {
+   "name": "DragDetect",
+   "ordinal": 1712
+  },
+  {
+   "name": "DragObject",
+   "ordinal": 1713
+  },
+  {
+   "name": "DrawAnimatedRects",
+   "ordinal": 1714
+  },
+  {
+   "name": "DrawCaption",
+   "ordinal": 1715
+  },
+  {
+   "name": "DrawCaptionTempA",
+   "ordinal": 1716
+  },
+  {
+   "name": "DrawCaptionTempW",
+   "ordinal": 1717
+  },
+  {
+   "name": "DrawEdge",
+   "ordinal": 1718
+  },
+  {
+   "name": "DrawFocusRect",
+   "ordinal": 1719
+  },
+  {
+   "name": "DrawFrame",
+   "ordinal": 1720
+  },
+  {
+   "name": "DrawFrameControl",
+   "ordinal": 1721
+  },
+  {
+   "name": "DrawIcon",
+   "ordinal": 1722
+  },
+  {
+   "name": "DrawIconEx",
+   "ordinal": 1723
+  },
+  {
+   "name": "DrawMenuBar",
+   "ordinal": 1724
+  },
+  {
+   "name": "DrawMenuBarTemp",
+   "ordinal": 1725
+  },
+  {
+   "name": "DrawStateA",
+   "ordinal": 1726
+  },
+  {
+   "name": "DrawStateW",
+   "ordinal": 1727
+  },
+  {
+   "name": "DrawTextA",
+   "ordinal": 1728
+  },
+  {
+   "name": "DrawTextExA",
+   "ordinal": 1729
+  },
+  {
+   "name": "DrawTextExW",
+   "ordinal": 1730
+  },
+  {
+   "name": "DrawTextW",
+   "ordinal": 1731
+  },
+  {
+   "name": "DwmGetDxSharedSurface",
+   "ordinal": 1732
+  },
+  {
+   "name": "DwmGetRemoteSessionOcclusionEvent",
+   "ordinal": 1733
+  },
+  {
+   "name": "DwmGetRemoteSessionOcclusionState",
+   "ordinal": 1734
+  },
+  {
+   "name": "DwmKernelShutdown",
+   "ordinal": 1735
+  },
+  {
+   "name": "DwmKernelStartup",
+   "ordinal": 1736
+  },
+  {
+   "name": "DwmLockScreenUpdates",
+   "ordinal": 1737
+  },
+  {
+   "name": "DwmValidateWindow",
+   "ordinal": 1738
+  },
+  {
+   "name": "EditWndProc",
+   "ordinal": 1739
+  },
+  {
+   "name": "EmptyClipboard",
+   "ordinal": 1740
+  },
+  {
+   "name": "EnableMenuItem",
+   "ordinal": 1741
+  },
+  {
+   "name": "EnableMouseInPointer",
+   "ordinal": 1742
+  },
+  {
+   "name": "EnableNonClientDpiScaling",
+   "ordinal": 1743
+  },
+  {
+   "name": "EnableOneCoreTransformMode",
+   "ordinal": 1744
+  },
+  {
+   "name": "EnableScrollBar",
+   "ordinal": 1745
+  },
+  {
+   "name": "EnableSessionForMMCSS",
+   "ordinal": 1746
+  },
+  {
+   "name": "EnableWindow",
+   "ordinal": 1747
+  },
+  {
+   "name": "EndDeferWindowPos",
+   "ordinal": 1748
+  },
+  {
+   "name": "EndDeferWindowPosEx",
+   "ordinal": 1749
+  },
+  {
+   "name": "EndDialog",
+   "ordinal": 1750
+  },
+  {
+   "name": "EndMenu",
+   "ordinal": 1751
+  },
+  {
+   "name": "EndPaint",
+   "ordinal": 1752
+  },
+  {
+   "name": "EndTask",
+   "ordinal": 1753
+  },
+  {
+   "name": "EnterReaderModeHelper",
+   "ordinal": 1754
+  },
+  {
+   "name": "EnumChildWindows",
+   "ordinal": 1755
+  },
+  {
+   "name": "EnumClipboardFormats",
+   "ordinal": 1756
+  },
+  {
+   "name": "EnumDesktopWindows",
+   "ordinal": 1757
+  },
+  {
+   "name": "EnumDesktopsA",
+   "ordinal": 1758
+  },
+  {
+   "name": "EnumDesktopsW",
+   "ordinal": 1759
+  },
+  {
+   "name": "EnumDisplayDevicesA",
+   "ordinal": 1760
+  },
+  {
+   "name": "EnumDisplayDevicesW",
+   "ordinal": 1761
+  },
+  {
+   "name": "EnumDisplayMonitors",
+   "ordinal": 1762
+  },
+  {
+   "name": "EnumDisplaySettingsA",
+   "ordinal": 1763
+  },
+  {
+   "name": "EnumDisplaySettingsExA",
+   "ordinal": 1764
+  },
+  {
+   "name": "EnumDisplaySettingsExW",
+   "ordinal": 1765
+  },
+  {
+   "name": "EnumDisplaySettingsW",
+   "ordinal": 1766
+  },
+  {
+   "name": "EnumPropsA",
+   "ordinal": 1767
+  },
+  {
+   "name": "EnumPropsExA",
+   "ordinal": 1768
+  },
+  {
+   "name": "EnumPropsExW",
+   "ordinal": 1769
+  },
+  {
+   "name": "EnumPropsW",
+   "ordinal": 1770
+  },
+  {
+   "name": "EnumThreadWindows",
+   "ordinal": 1771
+  },
+  {
+   "name": "EnumWindowStationsA",
+   "ordinal": 1772
+  },
+  {
+   "name": "EnumWindowStationsW",
+   "ordinal": 1773
+  },
+  {
+   "name": "EnumWindows",
+   "ordinal": 1774
+  },
+  {
+   "name": "EqualRect",
+   "ordinal": 1775
+  },
+  {
+   "name": "EvaluateProximityToPolygon",
+   "ordinal": 1776
+  },
+  {
+   "name": "EvaluateProximityToRect",
+   "ordinal": 1777
+  },
+  {
+   "name": "ExcludeUpdateRgn",
+   "ordinal": 1778
+  },
+  {
+   "name": "ExitWindowsEx",
+   "ordinal": 1779
+  },
+  {
+   "name": "FillRect",
+   "ordinal": 1780
+  },
+  {
+   "name": "FindWindowA",
+   "ordinal": 1781
+  },
+  {
+   "name": "FindWindowExA",
+   "ordinal": 1782
+  },
+  {
+   "name": "FindWindowExW",
+   "ordinal": 1783
+  },
+  {
+   "name": "FindWindowW",
+   "ordinal": 1784
+  },
+  {
+   "name": "FlashWindow",
+   "ordinal": 1785
+  },
+  {
+   "name": "FlashWindowEx",
+   "ordinal": 1786
+  },
+  {
+   "name": "FrameRect",
+   "ordinal": 1787
+  },
+  {
+   "name": "FreeDDElParam",
+   "ordinal": 1788
+  },
+  {
+   "name": "FrostCrashedWindow",
+   "ordinal": 1789
+  },
+  {
+   "name": "GetActiveWindow",
+   "ordinal": 1790
+  },
+  {
+   "name": "GetAltTabInfo",
+   "ordinal": 1791
+  },
+  {
+   "name": "GetAltTabInfoA",
+   "ordinal": 1792
+  },
+  {
+   "name": "GetAltTabInfoW",
+   "ordinal": 1793
+  },
+  {
+   "name": "GetAncestor",
+   "ordinal": 1794
+  },
+  {
+   "name": "GetAppCompatFlags",
+   "ordinal": 1795
+  },
+  {
+   "name": "GetAppCompatFlags2",
+   "ordinal": 1796
+  },
+  {
+   "name": "GetAsyncKeyState",
+   "ordinal": 1797
+  },
+  {
+   "name": "GetAutoRotationState",
+   "ordinal": 1798
+  },
+  {
+   "name": "GetAwarenessFromDpiAwarenessContext",
+   "ordinal": 1799
+  },
+  {
+   "name": "GetCIMSSM",
+   "ordinal": 1800
+  },
+  {
+   "name": "GetCapture",
+   "ordinal": 1801
+  },
+  {
+   "name": "GetCaretBlinkTime",
+   "ordinal": 1802
+  },
+  {
+   "name": "GetCaretPos",
+   "ordinal": 1803
+  },
+  {
+   "name": "GetClassInfoA",
+   "ordinal": 1804
+  },
+  {
+   "name": "GetClassInfoExA",
+   "ordinal": 1805
+  },
+  {
+   "name": "GetClassInfoExW",
+   "ordinal": 1806
+  },
+  {
+   "name": "GetClassInfoW",
+   "ordinal": 1807
+  },
+  {
+   "name": "GetClassLongA",
+   "ordinal": 1808
+  },
+  {
+   "name": "GetClassLongPtrA",
+   "ordinal": 1809
+  },
+  {
+   "name": "GetClassLongPtrW",
+   "ordinal": 1810
+  },
+  {
+   "name": "GetClassLongW",
+   "ordinal": 1811
+  },
+  {
+   "name": "GetClassNameA",
+   "ordinal": 1812
+  },
+  {
+   "name": "GetClassNameW",
+   "ordinal": 1813
+  },
+  {
+   "name": "GetClassWord",
+   "ordinal": 1814
+  },
+  {
+   "name": "GetClientRect",
+   "ordinal": 1815
+  },
+  {
+   "name": "GetClipCursor",
+   "ordinal": 1816
+  },
+  {
+   "name": "GetClipboardAccessToken",
+   "ordinal": 1817
+  },
+  {
+   "name": "GetClipboardData",
+   "ordinal": 1818
+  },
+  {
+   "name": "GetClipboardFormatNameA",
+   "ordinal": 1819
+  },
+  {
+   "name": "GetClipboardFormatNameW",
+   "ordinal": 1820
+  },
+  {
+   "name": "GetClipboardOwner",
+   "ordinal": 1821
+  },
+  {
+   "name": "GetClipboardSequenceNumber",
+   "ordinal": 1822
+  },
+  {
+   "name": "GetClipboardViewer",
+   "ordinal": 1823
+  },
+  {
+   "name": "GetComboBoxInfo",
+   "ordinal": 1824
+  },
+  {
+   "name": "GetCurrentInputMessageSource",
+   "ordinal": 1825
+  },
+  {
+   "name": "GetCursor",
+   "ordinal": 1826
+  },
+  {
+   "name": "GetCursorFrameInfo",
+   "ordinal": 1827
+  },
+  {
+   "name": "GetCursorInfo",
+   "ordinal": 1828
+  },
+  {
+   "name": "GetCursorPos",
+   "ordinal": 1829
+  },
+  {
+   "name": "GetDC",
+   "ordinal": 1830
+  },
+  {
+   "name": "GetDCEx",
+   "ordinal": 1831
+  },
+  {
+   "name": "GetDCompositionHwndBitmap",
+   "ordinal": 1832
+  },
+  {
+   "name": "GetDesktopID",
+   "ordinal": 1833
+  },
+  {
+   "name": "GetDesktopWindow",
+   "ordinal": 1834
+  },
+  {
+   "name": "GetDialogBaseUnits",
+   "ordinal": 1835
+  },
+  {
+   "name": "GetDialogControlDpiChangeBehavior",
+   "ordinal": 1836
+  },
+  {
+   "name": "GetDialogDpiChangeBehavior",
+   "ordinal": 1837
+  },
+  {
+   "name": "GetDisplayAutoRotationPreferences",
+   "ordinal": 1838
+  },
+  {
+   "name": "GetDisplayConfigBufferSizes",
+   "ordinal": 1839
+  },
+  {
+   "name": "GetDlgCtrlID",
+   "ordinal": 1840
+  },
+  {
+   "name": "GetDlgItem",
+   "ordinal": 1841
+  },
+  {
+   "name": "GetDlgItemInt",
+   "ordinal": 1842
+  },
+  {
+   "name": "GetDlgItemTextA",
+   "ordinal": 1843
+  },
+  {
+   "name": "GetDlgItemTextW",
+   "ordinal": 1844
+  },
+  {
+   "name": "GetDoubleClickTime",
+   "ordinal": 1845
+  },
+  {
+   "name": "GetDpiAwarenessContextForProcess",
+   "ordinal": 1846
+  },
+  {
+   "name": "GetDpiForMonitorInternal",
+   "ordinal": 1847
+  },
+  {
+   "name": "GetDpiForSystem",
+   "ordinal": 1848
+  },
+  {
+   "name": "GetDpiForWindow",
+   "ordinal": 1849
+  },
+  {
+   "name": "GetDpiFromDpiAwarenessContext",
+   "ordinal": 1850
+  },
+  {
+   "name": "GetExtendedPointerDeviceProperty",
+   "ordinal": 1851
+  },
+  {
+   "name": "GetFocus",
+   "ordinal": 1852
+  },
+  {
+   "name": "GetForegroundWindow",
+   "ordinal": 1853
+  },
+  {
+   "name": "GetGUIThreadInfo",
+   "ordinal": 1854
+  },
+  {
+   "name": "GetGestureConfig",
+   "ordinal": 1855
+  },
+  {
+   "name": "GetGestureExtraArgs",
+   "ordinal": 1856
+  },
+  {
+   "name": "GetGestureInfo",
+   "ordinal": 1857
+  },
+  {
+   "name": "GetGuiResources",
+   "ordinal": 1858
+  },
+  {
+   "name": "GetIconInfo",
+   "ordinal": 1859
+  },
+  {
+   "name": "GetIconInfoExA",
+   "ordinal": 1860
+  },
+  {
+   "name": "GetIconInfoExW",
+   "ordinal": 1861
+  },
+  {
+   "name": "GetInputDesktop",
+   "ordinal": 1862
+  },
+  {
+   "name": "GetInputLocaleInfo",
+   "ordinal": 1863
+  },
+  {
+   "name": "GetInputState",
+   "ordinal": 1864
+  },
+  {
+   "name": "GetInternalWindowPos",
+   "ordinal": 1865
+  },
+  {
+   "name": "GetKBCodePage",
+   "ordinal": 1866
+  },
+  {
+   "name": "GetKeyNameTextA",
+   "ordinal": 1867
+  },
+  {
+   "name": "GetKeyNameTextW",
+   "ordinal": 1868
+  },
+  {
+   "name": "GetKeyState",
+   "ordinal": 1869
+  },
+  {
+   "name": "GetKeyboardLayout",
+   "ordinal": 1870
+  },
+  {
+   "name": "GetKeyboardLayoutList",
+   "ordinal": 1871
+  },
+  {
+   "name": "GetKeyboardLayoutNameA",
+   "ordinal": 1872
+  },
+  {
+   "name": "GetKeyboardLayoutNameW",
+   "ordinal": 1873
+  },
+  {
+   "name": "GetKeyboardState",
+   "ordinal": 1874
+  },
+  {
+   "name": "GetKeyboardType",
+   "ordinal": 1875
+  },
+  {
+   "name": "GetLastActivePopup",
+   "ordinal": 1876
+  },
+  {
+   "name": "GetLastInputInfo",
+   "ordinal": 1877
+  },
+  {
+   "name": "GetLayeredWindowAttributes",
+   "ordinal": 1878
+  },
+  {
+   "name": "GetListBoxInfo",
+   "ordinal": 1879
+  },
+  {
+   "name": "GetMagnificationDesktopColorEffect",
+   "ordinal": 1880
+  },
+  {
+   "name": "GetMagnificationDesktopMagnification",
+   "ordinal": 1881
+  },
+  {
+   "name": "GetMagnificationDesktopMonitorMagnification",
+   "ordinal": 1882
+  },
+  {
+   "name": "GetMagnificationDesktopSamplingMode",
+   "ordinal": 1883
+  },
+  {
+   "name": "GetMagnificationInputTransformForMonitor",
+   "ordinal": 1884
+  },
+  {
+   "name": "GetMagnificationLensCtxInformation",
+   "ordinal": 1885
+  },
+  {
+   "name": "GetMenu",
+   "ordinal": 1886
+  },
+  {
+   "name": "GetMenuBarInfo",
+   "ordinal": 1887
+  },
+  {
+   "name": "GetMenuCheckMarkDimensions",
+   "ordinal": 1888
+  },
+  {
+   "name": "GetMenuContextHelpId",
+   "ordinal": 1889
+  },
+  {
+   "name": "GetMenuDefaultItem",
+   "ordinal": 1890
+  },
+  {
+   "name": "GetMenuInfo",
+   "ordinal": 1891
+  },
+  {
+   "name": "GetMenuItemCount",
+   "ordinal": 1892
+  },
+  {
+   "name": "GetMenuItemID",
+   "ordinal": 1893
+  },
+  {
+   "name": "GetMenuItemInfoA",
+   "ordinal": 1894
+  },
+  {
+   "name": "GetMenuItemInfoW",
+   "ordinal": 1895
+  },
+  {
+   "name": "GetMenuItemRect",
+   "ordinal": 1896
+  },
+  {
+   "name": "GetMenuState",
+   "ordinal": 1897
+  },
+  {
+   "name": "GetMenuStringA",
+   "ordinal": 1898
+  },
+  {
+   "name": "GetMenuStringW",
+   "ordinal": 1899
+  },
+  {
+   "name": "GetMessageA",
+   "ordinal": 1900
+  },
+  {
+   "name": "GetMessageExtraInfo",
+   "ordinal": 1901
+  },
+  {
+   "name": "GetMessagePos",
+   "ordinal": 1902
+  },
+  {
+   "name": "GetMessageTime",
+   "ordinal": 1903
+  },
+  {
+   "name": "GetMessageW",
+   "ordinal": 1904
+  },
+  {
+   "name": "GetMonitorInfoA",
+   "ordinal": 1905
+  },
+  {
+   "name": "GetMonitorInfoW",
+   "ordinal": 1906
+  },
+  {
+   "name": "GetMouseMovePointsEx",
+   "ordinal": 1907
+  },
+  {
+   "name": "GetNextDlgGroupItem",
+   "ordinal": 1908
+  },
+  {
+   "name": "GetNextDlgTabItem",
+   "ordinal": 1909
+  },
+  {
+   "name": "GetOpenClipboardWindow",
+   "ordinal": 1910
+  },
+  {
+   "name": "GetParent",
+   "ordinal": 1911
+  },
+  {
+   "name": "GetPhysicalCursorPos",
+   "ordinal": 1912
+  },
+  {
+   "name": "GetPointerCursorId",
+   "ordinal": 1913
+  },
+  {
+   "name": "GetPointerDevice",
+   "ordinal": 1914
+  },
+  {
+   "name": "GetPointerDeviceCursors",
+   "ordinal": 1915
+  },
+  {
+   "name": "GetPointerDeviceInputSpace",
+   "ordinal": 1916
+  },
+  {
+   "name": "GetPointerDeviceOrientation",
+   "ordinal": 1917
+  },
+  {
+   "name": "GetPointerDeviceProperties",
+   "ordinal": 1918
+  },
+  {
+   "name": "GetPointerDeviceRects",
+   "ordinal": 1919
+  },
+  {
+   "name": "GetPointerDevices",
+   "ordinal": 1920
+  },
+  {
+   "name": "GetPointerFrameInfo",
+   "ordinal": 1921
+  },
+  {
+   "name": "GetPointerFrameInfoHistory",
+   "ordinal": 1922
+  },
+  {
+   "name": "GetPointerFramePenInfo",
+   "ordinal": 1923
+  },
+  {
+   "name": "GetPointerFramePenInfoHistory",
+   "ordinal": 1924
+  },
+  {
+   "name": "GetPointerFrameTimes",
+   "ordinal": 1925
+  },
+  {
+   "name": "GetPointerFrameTouchInfo",
+   "ordinal": 1926
+  },
+  {
+   "name": "GetPointerFrameTouchInfoHistory",
+   "ordinal": 1927
+  },
+  {
+   "name": "GetPointerInfo",
+   "ordinal": 1928
+  },
+  {
+   "name": "GetPointerInfoHistory",
+   "ordinal": 1929
+  },
+  {
+   "name": "GetPointerInputTransform",
+   "ordinal": 1930
+  },
+  {
+   "name": "GetPointerPenInfo",
+   "ordinal": 1931
+  },
+  {
+   "name": "GetPointerPenInfoHistory",
+   "ordinal": 1932
+  },
+  {
+   "name": "GetPointerTouchInfo",
+   "ordinal": 1933
+  },
+  {
+   "name": "GetPointerTouchInfoHistory",
+   "ordinal": 1934
+  },
+  {
+   "name": "GetPointerType",
+   "ordinal": 1935
+  },
+  {
+   "name": "GetPriorityClipboardFormat",
+   "ordinal": 1936
+  },
+  {
+   "name": "GetProcessDefaultLayout",
+   "ordinal": 1937
+  },
+  {
+   "name": "GetProcessDpiAwarenessInternal",
+   "ordinal": 1938
+  },
+  {
+   "name": "GetProcessWindowStation",
+   "ordinal": 1939
+  },
+  {
+   "name": "GetProgmanWindow",
+   "ordinal": 1940
+  },
+  {
+   "name": "GetPropA",
+   "ordinal": 1941
+  },
+  {
+   "name": "GetPropW",
+   "ordinal": 1942
+  },
+  {
+   "name": "GetQueueStatus",
+   "ordinal": 1943
+  },
+  {
+   "name": "GetRawInputBuffer",
+   "ordinal": 1944
+  },
+  {
+   "name": "GetRawInputData",
+   "ordinal": 1945
+  },
+  {
+   "name": "GetRawInputDeviceInfoA",
+   "ordinal": 1946
+  },
+  {
+   "name": "GetRawInputDeviceInfoW",
+   "ordinal": 1947
+  },
+  {
+   "name": "GetRawInputDeviceList",
+   "ordinal": 1948
+  },
+  {
+   "name": "GetRawPointerDeviceData",
+   "ordinal": 1949
+  },
+  {
+   "name": "GetReasonTitleFromReasonCode",
+   "ordinal": 1950
+  },
+  {
+   "name": "GetRegisteredRawInputDevices",
+   "ordinal": 1951
+  },
+  {
+   "name": "GetScrollBarInfo",
+   "ordinal": 1952
+  },
+  {
+   "name": "GetScrollInfo",
+   "ordinal": 1953
+  },
+  {
+   "name": "GetScrollPos",
+   "ordinal": 1954
+  },
+  {
+   "name": "GetScrollRange",
+   "ordinal": 1955
+  },
+  {
+   "name": "GetSendMessageReceiver",
+   "ordinal": 1956
+  },
+  {
+   "name": "GetShellChangeNotifyWindow",
+   "ordinal": 1957
+  },
+  {
+   "name": "GetShellWindow",
+   "ordinal": 1958
+  },
+  {
+   "name": "GetSubMenu",
+   "ordinal": 1959
+  },
+  {
+   "name": "GetSysColor",
+   "ordinal": 1960
+  },
+  {
+   "name": "GetSysColorBrush",
+   "ordinal": 1961
+  },
+  {
+   "name": "GetSystemDpiForProcess",
+   "ordinal": 1962
+  },
+  {
+   "name": "GetSystemMenu",
+   "ordinal": 1963
+  },
+  {
+   "name": "GetSystemMetrics",
+   "ordinal": 1964
+  },
+  {
+   "name": "GetSystemMetricsForDpi",
+   "ordinal": 1965
+  },
+  {
+   "name": "GetTabbedTextExtentA",
+   "ordinal": 1966
+  },
+  {
+   "name": "GetTabbedTextExtentW",
+   "ordinal": 1967
+  },
+  {
+   "name": "GetTaskmanWindow",
+   "ordinal": 1968
+  },
+  {
+   "name": "GetThreadDesktop",
+   "ordinal": 1969
+  },
+  {
+   "name": "GetThreadDpiAwarenessContext",
+   "ordinal": 1970
+  },
+  {
+   "name": "GetThreadDpiHostingBehavior",
+   "ordinal": 1971
+  },
+  {
+   "name": "GetTitleBarInfo",
+   "ordinal": 1972
+  },
+  {
+   "name": "GetTopLevelWindow",
+   "ordinal": 1973
+  },
+  {
+   "name": "GetTopWindow",
+   "ordinal": 1974
+  },
+  {
+   "name": "GetTouchInputInfo",
+   "ordinal": 1975
+  },
+  {
+   "name": "GetUnpredictedMessagePos",
+   "ordinal": 1976
+  },
+  {
+   "name": "GetUpdateRect",
+   "ordinal": 1977
+  },
+  {
+   "name": "GetUpdateRgn",
+   "ordinal": 1978
+  },
+  {
+   "name": "GetUpdatedClipboardFormats",
+   "ordinal": 1979
+  },
+  {
+   "name": "GetUserObjectInformationA",
+   "ordinal": 1980
+  },
+  {
+   "name": "GetUserObjectInformationW",
+   "ordinal": 1981
+  },
+  {
+   "name": "GetUserObjectSecurity",
+   "ordinal": 1982
+  },
+  {
+   "name": "GetWinStationInfo",
+   "ordinal": 1983
+  },
+  {
+   "name": "GetWindow",
+   "ordinal": 1984
+  },
+  {
+   "name": "GetWindowBand",
+   "ordinal": 1985
+  },
+  {
+   "name": "GetWindowCompositionAttribute",
+   "ordinal": 1986
+  },
+  {
+   "name": "GetWindowCompositionInfo",
+   "ordinal": 1987
+  },
+  {
+   "name": "GetWindowContextHelpId",
+   "ordinal": 1988
+  },
+  {
+   "name": "GetWindowDC",
+   "ordinal": 1989
+  },
+  {
+   "name": "GetWindowDisplayAffinity",
+   "ordinal": 1990
+  },
+  {
+   "name": "GetWindowDpiAwarenessContext",
+   "ordinal": 1991
+  },
+  {
+   "name": "GetWindowDpiHostingBehavior",
+   "ordinal": 1992
+  },
+  {
+   "name": "GetWindowFeedbackSetting",
+   "ordinal": 1993
+  },
+  {
+   "name": "GetWindowInfo",
+   "ordinal": 1994
+  },
+  {
+   "name": "GetWindowLongA",
+   "ordinal": 1995
+  },
+  {
+   "name": "GetWindowLongPtrA",
+   "ordinal": 1996
+  },
+  {
+   "name": "GetWindowLongPtrW",
+   "ordinal": 1997
+  },
+  {
+   "name": "GetWindowLongW",
+   "ordinal": 1998
+  },
+  {
+   "name": "GetWindowMinimizeRect",
+   "ordinal": 1999
+  },
+  {
+   "name": "GetWindowModuleFileName",
+   "ordinal": 2000
+  },
+  {
+   "name": "GetWindowModuleFileNameA",
+   "ordinal": 2003
+  },
+  {
+   "name": "GetWindowModuleFileNameW",
+   "ordinal": 2004
+  },
+  {
+   "name": "GetWindowPlacement",
+   "ordinal": 2006
+  },
+  {
+   "name": "GetWindowProcessHandle",
+   "ordinal": 2007
+  },
+  {
+   "name": "GetWindowRect",
+   "ordinal": 2008
+  },
+  {
+   "name": "GetWindowRgn",
+   "ordinal": 2009
+  },
+  {
+   "name": "GetWindowRgnBox",
+   "ordinal": 2011
+  },
+  {
+   "name": "GetWindowRgnEx",
+   "ordinal": 2012
+  },
+  {
+   "name": "GetWindowTextA",
+   "ordinal": 2013
+  },
+  {
+   "name": "GetWindowTextLengthA",
+   "ordinal": 2014
+  },
+  {
+   "name": "GetWindowTextLengthW",
+   "ordinal": 2015
+  },
+  {
+   "name": "GetWindowTextW",
+   "ordinal": 2016
+  },
+  {
+   "name": "GetWindowThreadProcessId",
+   "ordinal": 2017
+  },
+  {
+   "name": "GetWindowWord",
+   "ordinal": 2018
+  },
+  {
+   "name": "GhostWindowFromHungWindow",
+   "ordinal": 2019
+  },
+  {
+   "name": "GrayStringA",
+   "ordinal": 2020
+  },
+  {
+   "name": "GrayStringW",
+   "ordinal": 2021
+  },
+  {
+   "name": "HideCaret",
+   "ordinal": 2022
+  },
+  {
+   "name": "HiliteMenuItem",
+   "ordinal": 2023
+  },
+  {
+   "name": "HungWindowFromGhostWindow",
+   "ordinal": 2024
+  },
+  {
+   "name": "IMPGetIMEA",
+   "ordinal": 2025
+  },
+  {
+   "name": "IMPGetIMEW",
+   "ordinal": 2026
+  },
+  {
+   "name": "IMPQueryIMEA",
+   "ordinal": 2027
+  },
+  {
+   "name": "IMPQueryIMEW",
+   "ordinal": 2028
+  },
+  {
+   "name": "IMPSetIMEA",
+   "ordinal": 2029
+  },
+  {
+   "name": "IMPSetIMEW",
+   "ordinal": 2030
+  },
+  {
+   "name": "ImpersonateDdeClientWindow",
+   "ordinal": 2031
+  },
+  {
+   "name": "InSendMessage",
+   "ordinal": 2032
+  },
+  {
+   "name": "InSendMessageEx",
+   "ordinal": 2033
+  },
+  {
+   "name": "InflateRect",
+   "ordinal": 2034
+  },
+  {
+   "name": "InheritWindowMonitor",
+   "ordinal": 2035
+  },
+  {
+   "name": "InitDManipHook",
+   "ordinal": 2036
+  },
+  {
+   "name": "InitializeGenericHidInjection",
+   "ordinal": 2037
+  },
+  {
+   "name": "InitializeInputDeviceInjection",
+   "ordinal": 2038
+  },
+  {
+   "name": "InitializeLpkHooks",
+   "ordinal": 2039
+  },
+  {
+   "name": "InitializePointerDeviceInjection",
+   "ordinal": 2040
+  },
+  {
+   "name": "InitializePointerDeviceInjectionEx",
+   "ordinal": 2041
+  },
+  {
+   "name": "InitializeTouchInjection",
+   "ordinal": 2042
+  },
+  {
+   "name": "InjectDeviceInput",
+   "ordinal": 2043
+  },
+  {
+   "name": "InjectGenericHidInput",
+   "ordinal": 2044
+  },
+  {
+   "name": "InjectKeyboardInput",
+   "ordinal": 2045
+  },
+  {
+   "name": "InjectMouseInput",
+   "ordinal": 2046
+  },
+  {
+   "name": "InjectPointerInput",
+   "ordinal": 2047
+  },
+  {
+   "name": "InjectSyntheticPointerInput",
+   "ordinal": 2048
+  },
+  {
+   "name": "InjectTouchInput",
+   "ordinal": 2049
+  },
+  {
+   "name": "InputSpaceRegionFromPoint",
+   "ordinal": 2050
+  },
+  {
+   "name": "InsertMenuA",
+   "ordinal": 2051
+  },
+  {
+   "name": "InsertMenuItemA",
+   "ordinal": 2052
+  },
+  {
+   "name": "InsertMenuItemW",
+   "ordinal": 2053
+  },
+  {
+   "name": "InsertMenuW",
+   "ordinal": 2054
+  },
+  {
+   "name": "InternalGetWindowIcon",
+   "ordinal": 2055
+  },
+  {
+   "name": "InternalGetWindowText",
+   "ordinal": 2056
+  },
+  {
+   "name": "IntersectRect",
+   "ordinal": 2057
+  },
+  {
+   "name": "InvalidateRect",
+   "ordinal": 2058
+  },
+  {
+   "name": "InvalidateRgn",
+   "ordinal": 2059
+  },
+  {
+   "name": "InvertRect",
+   "ordinal": 2060
+  },
+  {
+   "name": "IsCharAlphaA",
+   "ordinal": 2061
+  },
+  {
+   "name": "IsCharAlphaNumericA",
+   "ordinal": 2062
+  },
+  {
+   "name": "IsCharAlphaNumericW",
+   "ordinal": 2063
+  },
+  {
+   "name": "IsCharAlphaW",
+   "ordinal": 2064
+  },
+  {
+   "name": "IsCharLowerA",
+   "ordinal": 2065
+  },
+  {
+   "name": "IsCharLowerW",
+   "ordinal": 2066
+  },
+  {
+   "name": "IsCharUpperA",
+   "ordinal": 2067
+  },
+  {
+   "name": "IsCharUpperW",
+   "ordinal": 2068
+  },
+  {
+   "name": "IsChild",
+   "ordinal": 2069
+  },
+  {
+   "name": "IsClipboardFormatAvailable",
+   "ordinal": 2070
+  },
+  {
+   "name": "IsDialogMessage",
+   "ordinal": 2071
+  },
+  {
+   "name": "IsDialogMessageA",
+   "ordinal": 2072
+  },
+  {
+   "name": "IsDialogMessageW",
+   "ordinal": 2073
+  },
+  {
+   "name": "IsDlgButtonChecked",
+   "ordinal": 2074
+  },
+  {
+   "name": "IsGUIThread",
+   "ordinal": 2075
+  },
+  {
+   "name": "IsHungAppWindow",
+   "ordinal": 2076
+  },
+  {
+   "name": "IsIconic",
+   "ordinal": 2077
+  },
+  {
+   "name": "IsImmersiveProcess",
+   "ordinal": 2078
+  },
+  {
+   "name": "SetThreadCursorCreationScaling",
+   "ordinal": 2079
+  },
+  {
+   "name": "IsInDesktopWindowBand",
+   "ordinal": 2080
+  },
+  {
+   "name": "IsMenu",
+   "ordinal": 2081
+  },
+  {
+   "name": "IsMouseInPointerEnabled",
+   "ordinal": 2082
+  },
+  {
+   "name": "IsOneCoreTransformMode",
+   "ordinal": 2083
+  },
+  {
+   "name": "IsProcessDPIAware",
+   "ordinal": 2084
+  },
+  {
+   "name": "IsRectEmpty",
+   "ordinal": 2085
+  },
+  {
+   "name": "IsSETEnabled",
+   "ordinal": 2086
+  },
+  {
+   "name": "IsServerSideWindow",
+   "ordinal": 2087
+  },
+  {
+   "name": "IsThreadDesktopComposited",
+   "ordinal": 2088
+  },
+  {
+   "name": "IsThreadTSFEventAware",
+   "ordinal": 2089
+  },
+  {
+   "name": "IsTopLevelWindow",
+   "ordinal": 2090
+  },
+  {
+   "name": "IsTouchWindow",
+   "ordinal": 2091
+  },
+  {
+   "name": "IsValidDpiAwarenessContext",
+   "ordinal": 2092
+  },
+  {
+   "name": "IsWinEventHookInstalled",
+   "ordinal": 2093
+  },
+  {
+   "name": "IsWindow",
+   "ordinal": 2094
+  },
+  {
+   "name": "IsWindowArranged",
+   "ordinal": 2095
+  },
+  {
+   "name": "IsWindowEnabled",
+   "ordinal": 2096
+  },
+  {
+   "name": "IsWindowInDestroy",
+   "ordinal": 2097
+  },
+  {
+   "name": "IsWindowRedirectedForPrint",
+   "ordinal": 2098
+  },
+  {
+   "name": "IsWindowUnicode",
+   "ordinal": 2099
+  },
+  {
+   "name": "IsWindowVisible",
+   "ordinal": 2100
+  },
+  {
+   "name": "IsWow64Message",
+   "ordinal": 2101
+  },
+  {
+   "name": "IsZoomed",
+   "ordinal": 2102
+  },
+  {
+   "name": "KillTimer",
+   "ordinal": 2103
+  },
+  {
+   "name": "LoadAcceleratorsA",
+   "ordinal": 2104
+  },
+  {
+   "name": "LoadAcceleratorsW",
+   "ordinal": 2105
+  },
+  {
+   "name": "LoadBitmapA",
+   "ordinal": 2106
+  },
+  {
+   "name": "LoadBitmapW",
+   "ordinal": 2107
+  },
+  {
+   "name": "LoadCursorA",
+   "ordinal": 2108
+  },
+  {
+   "name": "LoadCursorFromFileA",
+   "ordinal": 2109
+  },
+  {
+   "name": "LoadCursorFromFileW",
+   "ordinal": 2110
+  },
+  {
+   "name": "LoadCursorW",
+   "ordinal": 2111
+  },
+  {
+   "name": "LoadIconA",
+   "ordinal": 2112
+  },
+  {
+   "name": "LoadIconW",
+   "ordinal": 2113
+  },
+  {
+   "name": "LoadImageA",
+   "ordinal": 2114
+  },
+  {
+   "name": "LoadImageW",
+   "ordinal": 2115
+  },
+  {
+   "name": "LoadKeyboardLayoutA",
+   "ordinal": 2116
+  },
+  {
+   "name": "LoadKeyboardLayoutEx",
+   "ordinal": 2117
+  },
+  {
+   "name": "LoadKeyboardLayoutW",
+   "ordinal": 2118
+  },
+  {
+   "name": "LoadLocalFonts",
+   "ordinal": 2119
+  },
+  {
+   "name": "LoadMenuA",
+   "ordinal": 2120
+  },
+  {
+   "name": "LoadMenuIndirectA",
+   "ordinal": 2121
+  },
+  {
+   "name": "LoadMenuIndirectW",
+   "ordinal": 2122
+  },
+  {
+   "name": "LoadMenuW",
+   "ordinal": 2123
+  },
+  {
+   "name": "LoadRemoteFonts",
+   "ordinal": 2124
+  },
+  {
+   "name": "LoadStringA",
+   "ordinal": 2125
+  },
+  {
+   "name": "LoadStringW",
+   "ordinal": 2126
+  },
+  {
+   "name": "LockSetForegroundWindow",
+   "ordinal": 2127
+  },
+  {
+   "name": "LockWindowStation",
+   "ordinal": 2128
+  },
+  {
+   "name": "LockWindowUpdate",
+   "ordinal": 2129
+  },
+  {
+   "name": "LockWorkStation",
+   "ordinal": 2130
+  },
+  {
+   "name": "LogicalToPhysicalPoint",
+   "ordinal": 2131
+  },
+  {
+   "name": "LogicalToPhysicalPointForPerMonitorDPI",
+   "ordinal": 2132
+  },
+  {
+   "name": "LookupIconIdFromDirectory",
+   "ordinal": 2133
+  },
+  {
+   "name": "LookupIconIdFromDirectoryEx",
+   "ordinal": 2134
+  },
+  {
+   "name": "MBToWCSEx",
+   "ordinal": 2135
+  },
+  {
+   "name": "MBToWCSExt",
+   "ordinal": 2136
+  },
+  {
+   "name": "MB_GetString",
+   "ordinal": 2137
+  },
+  {
+   "name": "MITGetCursorUpdateHandle",
+   "ordinal": 2138
+  },
+  {
+   "name": "MITSetLastInputRecipient",
+   "ordinal": 2139
+  },
+  {
+   "name": "MITSynthesizeTouchInput",
+   "ordinal": 2140
+  },
+  {
+   "name": "MakeThreadTSFEventAware",
+   "ordinal": 2141
+  },
+  {
+   "name": "MapDialogRect",
+   "ordinal": 2142
+  },
+  {
+   "name": "MapPointsByVisualIdentifier",
+   "ordinal": 2143
+  },
+  {
+   "name": "MapVirtualKeyA",
+   "ordinal": 2144
+  },
+  {
+   "name": "MapVirtualKeyExA",
+   "ordinal": 2145
+  },
+  {
+   "name": "MapVirtualKeyExW",
+   "ordinal": 2146
+  },
+  {
+   "name": "MapVirtualKeyW",
+   "ordinal": 2147
+  },
+  {
+   "name": "MapVisualRelativePoints",
+   "ordinal": 2148
+  },
+  {
+   "name": "MapWindowPoints",
+   "ordinal": 2149
+  },
+  {
+   "name": "MenuItemFromPoint",
+   "ordinal": 2150
+  },
+  {
+   "name": "MenuWindowProcA",
+   "ordinal": 2151
+  },
+  {
+   "name": "MenuWindowProcW",
+   "ordinal": 2152
+  },
+  {
+   "name": "MessageBeep",
+   "ordinal": 2153
+  },
+  {
+   "name": "MessageBoxA",
+   "ordinal": 2154
+  },
+  {
+   "name": "MessageBoxExA",
+   "ordinal": 2155
+  },
+  {
+   "name": "MessageBoxExW",
+   "ordinal": 2156
+  },
+  {
+   "name": "MessageBoxIndirectA",
+   "ordinal": 2157
+  },
+  {
+   "name": "MessageBoxIndirectW",
+   "ordinal": 2158
+  },
+  {
+   "name": "MessageBoxTimeoutA",
+   "ordinal": 2159
+  },
+  {
+   "name": "MessageBoxTimeoutW",
+   "ordinal": 2160
+  },
+  {
+   "name": "MessageBoxW",
+   "ordinal": 2161
+  },
+  {
+   "name": "ModifyMenuA",
+   "ordinal": 2162
+  },
+  {
+   "name": "ModifyMenuW",
+   "ordinal": 2163
+  },
+  {
+   "name": "MonitorFromPoint",
+   "ordinal": 2164
+  },
+  {
+   "name": "MonitorFromRect",
+   "ordinal": 2165
+  },
+  {
+   "name": "MonitorFromWindow",
+   "ordinal": 2166
+  },
+  {
+   "name": "MoveWindow",
+   "ordinal": 2167
+  },
+  {
+   "name": "MsgWaitForMultipleObjects",
+   "ordinal": 2168
+  },
+  {
+   "name": "MsgWaitForMultipleObjectsEx",
+   "ordinal": 2169
+  },
+  {
+   "name": "NotifyOverlayWindow",
+   "ordinal": 2170
+  },
+  {
+   "name": "NotifyWinEvent",
+   "ordinal": 2171
+  },
+  {
+   "name": "OemKeyScan",
+   "ordinal": 2172
+  },
+  {
+   "name": "OemToCharA",
+   "ordinal": 2173
+  },
+  {
+   "name": "OemToCharBuffA",
+   "ordinal": 2174
+  },
+  {
+   "name": "OemToCharBuffW",
+   "ordinal": 2175
+  },
+  {
+   "name": "OemToCharW",
+   "ordinal": 2176
+  },
+  {
+   "name": "OffsetRect",
+   "ordinal": 2177
+  },
+  {
+   "name": "OpenClipboard",
+   "ordinal": 2178
+  },
+  {
+   "name": "OpenDesktopA",
+   "ordinal": 2179
+  },
+  {
+   "name": "OpenDesktopW",
+   "ordinal": 2180
+  },
+  {
+   "name": "OpenIcon",
+   "ordinal": 2181
+  },
+  {
+   "name": "OpenInputDesktop",
+   "ordinal": 2182
+  },
+  {
+   "name": "OpenThreadDesktop",
+   "ordinal": 2183
+  },
+  {
+   "name": "OpenWindowStationA",
+   "ordinal": 2184
+  },
+  {
+   "name": "OpenWindowStationW",
+   "ordinal": 2185
+  },
+  {
+   "name": "PackDDElParam",
+   "ordinal": 2186
+  },
+  {
+   "name": "PackTouchHitTestingProximityEvaluation",
+   "ordinal": 2187
+  },
+  {
+   "name": "PaintDesktop",
+   "ordinal": 2188
+  },
+  {
+   "name": "PaintMenuBar",
+   "ordinal": 2189
+  },
+  {
+   "name": "PaintMonitor",
+   "ordinal": 2190
+  },
+  {
+   "name": "PeekMessageA",
+   "ordinal": 2191
+  },
+  {
+   "name": "PeekMessageW",
+   "ordinal": 2192
+  },
+  {
+   "name": "PhysicalToLogicalPoint",
+   "ordinal": 2193
+  },
+  {
+   "name": "PhysicalToLogicalPointForPerMonitorDPI",
+   "ordinal": 2194
+  },
+  {
+   "name": "PostMessageA",
+   "ordinal": 2195
+  },
+  {
+   "name": "PostMessageW",
+   "ordinal": 2196
+  },
+  {
+   "name": "PostQuitMessage",
+   "ordinal": 2197
+  },
+  {
+   "name": "PostThreadMessageA",
+   "ordinal": 2198
+  },
+  {
+   "name": "PostThreadMessageW",
+   "ordinal": 2199
+  },
+  {
+   "name": "PrintWindow",
+   "ordinal": 2200
+  },
+  {
+   "name": "PrivateExtractIconExA",
+   "ordinal": 2201
+  },
+  {
+   "name": "PrivateExtractIconExW",
+   "ordinal": 2202
+  },
+  {
+   "name": "PrivateExtractIconsA",
+   "ordinal": 2203
+  },
+  {
+   "name": "PrivateExtractIconsW",
+   "ordinal": 2204
+  },
+  {
+   "name": "PrivateRegisterICSProc",
+   "ordinal": 2205
+  },
+  {
+   "name": "PtInRect",
+   "ordinal": 2206
+  },
+  {
+   "name": "QueryBSDRWindow",
+   "ordinal": 2207
+  },
+  {
+   "name": "QueryDisplayConfig",
+   "ordinal": 2208
+  },
+  {
+   "name": "RIMAddInputObserver",
+   "ordinal": 2209
+  },
+  {
+   "name": "RIMAreSiblingDevices",
+   "ordinal": 2210
+  },
+  {
+   "name": "RIMDeviceIoControl",
+   "ordinal": 2211
+  },
+  {
+   "name": "RIMEnableMonitorMappingForDevice",
+   "ordinal": 2212
+  },
+  {
+   "name": "RIMFreeInputBuffer",
+   "ordinal": 2213
+  },
+  {
+   "name": "RIMGetDevicePreparsedData",
+   "ordinal": 2214
+  },
+  {
+   "name": "RIMGetDevicePreparsedDataLockfree",
+   "ordinal": 2215
+  },
+  {
+   "name": "RIMGetDeviceProperties",
+   "ordinal": 2216
+  },
+  {
+   "name": "RIMGetDevicePropertiesLockfree",
+   "ordinal": 2217
+  },
+  {
+   "name": "RIMGetPhysicalDeviceRect",
+   "ordinal": 2218
+  },
+  {
+   "name": "RIMGetSourceProcessId",
+   "ordinal": 2219
+  },
+  {
+   "name": "RIMObserveNextInput",
+   "ordinal": 2220
+  },
+  {
+   "name": "RIMOnPnpNotification",
+   "ordinal": 2221
+  },
+  {
+   "name": "RIMOnTimerNotification",
+   "ordinal": 2222
+  },
+  {
+   "name": "RIMQueryDevicePath",
+   "ordinal": 2223
+  },
+  {
+   "name": "RIMReadInput",
+   "ordinal": 2224
+  },
+  {
+   "name": "RIMRegisterForInput",
+   "ordinal": 2225
+  },
+  {
+   "name": "RIMRemoveInputObserver",
+   "ordinal": 2226
+  },
+  {
+   "name": "RIMSetExtendedDeviceProperty",
+   "ordinal": 2227
+  },
+  {
+   "name": "RIMSetTestModeStatus",
+   "ordinal": 2228
+  },
+  {
+   "name": "RIMUnregisterForInput",
+   "ordinal": 2229
+  },
+  {
+   "name": "RIMUpdateInputObserverRegistration",
+   "ordinal": 2230
+  },
+  {
+   "name": "RealChildWindowFromPoint",
+   "ordinal": 2231
+  },
+  {
+   "name": "RealGetWindowClass",
+   "ordinal": 2232
+  },
+  {
+   "name": "RealGetWindowClassA",
+   "ordinal": 2233
+  },
+  {
+   "name": "RealGetWindowClassW",
+   "ordinal": 2234
+  },
+  {
+   "name": "ReasonCodeNeedsBugID",
+   "ordinal": 2235
+  },
+  {
+   "name": "ReasonCodeNeedsComment",
+   "ordinal": 2236
+  },
+  {
+   "name": "RecordShutdownReason",
+   "ordinal": 2237
+  },
+  {
+   "name": "RedrawWindow",
+   "ordinal": 2238
+  },
+  {
+   "name": "RegisterBSDRWindow",
+   "ordinal": 2239
+  },
+  {
+   "name": "RegisterClassA",
+   "ordinal": 2240
+  },
+  {
+   "name": "RegisterClassExA",
+   "ordinal": 2241
+  },
+  {
+   "name": "RegisterClassExW",
+   "ordinal": 2242
+  },
+  {
+   "name": "RegisterClassW",
+   "ordinal": 2243
+  },
+  {
+   "name": "RegisterClipboardFormatA",
+   "ordinal": 2244
+  },
+  {
+   "name": "RegisterClipboardFormatW",
+   "ordinal": 2245
+  },
+  {
+   "name": "RegisterDManipHook",
+   "ordinal": 2246
+  },
+  {
+   "name": "RegisterDeviceNotificationA",
+   "ordinal": 2247
+  },
+  {
+   "name": "RegisterDeviceNotificationW",
+   "ordinal": 2248
+  },
+  {
+   "name": "RegisterErrorReportingDialog",
+   "ordinal": 2249
+  },
+  {
+   "name": "RegisterFrostWindow",
+   "ordinal": 2250
+  },
+  {
+   "name": "RegisterGhostWindow",
+   "ordinal": 2251
+  },
+  {
+   "name": "RegisterHotKey",
+   "ordinal": 2252
+  },
+  {
+   "name": "RegisterLogonProcess",
+   "ordinal": 2253
+  },
+  {
+   "name": "RegisterMessagePumpHook",
+   "ordinal": 2254
+  },
+  {
+   "name": "RegisterPointerDeviceNotifications",
+   "ordinal": 2255
+  },
+  {
+   "name": "RegisterPointerInputTarget",
+   "ordinal": 2256
+  },
+  {
+   "name": "RegisterPointerInputTargetEx",
+   "ordinal": 2257
+  },
+  {
+   "name": "RegisterPowerSettingNotification",
+   "ordinal": 2258
+  },
+  {
+   "name": "RegisterRawInputDevices",
+   "ordinal": 2259
+  },
+  {
+   "name": "RegisterServicesProcess",
+   "ordinal": 2260
+  },
+  {
+   "name": "RegisterSessionPort",
+   "ordinal": 2261
+  },
+  {
+   "name": "RegisterShellHookWindow",
+   "ordinal": 2262
+  },
+  {
+   "name": "RegisterSuspendResumeNotification",
+   "ordinal": 2263
+  },
+  {
+   "name": "RegisterSystemThread",
+   "ordinal": 2264
+  },
+  {
+   "name": "RegisterTasklist",
+   "ordinal": 2265
+  },
+  {
+   "name": "RegisterTouchHitTestingWindow",
+   "ordinal": 2266
+  },
+  {
+   "name": "RegisterTouchWindow",
+   "ordinal": 2267
+  },
+  {
+   "name": "RegisterUserApiHook",
+   "ordinal": 2268
+  },
+  {
+   "name": "RegisterWindowMessageA",
+   "ordinal": 2269
+  },
+  {
+   "name": "RegisterWindowMessageW",
+   "ordinal": 2270
+  },
+  {
+   "name": "ReleaseCapture",
+   "ordinal": 2271
+  },
+  {
+   "name": "ReleaseDC",
+   "ordinal": 2272
+  },
+  {
+   "name": "ReleaseDwmHitTestWaiters",
+   "ordinal": 2273
+  },
+  {
+   "name": "RemoveClipboardFormatListener",
+   "ordinal": 2274
+  },
+  {
+   "name": "RemoveInjectionDevice",
+   "ordinal": 2275
+  },
+  {
+   "name": "RemoveMenu",
+   "ordinal": 2276
+  },
+  {
+   "name": "RemovePropA",
+   "ordinal": 2277
+  },
+  {
+   "name": "RemovePropW",
+   "ordinal": 2278
+  },
+  {
+   "name": "RemoveThreadTSFEventAwareness",
+   "ordinal": 2279
+  },
+  {
+   "name": "RemoveVisualIdentifier",
+   "ordinal": 2280
+  },
+  {
+   "name": "ReplyMessage",
+   "ordinal": 2281
+  },
+  {
+   "name": "ResolveDesktopForWOW",
+   "ordinal": 2282
+  },
+  {
+   "name": "ReuseDDElParam",
+   "ordinal": 2283
+  },
+  {
+   "name": "ScreenToClient",
+   "ordinal": 2284
+  },
+  {
+   "name": "ScrollChildren",
+   "ordinal": 2285
+  },
+  {
+   "name": "ScrollDC",
+   "ordinal": 2286
+  },
+  {
+   "name": "ScrollWindow",
+   "ordinal": 2287
+  },
+  {
+   "name": "ScrollWindowEx",
+   "ordinal": 2288
+  },
+  {
+   "name": "SendDlgItemMessageA",
+   "ordinal": 2289
+  },
+  {
+   "name": "SendDlgItemMessageW",
+   "ordinal": 2290
+  },
+  {
+   "name": "SendIMEMessageExA",
+   "ordinal": 2291
+  },
+  {
+   "name": "SendIMEMessageExW",
+   "ordinal": 2292
+  },
+  {
+   "name": "SendInput",
+   "ordinal": 2293
+  },
+  {
+   "name": "SendMessageA",
+   "ordinal": 2294
+  },
+  {
+   "name": "SendMessageCallbackA",
+   "ordinal": 2295
+  },
+  {
+   "name": "SendMessageCallbackW",
+   "ordinal": 2296
+  },
+  {
+   "name": "SendMessageTimeoutA",
+   "ordinal": 2297
+  },
+  {
+   "name": "SendMessageTimeoutW",
+   "ordinal": 2298
+  },
+  {
+   "name": "SendMessageW",
+   "ordinal": 2299
+  },
+  {
+   "name": "SendNotifyMessageA",
+   "ordinal": 2300
+  },
+  {
+   "name": "SendNotifyMessageW",
+   "ordinal": 2301
+  },
+  {
+   "name": "SetActiveWindow",
+   "ordinal": 2302
+  },
+  {
+   "name": "SetCapture",
+   "ordinal": 2303
+  },
+  {
+   "name": "SetCaretBlinkTime",
+   "ordinal": 2304
+  },
+  {
+   "name": "SetCaretPos",
+   "ordinal": 2305
+  },
+  {
+   "name": "SetClassLongA",
+   "ordinal": 2306
+  },
+  {
+   "name": "SetClassLongPtrA",
+   "ordinal": 2307
+  },
+  {
+   "name": "SetClassLongPtrW",
+   "ordinal": 2308
+  },
+  {
+   "name": "SetClassLongW",
+   "ordinal": 2309
+  },
+  {
+   "name": "SetClassWord",
+   "ordinal": 2310
+  },
+  {
+   "name": "SetClipboardData",
+   "ordinal": 2311
+  },
+  {
+   "name": "SetClipboardViewer",
+   "ordinal": 2312
+  },
+  {
+   "name": "SetCoalescableTimer",
+   "ordinal": 2313
+  },
+  {
+   "name": "SetCursor",
+   "ordinal": 2314
+  },
+  {
+   "name": "SetCursorContents",
+   "ordinal": 2315
+  },
+  {
+   "name": "SetCursorPos",
+   "ordinal": 2316
+  },
+  {
+   "name": "SetDebugErrorLevel",
+   "ordinal": 2317
+  },
+  {
+   "name": "SetDeskWallpaper",
+   "ordinal": 2318
+  },
+  {
+   "name": "SetDesktopColorTransform",
+   "ordinal": 2319
+  },
+  {
+   "name": "SetDialogControlDpiChangeBehavior",
+   "ordinal": 2320
+  },
+  {
+   "name": "SetDialogDpiChangeBehavior",
+   "ordinal": 2321
+  },
+  {
+   "name": "SetDisplayAutoRotationPreferences",
+   "ordinal": 2322
+  },
+  {
+   "name": "SetDisplayConfig",
+   "ordinal": 2323
+  },
+  {
+   "name": "SetDlgItemInt",
+   "ordinal": 2324
+  },
+  {
+   "name": "SetDlgItemTextA",
+   "ordinal": 2325
+  },
+  {
+   "name": "SetDlgItemTextW",
+   "ordinal": 2326
+  },
+  {
+   "name": "SetDoubleClickTime",
+   "ordinal": 2327
+  },
+  {
+   "name": "SetFeatureReportResponse",
+   "ordinal": 2328
+  },
+  {
+   "name": "SetFocus",
+   "ordinal": 2329
+  },
+  {
+   "name": "SetForegroundRedirectionForActivationObject",
+   "ordinal": 2330
+  },
+  {
+   "name": "SetForegroundWindow",
+   "ordinal": 2331
+  },
+  {
+   "name": "SetFullscreenMagnifierOffsetsDWMUpdated",
+   "ordinal": 2332
+  },
+  {
+   "name": "SetGestureConfig",
+   "ordinal": 2333
+  },
+  {
+   "name": "SetInternalWindowPos",
+   "ordinal": 2334
+  },
+  {
+   "name": "SetKeyboardState",
+   "ordinal": 2335
+  },
+  {
+   "name": "SetLastErrorEx",
+   "ordinal": 2336
+  },
+  {
+   "name": "SetLayeredWindowAttributes",
+   "ordinal": 2337
+  },
+  {
+   "name": "SetMagnificationDesktopColorEffect",
+   "ordinal": 2338
+  },
+  {
+   "name": "SetMagnificationDesktopMagnification",
+   "ordinal": 2339
+  },
+  {
+   "name": "SetMagnificationDesktopMagnifierOffsetsDWMUpdated",
+   "ordinal": 2340
+  },
+  {
+   "name": "SetMagnificationDesktopMonitorTransformList",
+   "ordinal": 2341
+  },
+  {
+   "name": "SetMagnificationDesktopSamplingMode",
+   "ordinal": 2342
+  },
+  {
+   "name": "SetMagnificationInputTransformList",
+   "ordinal": 2343
+  },
+  {
+   "name": "SetMagnificationLensCtxInformation",
+   "ordinal": 2344
+  },
+  {
+   "name": "SetMenu",
+   "ordinal": 2345
+  },
+  {
+   "name": "SetMenuContextHelpId",
+   "ordinal": 2346
+  },
+  {
+   "name": "SetMenuDefaultItem",
+   "ordinal": 2347
+  },
+  {
+   "name": "SetMenuInfo",
+   "ordinal": 2348
+  },
+  {
+   "name": "SetMenuItemBitmaps",
+   "ordinal": 2349
+  },
+  {
+   "name": "SetMenuItemInfoA",
+   "ordinal": 2350
+  },
+  {
+   "name": "SetMenuItemInfoW",
+   "ordinal": 2351
+  },
+  {
+   "name": "SetMessageExtraInfo",
+   "ordinal": 2352
+  },
+  {
+   "name": "SetMessageQueue",
+   "ordinal": 2353
+  },
+  {
+   "name": "SetMirrorRendering",
+   "ordinal": 2354
+  },
+  {
+   "name": "SetParent",
+   "ordinal": 2355
+  },
+  {
+   "name": "SetPhysicalCursorPos",
+   "ordinal": 2356
+  },
+  {
+   "name": "SetPointerDeviceInputSpace",
+   "ordinal": 2357
+  },
+  {
+   "name": "SetProcessDPIAware",
+   "ordinal": 2358
+  },
+  {
+   "name": "SetProcessDefaultLayout",
+   "ordinal": 2359
+  },
+  {
+   "name": "SetProcessDpiAwarenessContext",
+   "ordinal": 2360
+  },
+  {
+   "name": "SetProcessDpiAwarenessInternal",
+   "ordinal": 2361
+  },
+  {
+   "name": "SetProcessLaunchForegroundPolicy",
+   "ordinal": 2362
+  },
+  {
+   "name": "SetProcessRestrictionExemption",
+   "ordinal": 2363
+  },
+  {
+   "name": "SetProcessWindowStation",
+   "ordinal": 2364
+  },
+  {
+   "name": "SetProgmanWindow",
+   "ordinal": 2365
+  },
+  {
+   "name": "SetPropA",
+   "ordinal": 2366
+  },
+  {
+   "name": "SetPropW",
+   "ordinal": 2367
+  },
+  {
+   "name": "SetRect",
+   "ordinal": 2368
+  },
+  {
+   "name": "SetRectEmpty",
+   "ordinal": 2369
+  },
+  {
+   "name": "SetScrollInfo",
+   "ordinal": 2370
+  },
+  {
+   "name": "SetScrollPos",
+   "ordinal": 2371
+  },
+  {
+   "name": "SetScrollRange",
+   "ordinal": 2372
+  },
+  {
+   "name": "SetShellChangeNotifyWindow",
+   "ordinal": 2373
+  },
+  {
+   "name": "SetShellWindow",
+   "ordinal": 2374
+  },
+  {
+   "name": "SetShellWindowEx",
+   "ordinal": 2375
+  },
+  {
+   "name": "SetSysColors",
+   "ordinal": 2376
+  },
+  {
+   "name": "SetSysColorsTemp",
+   "ordinal": 2377
+  },
+  {
+   "name": "SetSystemCursor",
+   "ordinal": 2378
+  },
+  {
+   "name": "SetSystemMenu",
+   "ordinal": 2379
+  },
+  {
+   "name": "SetTaskmanWindow",
+   "ordinal": 2380
+  },
+  {
+   "name": "SetThreadDesktop",
+   "ordinal": 2381
+  },
+  {
+   "name": "SetThreadDpiAwarenessContext",
+   "ordinal": 2382
+  },
+  {
+   "name": "SetThreadDpiHostingBehavior",
+   "ordinal": 2383
+  },
+  {
+   "name": "SetThreadInputBlocked",
+   "ordinal": 2384
+  },
+  {
+   "name": "SetTimer",
+   "ordinal": 2385
+  },
+  {
+   "name": "SetUserObjectInformationA",
+   "ordinal": 2386
+  },
+  {
+   "name": "SetUserObjectInformationW",
+   "ordinal": 2387
+  },
+  {
+   "name": "SetUserObjectSecurity",
+   "ordinal": 2388
+  },
+  {
+   "name": "SetWinEventHook",
+   "ordinal": 2389
+  },
+  {
+   "name": "SetWindowBand",
+   "ordinal": 2390
+  },
+  {
+   "name": "SetWindowCompositionAttribute",
+   "ordinal": 2391
+  },
+  {
+   "name": "SetWindowCompositionTransition",
+   "ordinal": 2392
+  },
+  {
+   "name": "SetWindowContextHelpId",
+   "ordinal": 2393
+  },
+  {
+   "name": "SetWindowDisplayAffinity",
+   "ordinal": 2394
+  },
+  {
+   "name": "SetWindowFeedbackSetting",
+   "ordinal": 2395
+  },
+  {
+   "name": "SetWindowLongA",
+   "ordinal": 2396
+  },
+  {
+   "name": "SetWindowLongPtrA",
+   "ordinal": 2397
+  },
+  {
+   "name": "SetWindowLongPtrW",
+   "ordinal": 2398
+  },
+  {
+   "name": "SetWindowLongW",
+   "ordinal": 2399
+  },
+  {
+   "name": "SetWindowPlacement",
+   "ordinal": 2400
+  },
+  {
+   "name": "SetWindowPos",
+   "ordinal": 2401
+  },
+  {
+   "name": "SetWindowRgn",
+   "ordinal": 2402
+  },
+  {
+   "name": "SetWindowRgnEx",
+   "ordinal": 2403
+  },
+  {
+   "name": "SetWindowStationUser",
+   "ordinal": 2404
+  },
+  {
+   "name": "SetWindowTextA",
+   "ordinal": 2405
+  },
+  {
+   "name": "SetWindowTextW",
+   "ordinal": 2406
+  },
+  {
+   "name": "SetWindowWord",
+   "ordinal": 2407
+  },
+  {
+   "name": "SetWindowsHookA",
+   "ordinal": 2408
+  },
+  {
+   "name": "SetWindowsHookExA",
+   "ordinal": 2409
+  },
+  {
+   "name": "SetWindowsHookExAW",
+   "ordinal": 2410
+  },
+  {
+   "name": "SetWindowsHookExW",
+   "ordinal": 2411
+  },
+  {
+   "name": "SetWindowsHookW",
+   "ordinal": 2412
+  },
+  {
+   "name": "ShellSetWindowPos",
+   "ordinal": 2413
+  },
+  {
+   "name": "ShowCaret",
+   "ordinal": 2414
+  },
+  {
+   "name": "ShowCursor",
+   "ordinal": 2415
+  },
+  {
+   "name": "ShowOwnedPopups",
+   "ordinal": 2416
+  },
+  {
+   "name": "ShowScrollBar",
+   "ordinal": 2417
+  },
+  {
+   "name": "ShowStartGlass",
+   "ordinal": 2418
+  },
+  {
+   "name": "ShowSystemCursor",
+   "ordinal": 2419
+  },
+  {
+   "name": "ShowWindow",
+   "ordinal": 2420
+  },
+  {
+   "name": "ShowWindowAsync",
+   "ordinal": 2421
+  },
+  {
+   "name": "ShutdownBlockReasonCreate",
+   "ordinal": 2422
+  },
+  {
+   "name": "ShutdownBlockReasonDestroy",
+   "ordinal": 2423
+  },
+  {
+   "name": "ShutdownBlockReasonQuery",
+   "ordinal": 2424
+  },
+  {
+   "name": "SignalRedirectionStartComplete",
+   "ordinal": 2425
+  },
+  {
+   "name": "SkipPointerFrameMessages",
+   "ordinal": 2426
+  },
+  {
+   "name": "SoftModalMessageBox",
+   "ordinal": 2427
+  },
+  {
+   "name": "SoundSentry",
+   "ordinal": 2428
+  },
+  {
+   "name": "SubtractRect",
+   "ordinal": 2429
+  },
+  {
+   "name": "SwapMouseButton",
+   "ordinal": 2430
+  },
+  {
+   "name": "SwitchDesktop",
+   "ordinal": 2431
+  },
+  {
+   "name": "SwitchDesktopWithFade",
+   "ordinal": 2432
+  },
+  {
+   "name": "SwitchToThisWindow",
+   "ordinal": 2433
+  },
+  {
+   "name": "SystemParametersInfoA",
+   "ordinal": 2434
+  },
+  {
+   "name": "SystemParametersInfoForDpi",
+   "ordinal": 2435
+  },
+  {
+   "name": "SystemParametersInfoW",
+   "ordinal": 2436
+  },
+  {
+   "name": "TabbedTextOutA",
+   "ordinal": 2437
+  },
+  {
+   "name": "TabbedTextOutW",
+   "ordinal": 2438
+  },
+  {
+   "name": "TileChildWindows",
+   "ordinal": 2439
+  },
+  {
+   "name": "TileWindows",
+   "ordinal": 2440
+  },
+  {
+   "name": "ToAscii",
+   "ordinal": 2441
+  },
+  {
+   "name": "ToAsciiEx",
+   "ordinal": 2442
+  },
+  {
+   "name": "ToUnicode",
+   "ordinal": 2443
+  },
+  {
+   "name": "ToUnicodeEx",
+   "ordinal": 2444
+  },
+  {
+   "name": "TrackMouseEvent",
+   "ordinal": 2445
+  },
+  {
+   "name": "TrackPopupMenu",
+   "ordinal": 2446
+  },
+  {
+   "name": "TrackPopupMenuEx",
+   "ordinal": 2447
+  },
+  {
+   "name": "TranslateAccelerator",
+   "ordinal": 2448
+  },
+  {
+   "name": "TranslateAcceleratorA",
+   "ordinal": 2449
+  },
+  {
+   "name": "TranslateAcceleratorW",
+   "ordinal": 2450
+  },
+  {
+   "name": "TranslateMDISysAccel",
+   "ordinal": 2451
+  },
+  {
+   "name": "TranslateMessage",
+   "ordinal": 2452
+  },
+  {
+   "name": "TranslateMessageEx",
+   "ordinal": 2453
+  },
+  {
+   "name": "UnhookWinEvent",
+   "ordinal": 2454
+  },
+  {
+   "name": "UnhookWindowsHook",
+   "ordinal": 2455
+  },
+  {
+   "name": "UnhookWindowsHookEx",
+   "ordinal": 2456
+  },
+  {
+   "name": "UnionRect",
+   "ordinal": 2457
+  },
+  {
+   "name": "UnloadKeyboardLayout",
+   "ordinal": 2458
+  },
+  {
+   "name": "UnlockWindowStation",
+   "ordinal": 2459
+  },
+  {
+   "name": "UnpackDDElParam",
+   "ordinal": 2460
+  },
+  {
+   "name": "UnregisterClassA",
+   "ordinal": 2461
+  },
+  {
+   "name": "UnregisterClassW",
+   "ordinal": 2462
+  },
+  {
+   "name": "UnregisterDeviceNotification",
+   "ordinal": 2463
+  },
+  {
+   "name": "UnregisterHotKey",
+   "ordinal": 2464
+  },
+  {
+   "name": "UnregisterMessagePumpHook",
+   "ordinal": 2465
+  },
+  {
+   "name": "UnregisterPointerInputTarget",
+   "ordinal": 2466
+  },
+  {
+   "name": "UnregisterPointerInputTargetEx",
+   "ordinal": 2467
+  },
+  {
+   "name": "UnregisterPowerSettingNotification",
+   "ordinal": 2468
+  },
+  {
+   "name": "UnregisterSessionPort",
+   "ordinal": 2469
+  },
+  {
+   "name": "UnregisterSuspendResumeNotification",
+   "ordinal": 2470
+  },
+  {
+   "name": "UnregisterTouchWindow",
+   "ordinal": 2471
+  },
+  {
+   "name": "UnregisterUserApiHook",
+   "ordinal": 2472
+  },
+  {
+   "name": "UpdateDefaultDesktopThumbnail",
+   "ordinal": 2473
+  },
+  {
+   "name": "UpdateLayeredWindow",
+   "ordinal": 2474
+  },
+  {
+   "name": "UpdateLayeredWindowIndirect",
+   "ordinal": 2475
+  },
+  {
+   "name": "UpdatePerUserSystemParameters",
+   "ordinal": 2476
+  },
+  {
+   "name": "UpdateWindow",
+   "ordinal": 2477
+  },
+  {
+   "name": "UpdateWindowInputSinkHints",
+   "ordinal": 2478
+  },
+  {
+   "name": "User32InitializeImmEntryTable",
+   "ordinal": 2479
+  },
+  {
+   "name": "UserClientDllInitialize",
+   "ordinal": 2480
+  },
+  {
+   "name": "UserHandleGrantAccess",
+   "ordinal": 2481
+  },
+  {
+   "name": "UserLpkPSMTextOut",
+   "ordinal": 2482
+  },
+  {
+   "name": "UserLpkTabbedTextOut",
+   "ordinal": 2483
+  },
+  {
+   "name": "UserRealizePalette",
+   "ordinal": 2484
+  },
+  {
+   "name": "UserRegisterWowHandlers",
+   "ordinal": 2485
+  },
+  {
+   "name": "VRipOutput",
+   "ordinal": 2486
+  },
+  {
+   "name": "VTagOutput",
+   "ordinal": 2487
+  },
+  {
+   "name": "ValidateRect",
+   "ordinal": 2488
+  },
+  {
+   "name": "ValidateRgn",
+   "ordinal": 2489
+  },
+  {
+   "name": "VkKeyScanA",
+   "ordinal": 2490
+  },
+  {
+   "name": "VkKeyScanExA",
+   "ordinal": 2491
+  },
+  {
+   "name": "VkKeyScanExW",
+   "ordinal": 2492
+  },
+  {
+   "name": "VkKeyScanW",
+   "ordinal": 2493
+  },
+  {
+   "name": "WCSToMBEx",
+   "ordinal": 2494
+  },
+  {
+   "name": "WINNLSEnableIME",
+   "ordinal": 2495
+  },
+  {
+   "name": "WINNLSGetEnableStatus",
+   "ordinal": 2496
+  },
+  {
+   "name": "WINNLSGetIMEHotkey",
+   "ordinal": 2497
+  },
+  {
+   "name": "WaitForInputIdle",
+   "ordinal": 2498
+  },
+  {
+   "name": "WaitForRedirectionStartComplete",
+   "ordinal": 2499
+  },
+  {
+   "name": "WaitMessage",
+   "ordinal": 2500
+  },
+  {
+   "name": "WinHelpA",
+   "ordinal": 2501
+  },
+  {
+   "name": "WinHelpW",
+   "ordinal": 2502
+  },
+  {
+   "name": "DelegateInput",
+   "ordinal": 2503
+  },
+  {
+   "name": "UndelegateInput",
+   "ordinal": 2504
+  },
+  {
+   "name": "HandleDelegatedInput",
+   "ordinal": 2505
+  },
+  {
+   "name": "GetProcessUIContextInformation",
+   "ordinal": 2521
+  },
+  {
+   "name": "IsThreadMessageQueueAttached",
+   "ordinal": 2528
+  },
+  {
+   "name": "SetCoveredWindowStates",
+   "ordinal": 2542
+  },
+  {
+   "name": "WindowFromDC",
+   "ordinal": 2543
+  },
+  {
+   "name": "WindowFromPhysicalPoint",
+   "ordinal": 2547
+  },
+  {
+   "name": "ReportInertia",
+   "ordinal": 2551
+  },
+  {
+   "name": "WindowFromPoint",
+   "ordinal": 2562
+  },
+  {
+   "name": "SetCoreWindow",
+   "ordinal": 2571
+  },
+  {
+   "name": "_UserTestTokenForInteractive",
+   "ordinal": 2577
+  },
+  {
+   "name": "gSharedInfo",
+   "ordinal": 2580
+  },
+  {
+   "name": "gapfnScSendMessage",
+   "ordinal": 2583
+  },
+  {
+   "name": "keybd_event",
+   "ordinal": 2596
+  },
+  {
+   "name": "mouse_event",
+   "ordinal": 2601
+  },
+  {
+   "name": "wsprintfA",
+   "ordinal": 2602
+  },
+  {
+   "name": "wsprintfW",
+   "ordinal": 2603
+  },
+  {
+   "name": "wvsprintfA",
+   "ordinal": 2604
+  },
+  {
+   "name": "wvsprintfW",
+   "ordinal": 2605
+  },
+  {
+   "name": "RIMRegisterForInputEx",
+   "ordinal": 2662
+  },
+  {
+   "name": "RIMOnAsyncPnpWorkNotification",
+   "ordinal": 2663
+  },
+  {
+   "name": "ShellMigrateWindow",
+   "ordinal": 2664
+  },
+  {
+   "name": "SetAdditionalForegroundBoostProcesses",
+   "ordinal": 2665
+  },
+  {
+   "name": "RegisterForTooltipDismissNotification",
+   "ordinal": 2666
+  },
+  {
+   "name": "RegisterForCustomDockTargets",
+   "ordinal": 2667
+  },
+  {
+   "name": "GetClipboardMetadata",
+   "ordinal": 2668
+  },
+  {
+   "name": "ShellRegisterHotKey",
+   "ordinal": 2671
+  },
+  {
+   "name": "SetUserObjectCapability",
+   "ordinal": 2672
+  },
+  {
+   "name": "SetWindowMessageCapability",
+   "ordinal": 2673
+  },
+  {
+   "name": "ShellForegroundBoostProcess",
+   "ordinal": 2674
+  },
+  {
+   "name": "ConvertToInterceptWindow",
+   "ordinal": 2675
+  },
+  {
+   "name": "IsInterceptWindow",
+   "ordinal": 2676
+  },
+  {
+   "name": "DwmWindowNotificationsEnabled",
+   "ordinal": 2680
+  },
+  {
+   "name": "ApplyWindowAction",
+   "ordinal": 2681
+  },
+  {
+   "name": "RegisterCloakedNotification",
+   "ordinal": 2682
+  },
+  {
+   "name": "GetCurrentMonitorTopologyId",
+   "ordinal": 2683
+  },
+  {
+   "name": "SuppressWindowDisplayChange",
+   "ordinal": 2684
+  },
+  {
+   "name": "IsWindowDisplayChangeSuppressed",
+   "ordinal": 2685
+  },
+  {
+   "name": "EnterMoveSizeLoop",
+   "ordinal": 2686
+  },
+  {
+   "name": "RaiseLowerShellWindow",
+   "ordinal": 2687
+  },
+  {
+   "name": "RegisterTouchpadCapableThread",
+   "ordinal": 2688
+  },
+  {
+   "name": "RegisterTouchpadCapableWindow",
+   "ordinal": 2689
+  },
+  {
+   "name": "CreateSyntheticPointerDevice2",
+   "ordinal": 2690
+  },
+  {
+   "name": "GetPointerTouchpadInfo",
+   "ordinal": 2691
+  },
+  {
+   "name": "GetPointerTouchpadInfoHistory",
+   "ordinal": 2692
+  },
+  {
+   "name": "GetPointerFrameTouchpadInfo",
+   "ordinal": 2693
+  },
+  {
+   "name": "GetPointerFrameTouchpadInfoHistory",
+   "ordinal": 2694
+  },
+  {
+   "name": "ReportWindowContentInertia",
+   "ordinal": 2695
+  },
+  {
+   "name": "ShellHandwritingDelegateInput",
+   "ordinal": 2800
+  },
+  {
+   "name": "ShellHandwritingUndelegateInput",
+   "ordinal": 2801
+  },
+  {
+   "name": "ShellHandwritingHandleDelegatedInput",
+   "ordinal": 2802
+  },
+  {
+   "name": "InjectTouchpadAction",
+   "ordinal": 2803
+  },
+  {
+   "name": "EnableWindowShellWindowManagementBehavior",
+   "ordinal": 2804
+  },
+  {
+   "name": "SetMaxTouchpadSensitivity",
+   "ordinal": 2806
+  },
+  {
+   "name": "ConvertPrimaryPointerToMouseDrag",
+   "ordinal": 2811
+  },
+  {
+   "name": "CreateLayoutSyncForHwnd",
+   "ordinal": 2817
+  },
+  {
+   "name": "EnableSynchronizedLayout",
+   "ordinal": 2818
+  }
+ ]
+}

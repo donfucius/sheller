@@ -5,17 +5,20 @@
 
 #include <unicorn/unicorn.h>
 
+#include "loader_route.h"
 #include "syscall_number_map.h"
 #include <sheller/peloader.h>
 #include <sheller/syscallrun.h>
 
 #include <gtest/gtest.h>
 
+#include <algorithm>
 #include <cstdint>
 #include <filesystem>
 #include <fstream>
 #include <iterator>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace fs = std::filesystem;
@@ -67,8 +70,8 @@ TEST(SynthModules, GenerationIsDeterministic)
     fs::remove_all(dir / "b");
     ASSERT_EQ(run_generator(dir / "a"), 0);
     ASSERT_EQ(run_generator(dir / "b"), 0);
-    for (const auto* module :
-         {"ntdll.x64.dll", "ntdll.x86.dll", "kernel32.x64.dll", "ucrtbase.x86.dll"}) {
+    for (const auto* module : {"ntdll.x64.dll", "ntdll.x86.dll", "kernel32.x64.dll",
+                               "ucrtbase.x86.dll", "user32.x64.dll"}) {
         const auto a = read_file(dir / "a" / module);
         const auto b = read_file(dir / "b" / module);
         ASSERT_FALSE(a.empty()) << module;
@@ -116,6 +119,70 @@ TEST(SynthModules, NtStubNumbersResolveThroughTheEngine)
     uc_close(uc);
 }
 
+// A FIFTH extra must coexist with the reserved slots.
+// The extras ladder (x64 ascending from the third core base, x86 descending)
+// used to run straight through the tier-2 reserved bases - the ladder's
+// first member was advapi32's slot, its fifth user32's - so an extended
+// directory double-mapped and died as a unicorn setup failure. The reserved
+// pair now sits beyond the ladder's direction of travel; this test regenerates
+// the frozen directory plus a synthetic winhttp (the reviewer's fifth extra)
+// and requires a live construction with distinct, non-overlapping spans.
+TEST(SynthModules, FifthExtraCoexistsWithTheReservedSlots)
+{
+    namespace fs = std::filesystem;
+    const auto dir = fs::temp_directory_path() / "sheller_synth_fifth_extra";
+    fs::remove_all(dir);
+    const auto manifest_dir = dir / "manifest";
+    const auto module_dir = dir / "modules";
+    fs::create_directories(manifest_dir);
+    for (const auto& entry : fs::directory_iterator(kManifestDir)) {
+        fs::copy_file(entry.path(), manifest_dir / entry.path().filename());
+    }
+    {
+        std::ofstream out(manifest_dir / "winhttp.x64.json", std::ios::binary | std::ios::trunc);
+        out << R"({"name": "winhttp.dll", "arch": "x64", "exports": [)"
+            << R"({"name": "WinHttpOpen", "ordinal": 1},)"
+            << R"({"name": "WinHttpConnect", "ordinal": 2}]})";
+    }
+    {
+        // run_generator reads the frozen kManifestDir; this test needs its
+        // own manifest set (frozen + winhttp)
+        const std::string cmd = std::string(kPython) + " \"" + kGenScript + "\" \"" +
+                                manifest_dir.string() + "\" \"" + module_dir.string() + "\"";
+        ASSERT_EQ(std::system(cmd.c_str()), 0) << cmd;
+    }
+
+    // live construction (the fixed-slot planner) over the nine-module world
+    auto guest = sheller::engine::prepare_pe_file(SHELLER_SAMPLE_PACKED_PATH, false, module_dir);
+    ASSERT_TRUE(guest.has_value()) << "extended synthetic directory failed to construct";
+
+    std::vector<std::uint64_t> bases;
+    for (std::size_t i = 0; i < guest->map.module_count(); ++i) {
+        bases.push_back(guest->map.module(i).base);
+    }
+    ASSERT_GE(bases.size(), 9U);
+    // distinct bases and non-overlapping image spans
+    std::sort(bases.begin(), bases.end());
+    ASSERT_TRUE(std::adjacent_find(bases.begin(), bases.end()) == bases.end())
+        << "two resident modules plan at one base";
+    std::vector<std::pair<std::uint64_t, std::uint64_t>> spans;
+    for (std::size_t i = 0; i < guest->map.module_count(); ++i) {
+        const auto& module = guest->map.module(i);
+        spans.push_back({module.base, module.base + module.size});
+    }
+    std::sort(spans.begin(), spans.end());
+    for (std::size_t i = 1; i < spans.size(); ++i) {
+        EXPECT_LE(spans[i - 1].second, spans[i].first)
+            << "module image spans overlap at " << std::hex << spans[i - 1].second;
+    }
+    // the reserved pair and the fifth ladder member each landed where planned
+    const auto find_base = [&](const std::uint64_t base) {
+        return std::find(bases.begin(), bases.end(), base) != bases.end();
+    };
+    EXPECT_TRUE(find_base(0x7FF700000000ULL)); // reserved user32 slot (far side)
+    EXPECT_TRUE(find_base(0x7FFF00000000ULL)); // the ladder's fifth member: winhttp
+}
+
 TEST(SynthModules, PackedSampleRunsCleanWithSyntheticModules)
 {
     // the packed corpus (heap-heavy, loads its import DLLs post-OEP) used to
@@ -149,7 +216,19 @@ TEST(SynthModules, PackedSampleRunsCleanWithSyntheticModules)
             static_cast<unsigned long long>(stats.error().stats.blocks),
             static_cast<unsigned long long>(stats.error().stats.exceptions));
     }
-    // the acceptance: no unhandled-crash fallback while the payload runs
+    // the acceptance: the run must actually enter execution and reach a
+    // legitimate endpoint - any construction/setup failure (unicorn setup,
+    // I/O, bad image) is a hard failure, not a tolerated shape. The packed
+    // payload's documented ends: normal termination, budget exhaustion, or
+    // an absorbed-crash normal exit.
     ASSERT_TRUE(stats.has_value() ||
-                stats.error().error != sheller::engine::SyscallRunError::kUnhandledException);
+                stats.error().error != sheller::engine::SyscallRunError::kUnhandledException)
+        << "synth run must not die on an unhandled exception";
+    if (!stats.has_value()) {
+        EXPECT_NE(stats.error().error, sheller::engine::SyscallRunError::kUnicornFailure)
+            << "construction/setup failures are not acceptable run endpoints";
+        EXPECT_GT(stats.error().stats.blocks, 0ULL) << "the run must execute at least one block";
+    } else {
+        EXPECT_GT(stats.value().blocks, 0ULL);
+    }
 }

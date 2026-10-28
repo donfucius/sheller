@@ -62,6 +62,9 @@ jobs:
         # that only match the machine that generated them (the local norm is
         # 36/40 = clean-tree same set). capture_x86_e2e's double-capture
         # determinism does not hold on runner hardware (exit 5 vs 4 between
-        # two live WOW64 captures). All excluded until their normalization
+        # two live WOW64 captures). dll_capture_e2e replays the captured DLL
+        # world: the payload's per-process entropy crashes its CRT init past
+        # the OEP on runner hardware (green on the development machine; same
+        # live-capture family). All excluded until their normalization
         # slices land (HANDOFF).
-        run: ctest --preset windows-release -E "event_baseline|exception_e2e|behavior_e2e|loader_byhash_x86_e2e|capture_x86_e2e"
+        run: ctest --preset windows-release -E "event_baseline|exception_e2e|behavior_e2e|loader_byhash_x86_e2e|capture_x86_e2e|dll_capture_e2e"

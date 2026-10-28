@@ -171,6 +171,11 @@ struct SyscallRunStats {
     // the stop (xfer_stop is then true too, and xfers carries the hit
     // ordinal). Same successful-stop contract as xfer_stop.
     bool esp_stop{};
+    // DLL-input route: the synthesized sample module's base in the executed
+    // world (0 when no pending module loaded). The unpack pipeline's repair
+    // target selection anchors on this instead of the container's main-image
+    // base (which is the runner here).
+    std::uint64_t sample_module_base{};
 };
 
 struct SyscallRunFailure {

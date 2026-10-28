@@ -44,9 +44,19 @@ be located. `--from-snapshot` does not require it for a captured container; a
 constructed container that carries the synthetic module pages fails with its own
 message when the directory is absent. A PE32 sample is refused on non-Windows
 hosts before execution (capture-class failure naming the 32-bit limitation), and
-the same condition is distinguishable from the missing-directory failure. A DLL
-is not a process image: `capture` fails at spawn (`CreateProcessW failed
-(Win32 error 193)`), and there is no rundll32-style host on any route.
+the same condition is distinguishable from the missing-directory failure. An x64 DLL
+is a valid sample on Windows (and for replaying an already-captured v2
+container on any host): `capture` spawns a generated load-stub runner -
+the sample never enters a real process; its bytes travel with the
+snapshot as a pending module that the emulator loads synthetically at
+the stub's `LoadLibraryW` call. The runner imports the base pair plus
+every verified system dependency, so those initialize normally under
+the real loader before the entry spin. Dependencies are admitted by
+system-source verification (a same-named file outside the system
+directory does not pass); private, path-shaped, or missing dependencies
+are rejected by name before any process exists. The non-Windows
+construction route for DLL input is not delivered yet - DLL samples
+there fail with a named construction error until that slice lands.
 
 `--reject` maps a syscall number to a rejection NTSTATUS, both hexadecimal, and is
 repeatable:
@@ -122,6 +132,14 @@ exit 0, dump); `esp+xfer` arms there. A miss - no save area, a relocated stack
 (the VM shape), or an anti-debug probe reading its own save area with
 something other than a pop - prints `esp target not reached` and closes the
 run on its own terms.
+
+For DLL inputs the monitor re-arms at the synthesized module's DllMain, and
+UPX-class DLL stubs open that scene with argument-shadow stores and a reason
+branch before their register saves - the scan finds no contiguous push
+sequence at the entry, so `esp` / `esp+xfer` are a documented silent miss on
+those shells (the run continues and closes normally). The usable stop face
+there is `--stop xfer=1`: the stub's post-restore jump to the unpacked entry
+is the first counted transfer, which is exactly the OEP dump stop.
 
 ## The report artifact
 

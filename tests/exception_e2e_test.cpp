@@ -200,7 +200,7 @@ TEST(ExceptionDispatch, VectoredHandlerSeesFaultsAndResumesContext)
 
 TEST(ExceptionDispatch, FidelityAndEngineModesAgreeOnTheSehScenario)
 {
-    // Task 6.1/6.2: the same SEH sample run through both dispatch modes must
+    // The same SEH sample run through both dispatch modes must
     // agree on every observable - exit, output, exception event count/code
     // and first-chance spelling. The fidelity leg exercises the real ntdll
     // dispatch path (windows_fidelity_dispatch), the engine leg the
@@ -229,7 +229,7 @@ TEST(ExceptionDispatch, FidelityAndEngineModesAgreeOnTheSehScenario)
     EXPECT_EQ(std::string(engine_sink.begin(), engine_sink.end()),
               std::string(fidelity_sink.begin(), fidelity_sink.end()));
 
-    // Task 6.1's contract, updated for the handler-dispatch reports: the
+    // The contract, updated for the handler-dispatch reports: the
     // plain first-chance/last-chance events ({u32 code, u32 disposition})
     // agree byte for byte across the dispatch modes - the real ntdll
     // dispatch cannot know the handler, so the engine leg's disposition-2
