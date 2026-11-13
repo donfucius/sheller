@@ -1524,6 +1524,20 @@ add_test(NAME engine_trace_quiet COMMAND engine_trace_test
 add_test(NAME engine_trace_nosink COMMAND engine_trace_test --traces-on --no-sink
          "--gtest_filter=EngineTraceNoSink.*")
 
+# The deterministic virtual clock: pure functions on the run state, the KUSER
+# threshold publication, the derived QPC answer, the CPUID time leaves, the
+# rate-ratio closure, the default policy for clock-less containers, and the
+# leg-layout independence pin over the rdtsc answer trace (the TU's main()
+# sets SHELLER_RDTSC_TRACE before anything caches it). Portable: crafted
+# snapshots only.
+add_executable(virtual_clock_test virtual_clock_test.cpp)
+target_include_directories(virtual_clock_test PRIVATE
+  "${CMAKE_CURRENT_SOURCE_DIR}/../src/engine"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../src/syscalls")
+target_link_libraries(virtual_clock_test PRIVATE GTest::gtest sheller_engine)
+sheller_apply_common(virtual_clock_test)
+add_test(NAME virtual_clock COMMAND virtual_clock_test)
+
 # Static-side concurrency: four threads inside the analysis and unpack
 # entries at once, over the static core. Portable by design - the analysis half drives
 # a crafted snapshot, the unpack half uses the packed corpus, whose route differs by

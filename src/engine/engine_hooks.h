@@ -29,6 +29,15 @@ void on_boundary_trap(uc_engine* uc, const std::uint64_t address, const std::uin
 void on_syscall_run_block(uc_engine* uc, const std::uint64_t address, const std::uint32_t,
                           void* const user_data);
 
+// KUSER_SHARED_DATA TickCount publication: the quantized clock value
+// (blocks / blocks_per_tick) stored into the world's host-backed KUSER page
+// (0x7FFE0004/0x320/0x324, the three same-value fields) when it crosses a
+// threshold. `force` publishes unconditionally - the run start uses it to
+// overwrite the container's seed bytes; the block hook passes false so the
+// hot path pays one compare between crossings. Worlds without a KUSER page
+// (kuser_host_page == null) publish nothing.
+void publish_kusd_ticks(SyscallRunState& state, bool force);
+
 // Issuer attribution of one allocation/protect syscall (direct-issuance):
 // the bounded stack scan looks for a return address in sample territory -
 // the sample image or an already-registered sample region; system-issued

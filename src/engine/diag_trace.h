@@ -48,6 +48,16 @@ inline bool loop_gate_on()
     return on;
 }
 
+// Per-rdtsc answer traces ([rdtsc]/[rdtscp] block position + answer value per
+// instruction): the replay=rerun acceptance channel - two independent runs'
+// traces must be line-for-line identical. Off by default, so the event stream
+// and every golden stay untouched.
+inline bool rdtsc_on()
+{
+    static const bool on = std::getenv("SHELLER_RDTSC_TRACE") != nullptr;
+    return on;
+}
+
 // Guest file-serve decisions ([file]).
 inline bool file_on()
 {

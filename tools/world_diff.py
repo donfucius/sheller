@@ -2,7 +2,9 @@
 """World diff harness: a mechanical diff of two sheller world snapshots.
 
 Reads one capture snapshot and one crafted container (same snapshot format
-family: v1, or v2 with the trailing pending-module block), aligns the two
+family: v1, v2 with the trailing pending-module block, or v3 with the
+trailing pending and clock-policy blocks - both v3 blocks are skipped, not
+world content), aligns the two
 worlds' modules by name, and renders a deterministic JSON report that
 classifies every difference as expected (layout mechanics: the module set,
 relocations, import binding, KUSD volatile fields) or as a divergence
@@ -83,6 +85,8 @@ REGION_RECORD_SIZE = 25
 PENDING_MARKER = b"PENDMOD1"
 MAX_PENDING_NAME_BYTES = 260
 MAX_PENDING_MODULE_BYTES = 64 * 1024 * 1024
+CLOCK_MARKER = b"CLKPOLICY1"
+CLOCK_PAYLOAD_SIZE = 72  # policy version + length prefix + six u64s + two u32 triples
 
 DOMAIN_ORDER = {"module_set": 0, "module_image": 1, "infrastructure": 2, "pending": 3}
 
@@ -195,7 +199,7 @@ def read_snapshot(path):
     if len(data) < HEADER_SIZE or data[:8] != SNAPSHOT_MAGIC:
         raise SnapshotError("kBadMagic", "not a sheller snapshot")
     version = read_le(data, 8, 4)
-    if version not in (1, 2):
+    if version not in (1, 2, 3):
         raise SnapshotError("kUnsupportedVersion", "version %d" % version)
     bitness = data[12]
     if bitness != 64:
@@ -245,33 +249,77 @@ def read_snapshot(path):
     if version == 2:
         if data[offset:offset + 8] != PENDING_MARKER:
             raise SnapshotError("kBadPending", "v2 file does not carry the pending marker")
-        offset += 8
-        if offset + 4 > len(data):
-            raise SnapshotError("kTruncated", "pending name length cut short")
-        name_len = read_le(data, offset, 4)
-        offset += 4
-        if name_len > MAX_PENDING_NAME_BYTES:
-            raise SnapshotError("kBadPending", "pending name %d bytes over the bound" % name_len)
-        if offset + name_len + 4 > len(data):
-            raise SnapshotError("kTruncated", "pending name cut short")
-        name = data[offset:offset + name_len].decode("utf-8", errors="replace")
-        offset += name_len
-        pending_bitness = data[offset]
-        if pending_bitness != 64:
-            raise SnapshotError("kBadPending", "pending bitness %d" % pending_bitness)
-        offset += 4  # bitness + 3 reserved
-        if offset + 8 > len(data):
-            raise SnapshotError("kTruncated", "pending payload length cut short")
-        payload_len = read_le(data, offset, 8)
-        offset += 8
-        if payload_len > MAX_PENDING_MODULE_BYTES:
-            raise SnapshotError("kBadPending", "pending payload %d bytes over the bound" % payload_len)
-        if offset + payload_len > len(data):
-            raise SnapshotError("kTruncated", "pending payload cut short")
-        pending = {"name": name, "bitness": pending_bitness,
-                   "bytes": data[offset:offset + payload_len]}
+        pending, offset = _parse_pending(data, offset)
+    elif version == 3:
+        # v3: optional pending block, then exactly one clock-policy block.
+        # Neither rides in the world diff - the pending bytes belong to the
+        # DLL route, and the clock policy is engine metadata, not world
+        # content - but both are fully validated and the file must end at
+        # the clock block: named refusals mirror the engine reader, never a
+        # silent tail.
+        if data[offset:offset + 1] == PENDING_MARKER[:1]:
+            pending, offset = _parse_pending(data, offset)
+        if offset + 10 > len(data):
+            raise SnapshotError("kTruncated", "clock block cut short")
+        if data[offset:offset + 10] != CLOCK_MARKER:
+            raise SnapshotError("kBadClock", "v3 file does not carry the clock marker")
+        if offset + 10 + 8 > len(data):
+            raise SnapshotError("kTruncated", "clock header cut short")
+        policy_version = read_le(data, offset + 10, 4)
+        payload_len = read_le(data, offset + 10 + 4, 4)
+        if policy_version != 1 or payload_len != CLOCK_PAYLOAD_SIZE:
+            raise SnapshotError("kBadClock", "clock policy version %d, payload %d bytes"
+                                % (policy_version, payload_len))
+        payload_at = offset + 10 + 8
+        if payload_at + CLOCK_PAYLOAD_SIZE > len(data):
+            raise SnapshotError("kTruncated", "clock payload cut short")
+        blocks_per_tick = read_le(data, payload_at + 16, 8)
+        qpc_frequency = read_le(data, payload_at + 24, 8)
+        if blocks_per_tick == 0 or qpc_frequency == 0:
+            raise SnapshotError("kBadClock", "engine-unsafe clock policy "
+                                "(blocks_per_tick=%d, qpc_frequency=%d)"
+                                % (blocks_per_tick, qpc_frequency))
+        offset = payload_at + CLOCK_PAYLOAD_SIZE
+
+    if version >= 2 and offset != len(data):
+        raise SnapshotError("kBadPending" if version == 2 else "kBadClock",
+                            "trailing bytes after the last block")
 
     return World(version, regions, registers, metadata, pending)
+
+
+def _parse_pending(data, offset):
+    """Parse one pending-module block at offset; return (pending, next offset)."""
+    if offset + 8 > len(data):
+        raise SnapshotError("kTruncated", "pending marker cut short")
+    if data[offset:offset + 8] != PENDING_MARKER:
+        raise SnapshotError("kBadPending", "pending marker is invalid")
+    offset += 8
+    if offset + 4 > len(data):
+        raise SnapshotError("kTruncated", "pending name length cut short")
+    name_len = read_le(data, offset, 4)
+    offset += 4
+    if name_len == 0 or name_len > MAX_PENDING_NAME_BYTES:
+        raise SnapshotError("kBadPending", "pending name length %d is invalid" % name_len)
+    if offset + name_len + 4 > len(data):
+        raise SnapshotError("kTruncated", "pending name cut short")
+    name = data[offset:offset + name_len].decode("utf-8", errors="replace")
+    offset += name_len
+    pending_bitness = data[offset]
+    if pending_bitness != 64:
+        raise SnapshotError("kBadPending", "pending bitness %d" % pending_bitness)
+    offset += 4  # bitness + 3 reserved
+    if offset + 8 > len(data):
+        raise SnapshotError("kTruncated", "pending payload length cut short")
+    payload_len = read_le(data, offset, 8)
+    offset += 8
+    if payload_len == 0 or payload_len > MAX_PENDING_MODULE_BYTES:
+        raise SnapshotError("kBadPending", "pending payload length %d is invalid" % payload_len)
+    if offset + payload_len > len(data):
+        raise SnapshotError("kTruncated", "pending payload cut short")
+    pending = {"name": name, "bitness": pending_bitness,
+               "bytes": data[offset:offset + payload_len]}
+    return pending, offset + payload_len
 
 
 # ---------------------------------------------------------------------------

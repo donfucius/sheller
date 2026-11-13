@@ -99,15 +99,15 @@ allocation holding the delivered shellcode.
 
 ## Hosts and execution
 
-A sample can run without a capture host: on Linux the engine constructs a v1
-container from the PE bytes plus the synthetic system modules, then replays that
-container through the same snapshot pipeline. `sheller unpack` and `analyze`
-therefore carry the full behavior tier and module attribution there, and the
-repair verdict matches the capture route (`complete` on the packed corpus).
-The sample route needs the generated `synth_modules` directory next to the CLI
-(the build produces it; the CLI locates it automatically). PE32 sample input is
-refused on these hosts with a named capture-class failure instead of entering
-the 32-bit path.
+A sample can run without a capture host: on Linux the engine constructs a v3
+container (with the clock block) from the PE bytes plus the synthetic system
+modules, then replays that container through the same snapshot pipeline.
+`sheller unpack` and `analyze` therefore carry the full behavior tier and module
+attribution there, and the repair verdict matches the capture route (`complete`
+on the packed corpus). The sample route needs the generated `synth_modules`
+directory next to the CLI (the build produces it; the CLI locates it
+automatically). PE32 sample input is refused on these hosts with a named
+capture-class failure instead of entering the 32-bit path.
 
 ### Directory-mode system modules
 
@@ -148,18 +148,26 @@ Inside the emulator the guest is treated as a real Windows process: syscalls ans
 from a data-driven policy table with ntdll numbers resolved from the guest's own
 image, catchable exceptions walk the guest's SEH and C++ EH tables, and extra guest
 threads turn under a cooperative scheduler - x64 and WoW64 alike. Guest time never
-reads the wall clock (instruction-counted KUSER_SHARED_DATA ticks and RDTSC), so
-delay loops and spin counters cost emulation time only; a decoder-free
-fast-forward collapses pure-counter spins, and a loop-native-gate ledger (a Zydis
-closed-CFG scan over probe windows) records which hot loops would ever qualify for
-host-CPU execution - `SHELLER_LOOP_GATE_TRACE=1` with `--log-level debug` prints
-that audit.
+reads the wall clock: every clock face (KUSER_SHARED_DATA ticks, RDTSC/RDTSCP,
+`NtQueryPerformanceCounter`, the CPUID 0x15/0x16 time leaves) is a pure function of
+the executed block count under a fixed clock policy, so delay loops and spin
+counters cost emulation time only, the answers cannot depend on how the run's legs
+were partitioned, and the same container replays with the same clock on any host. A
+v3 container pins its clock policy in a trailing clock block (v1/v2 containers
+answer from the engine default); `SHELLER_RDTSC_TRACE=1` with `--log-level debug`
+prints one line per RDTSC/RDTSCP answer for replay-vs-rerun clock comparison. A
+decoder-free fast-forward collapses pure-counter spins, and a loop-native-gate
+ledger (a Zydis closed-CFG scan over probe windows) records which hot loops would
+ever qualify for host-CPU execution - `SHELLER_LOOP_GATE_TRACE=1` with
+`--log-level debug` prints that audit.
 
 ### World diff harness (development tool)
 
 `tools/world_diff.py` is a standalone python-stdlib harness for the crafted-route
 workflow: it reads two snapshots of the same format version (a capture snapshot
-and a crafted container; v1, or v2 with the trailing pending-module block),
+and a crafted container; v1, v2 with the trailing pending-module block, or v3
+with the trailing pending and clock-policy blocks - both v3 blocks are skipped,
+not world content),
 aligns the worlds' modules by Ldr name across differing bases, and renders a
 deterministic JSON report classifying every difference as expected (module set,
 relocation deltas checked against the base delta, import binding checked against
@@ -181,7 +189,7 @@ pair, byte-identical report; the engine, CLI and snapshot format are untouched.
   mode. The Linux sample route refuses PE32 with a named failure (32-bit
   container replay is not supported).
 * **DLLs** - supported as x64 direct input on Windows (and for replaying
-  an already-captured v2 container anywhere): the capture spawns a
+  an already-captured v2/v3 container anywhere): the capture spawns a
   generated load-stub runner - base imports `kernel32!LoadLibraryW` and
   `ExitProcess`, plus one import per verified system dependency so they
   initialize normally under the real loader - and the sample bytes travel

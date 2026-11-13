@@ -15,6 +15,7 @@
 #include "../syscalls/syscall_number_map.h"
 #include "../syscalls/syscall_policy.h"
 
+#include <sheller/clock_policy.h>
 #include <sheller/log.h>
 #include <unicorn/unicorn.h>
 
@@ -497,6 +498,12 @@ run_syscalls(PreparedGuest& guest, const SyscallRunOptions& options, const FactC
         }
     }
     SyscallRunState state;
+    // The clock: a container's pinned policy when it carries a clock block,
+    // the engine default otherwise - either way the run's answers are a pure
+    // function of the block count under one fixed policy. The publication
+    // channel is the world's host-backed KUSER page, when the world maps one.
+    state.clock = guest.clock_policy ? *guest.clock_policy : snapshot::default_clock_policy();
+    state.kuser_host_page = guest.kuser_host_page.get();
     // The read-only facts are gathered once, before any write assembly: the
     // PEB-derived cwd, the ntdll number <-> name tables, and the sample
     // module's index/image span feed both the state assembly and the write
@@ -528,6 +535,12 @@ run_syscalls(PreparedGuest& guest, const SyscallRunOptions& options, const FactC
     if (const auto hooks = register_run_hooks(guest, options, state, sample_image_size); !hooks) {
         return std::unexpected(hooks.error());
     }
+    // The clock's first KUSER publication, forced: the container's seed bytes
+    // (the synthetic fixed tick, or the captured world's) must not leak
+    // through the TickCount fields - from here on the memory image reads
+    // back the pure function of `blocks`, starting at tick(blocks = 0)
+    // before any guest code (TLS legs included) executes.
+    publish_kusd_ticks(state, true);
     if (const auto tls = run_tls_callback_legs(guest); !tls) {
         return std::unexpected(tls.error());
     }
@@ -574,13 +587,6 @@ run_syscalls(PreparedGuest& guest, const SyscallRunOptions& options, const FactC
     // host-side at leg boundaries; a leg is at most kLegInstructionCount
     // instructions (~tens of ms), which bounds the timeout granularity.
     constexpr std::uint64_t kLegInstructionCount = 1000000;
-    // Deterministic virtual time: 1 guest ms per 128 executed instructions,
-    // 16384 TSC ticks per instruction. Clock-based delay waits (KUSD
-    // TickCount busy-waits, rdtsc/rdtscp deltas) complete in bounded
-    // emulation time and replays stay host-independent. The rates are
-    // ~24x native-delay compression: a 3s Sleep costs ~0.4M instructions.
-    constexpr std::uint64_t kTscTicksPerInstruction = 16384;
-    constexpr std::uint64_t kInstructionsPerGuestMs = 128;
     std::uint64_t remaining_instructions = options.max_instructions;
     // Scheduler: main thread is tid 0; the scheduler stays a pass-
     // through until a thread creation flips it on.
@@ -600,16 +606,6 @@ run_syscalls(PreparedGuest& guest, const SyscallRunOptions& options, const FactC
             remaining_instructions == 0 ? kLegInstructionCount
                                         : (std::min)(kLegInstructionCount, remaining_instructions);
         const std::uint64_t leg_start_blocks = state.blocks;
-        // Advance the virtual clock and publish it into KUSER_SHARED_DATA
-        // (TickCount fields the loader and delay stubs read) before the leg.
-        state.virtual_instructions += leg_count;
-        state.virtual_tsc = state.virtual_instructions * kTscTicksPerInstruction;
-        state.virtual_ticks =
-            static_cast<std::uint32_t>(state.virtual_instructions / kInstructionsPerGuestMs);
-        const std::uint32_t kusd_ticks = state.virtual_ticks;
-        for (const std::uint64_t kusd_field : {0x7FFE0004ULL, 0x7FFE0320ULL, 0x7FFE0324ULL}) {
-            uc_mem_write(guest.unicorn.get(), kusd_field, &kusd_ticks, sizeof kusd_ticks);
-        }
         run_error = uc_emu_start(guest.unicorn.get(), begin, 0, 0, leg_count);
         // A leg return carries one stop reason: the xfer hook stops before the
         // landing block runs, so no resume or exception flag can be set

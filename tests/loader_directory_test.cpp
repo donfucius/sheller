@@ -961,7 +961,7 @@ TEST(LoaderDirectory, DllAdmissionResolvesThroughDirectoryRealExports)
     snapshot::Reader reader{in};
     const auto header = reader.read_header();
     ASSERT_TRUE(header.has_value());
-    EXPECT_EQ(header->version, snapshot::kVersionV2); // DLL input: pending block present
+    EXPECT_EQ(header->version, snapshot::kVersionV3); // DLL input: pending + clock blocks
 }
 
 #ifdef _WIN32

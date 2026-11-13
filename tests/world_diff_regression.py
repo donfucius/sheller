@@ -2,10 +2,13 @@
 """Boundary regressions complementing the Writer-backed world_diff fixtures."""
 
 import importlib.util
+import io
 import json
 from pathlib import Path
+import struct
 import tempfile
 import unittest
+from unittest.mock import patch
 
 
 tool = Path(__file__).resolve().parents[1] / "tools" / "world_diff.py"
@@ -21,6 +24,44 @@ def world():
 def pe(size=24, reloc=(), slots=None, rva=0):
     return wd.PeImage(0, size, [{"name": ".data", "rva": rva, "vsize": 24}],
                       set(reloc), slots or {})
+
+
+class SnapshotClockRegression(unittest.TestCase):
+    def read_tail(self, tail):
+        body = (wd.SNAPSHOT_MAGIC + struct.pack("<IB3xI4x", 3, 64, 0)
+                + bytes(wd.REGISTERS_SIZE + wd.METADATA_SIZE))
+        with patch("builtins.open", return_value=io.BytesIO(body + tail)):
+            return wd.read_snapshot("memory.snap")
+
+    def clock(self, version=1, blocks_per_tick=16, frequency=10000000):
+        return wd.CLOCK_MARKER + struct.pack(
+            "<II6Q6I", version, 72, 0, 150000, blocks_per_tick, frequency,
+            0, 625, 1, 100, 24000000, 2400, 2400, 100)
+
+    def test_v3_clock_refusals_match_engine_order(self):
+        valid = self.clock()
+        self.assertEqual(self.read_tail(valid).version, 3)
+        for tail, expected in (
+                (valid[:18], "kTruncated"),
+                (valid + valid, "kBadClock"),
+                (self.clock(version=2), "kBadClock"),
+                (self.clock(blocks_per_tick=0), "kBadClock"),
+                (self.clock(frequency=0), "kBadClock"),
+                (b"X" * 10, "kBadClock"),
+                (self.clock(version=2)[:18], "kBadClock")):
+            with self.subTest(tail=tail, expected=expected):
+                with self.assertRaises(wd.SnapshotError) as caught:
+                    self.read_tail(tail)
+                self.assertEqual(caught.exception.code, expected)
+
+    def test_empty_pending_fields_are_rejected(self):
+        for pending in (b"PXXXXXXX", wd.PENDING_MARKER + struct.pack("<I", 0),
+                        wd.PENDING_MARKER + struct.pack("<I", 1) + b"x"
+                        + struct.pack("<B3xQ", 64, 0)):
+            with self.subTest(pending=pending):
+                with self.assertRaises(wd.SnapshotError) as caught:
+                    self.read_tail(pending + self.clock())
+                self.assertEqual(caught.exception.code, "kBadPending")
 
 
 class WorldDiffRegression(unittest.TestCase):

@@ -665,8 +665,75 @@ TEST(WorldDiff, ReaderRefusalsAreNamed)
     }
     {
         auto copy = bytes;
-        put_u32(copy, 8, 3);
+        put_u32(copy, 8, 4); // beyond v3: version 3 is a legal container now
         refusals.push_back({"bad_version.snap", copy, "kUnsupportedVersion", false});
+    }
+    {
+        // A v3 container whose clock block declares a foreign payload
+        // length: the harness skips the v3 trailing blocks, and a broken
+        // clock block is still a named refusal - never a silent tail.
+        auto copy = bytes;
+        put_u32(copy, 8, 3);
+        const std::string marker = "CLKPOLICY1";
+        copy.insert(copy.end(), marker.begin(), marker.end());
+        copy.push_back(1); // policy version 1
+        copy.resize(copy.size() + 3);
+        copy.push_back(73); // payload length != 72
+        copy.resize(copy.size() + 3);
+        copy.resize(copy.size() + 73);
+        refusals.push_back({"bad_clock.snap", copy, "kBadClock", false});
+    }
+    for (const int flavor : {0, 1, 2, 3}) {
+        // The rest of the v3 clock validation: foreign policy version, an
+        // engine-unsafe policy (zero blocks_per_tick), a payload cut short,
+        // and a duplicated clock block - each a named refusal, each
+        // mirrored by the engine reader's classification.
+        auto copy = bytes;
+        put_u32(copy, 8, 3);
+        const std::string marker = "CLKPOLICY1";
+        const auto append_u32 = [&copy](const std::uint32_t value) {
+            for (int i = 0; i < 4; ++i) {
+                copy.push_back(static_cast<std::uint8_t>(value >> (8 * i)));
+            }
+        };
+        const auto append_u64 = [&copy](const std::uint64_t value) {
+            for (int i = 0; i < 8; ++i) {
+                copy.push_back(static_cast<std::uint8_t>(value >> (8 * i)));
+            }
+        };
+        const auto append_clock = [&](const std::uint32_t policy_version,
+                                      const std::uint64_t blocks_per_tick) {
+            copy.insert(copy.end(), marker.begin(), marker.end());
+            append_u32(policy_version);
+            append_u32(72);
+            append_u64(0x218711A700ULL); // base_tsc
+            append_u64(150000);          // tsc_per_block
+            append_u64(blocks_per_tick);
+            append_u64(10000000);  // qpc_frequency
+            append_u64(600000000); // base_qpc
+            append_u64(625);       // qpc_per_block
+            for (int i = 0; i < 6; ++i) {
+                append_u32(1); // both CPUID triples: any nonzero placeholder
+            }
+        };
+        const auto truncate = [&copy](const std::size_t keep) {
+            copy.resize(copy.size() - 90 + keep);
+        };
+        if (flavor == 0) {
+            append_clock(2, 16); // foreign policy version
+            refusals.push_back({"clock_version2.snap", copy, "kBadClock", false});
+        } else if (flavor == 1) {
+            append_clock(1, 0); // engine-unsafe: blocks_per_tick = 0
+            refusals.push_back({"clock_zero_bpt.snap", copy, "kBadClock", false});
+        } else if (flavor == 2) {
+            append_clock(1, 16);
+            truncate(80); // payload cut short
+            refusals.push_back({"clock_truncated.snap", copy, "kTruncated", false});
+        } else {
+            append_clock(1, 16);
+            append_clock(1, 16); // duplicated block: trailing bytes
+            refusals.push_back({"clock_duplicated.snap", copy, "kBadClock", false});
+        }
     }
     {
         auto copy = bytes;

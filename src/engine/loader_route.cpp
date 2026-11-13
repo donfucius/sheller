@@ -689,12 +689,40 @@ std::expected<LoadedSnapshot, RebuildFailure> load_snapshot_stream(std::istream&
     // byte) after the first is likewise rejected - the format defines one
     // block per container, and a silent tail would let hand-built doubles
     // through. v1 files stop at the region table - unchanged behavior.
+    // v3 carries the optional pending block (same DLL route) plus exactly one
+    // clock-policy block, in that order. "Absent" is the optional read's
+    // nullopt; every other pending outcome - including a block that starts
+    // like pending and then fails its bounds - is a named rejection. A v3
+    // file without a complete clock block, or with any trailing byte after
+    // it, is not loadable.
     if (loaded.header.version == snapshot::kVersionV2) {
         auto pending = reader.read_pending();
         if (!pending) {
             return std::unexpected(failure(RebuildError::kBadSnapshot));
         }
         loaded.pending = std::move(*pending);
+        char trailing = 0;
+        in.read(&trailing, 1);
+        if (in.gcount() != 0) {
+            return std::unexpected(failure(RebuildError::kBadSnapshot));
+        }
+    } else if (loaded.header.version == snapshot::kVersionV3) {
+        auto pending = reader.read_pending_optional();
+        if (!pending) {
+            return std::unexpected(failure(
+                RebuildError::kBadSnapshot,
+                std::string{"pending: "} + std::string{snapshot::error_message(pending.error())}));
+        }
+        if (pending->has_value()) {
+            loaded.pending = std::move(**pending);
+        }
+        auto clock = reader.read_clock();
+        if (!clock) {
+            return std::unexpected(failure(
+                RebuildError::kBadSnapshot,
+                std::string{"clock: "} + std::string{snapshot::error_message(clock.error())}));
+        }
+        loaded.clock_policy = std::move(*clock);
         char trailing = 0;
         in.read(&trailing, 1);
         if (in.gcount() != 0) {
@@ -708,10 +736,14 @@ std::expected<LoadedSnapshot, RebuildFailure> load_snapshot_stream(std::istream&
 }
 
 // Per-region rebuild order: validate alignment, map with the interpreted
-// permissions, then write the content bytes the capture actually read.
-std::expected<void, RebuildFailure> map_regions(UnicornEngine& unicorn,
-                                                const std::vector<snapshot::Region>& regions)
+// permissions, then write the content bytes the capture actually read. A
+// region that fully covers the KUSER page carves that page out for the
+// host-backed mapping the clock publishes through (returned; null when no
+// region carries it - the fixture worlds without KUSER publish nothing).
+std::expected<KuserHostPage, RebuildFailure>
+map_regions(UnicornEngine& unicorn, const std::vector<snapshot::Region>& regions)
 {
+    KuserHostPage kuser_page;
     for (const auto& region : regions) {
         if (region.header.size == 0) {
             continue; // degenerate entry, nothing to rebuild
@@ -720,16 +752,70 @@ std::expected<void, RebuildFailure> map_regions(UnicornEngine& unicorn,
             region.header.size % kMapAlignment != 0) {
             return std::unexpected(failure(RebuildError::kUnalignedRegion));
         }
-        auto perms = protection_to_perms(region.header.protection);
+        const auto perms = protection_to_perms(region.header.protection);
         // Fault-based dirty tracking: writable regions lose
         // their write permission at map time; the write-prot hook re-grants
         // it page by page on the guest's first write.
+        auto map_perms = perms;
         if (snapshot_protection_writable(region.header.protection)) {
-            perms &= ~static_cast<std::uint32_t>(UC_PROT_WRITE);
+            map_perms &= ~static_cast<std::uint32_t>(UC_PROT_WRITE);
+        }
+        // The KUSER page carve: one region, one aligned page, fully inside
+        // this region. Anything else keeps the plain uc_mem_map path.
+        const bool covers_kuser =
+            region.header.base_address <= kLoaderKUser &&
+            kLoaderKUser + kPageBytes <= region.header.base_address + region.header.size;
+        if (covers_kuser && kuser_page == nullptr) {
+            kuser_page = allocate_kuser_page();
+            if (kuser_page == nullptr) {
+                return std::unexpected(failure(RebuildError::kUnicornFailure));
+            }
+            const auto offset = static_cast<std::size_t>(kLoaderKUser - region.header.base_address);
+            if (region.header.content == snapshot::kContentPresent &&
+                region.content.size() >= offset + kPageBytes) {
+                std::memcpy(kuser_page.get(), region.content.data() + offset, kPageBytes);
+            }
+            if (uc_mem_map_ptr(unicorn.get(), kLoaderKUser, kPageBytes, map_perms,
+                               kuser_page.get()) != UC_ERR_OK) {
+                return std::unexpected(failure(RebuildError::kUnicornFailure));
+            }
+            // The page's before/after slices of the same region keep the
+            // plain mapping and the content bytes their slice carries.
+            const auto map_span =
+                [&](const std::uint64_t base,
+                    const std::uint64_t size) -> std::expected<void, RebuildFailure> {
+                if (uc_mem_map(unicorn.get(), base, static_cast<std::size_t>(size), map_perms) !=
+                    UC_ERR_OK) {
+                    return std::unexpected(failure(RebuildError::kUnicornFailure));
+                }
+                if (region.header.content == snapshot::kContentPresent &&
+                    region.content.size() >= (base - region.header.base_address) + size) {
+                    const auto offset = static_cast<std::size_t>(base - region.header.base_address);
+                    if (uc_mem_write(unicorn.get(), base, region.content.data() + offset,
+                                     static_cast<std::size_t>(size)) != UC_ERR_OK) {
+                        return std::unexpected(failure(RebuildError::kUnicornFailure));
+                    }
+                }
+                return {};
+            };
+            const auto before = kLoaderKUser - region.header.base_address;
+            const auto after =
+                region.header.base_address + region.header.size - (kLoaderKUser + kPageBytes);
+            if (before != 0) {
+                if (const auto mapped = map_span(region.header.base_address, before); !mapped) {
+                    return std::unexpected(mapped.error());
+                }
+            }
+            if (after != 0) {
+                if (const auto mapped = map_span(kLoaderKUser + kPageBytes, after); !mapped) {
+                    return std::unexpected(mapped.error());
+                }
+            }
+            continue;
         }
         if (uc_mem_map(unicorn.get(), region.header.base_address,
                        static_cast<std::size_t>(region.header.size),
-                       static_cast<std::uint32_t>(perms)) != UC_ERR_OK) {
+                       static_cast<std::uint32_t>(map_perms)) != UC_ERR_OK) {
             return std::unexpected(failure(RebuildError::kUnicornFailure));
         }
         if (region.header.content == snapshot::kContentPresent && !region.content.empty() &&
@@ -738,7 +824,7 @@ std::expected<void, RebuildFailure> map_regions(UnicornEngine& unicorn,
             return std::unexpected(failure(RebuildError::kUnicornFailure));
         }
     }
-    return {};
+    return kuser_page;
 }
 
 std::expected<void, RebuildFailure> write_registers_gdt(UnicornEngine& unicorn,
@@ -835,9 +921,11 @@ std::expected<PreparedGuest, RebuildFailure> prepare_guest_stream(std::istream& 
     }
     UnicornEngine unicorn{handle};
 
-    if (const auto mapped = map_regions(unicorn, loaded->regions); !mapped) {
+    auto mapped = map_regions(unicorn, loaded->regions);
+    if (!mapped.has_value()) {
         return std::unexpected(mapped.error());
     }
+    auto kuser_page = std::move(*mapped);
     if (mode == GuestMode::kX86) {
         // the 32-bit segment contract needs a GDT page; park it high in
         // the captured space at the first free 4KB page below 0xFFFE0000
@@ -908,6 +996,13 @@ std::expected<PreparedGuest, RebuildFailure> prepare_guest_stream(std::istream& 
                             std::string{syscall_run_error_message(restored.error())}));
         }
     }
+    if (loaded->clock_policy.has_value()) {
+        // The v3 container's pinned clock policy: the run stage answers from
+        // it verbatim (a container written under one engine default keeps
+        // replaying under that same clock on any engine version).
+        guest.clock_policy = loaded->clock_policy;
+    }
+    guest.kuser_host_page = std::move(kuser_page);
     if (loaded->pending.has_value()) {
         guest.pending = std::move(loaded->pending);
         if (const auto attached = attach_resident_world(guest); !attached.has_value()) {
@@ -1105,13 +1200,14 @@ load_system_modules(const GuestMode mode, const std::filesystem::path& synthetic
 
 // Opens the unicorn instance and builds the loader route's address space:
 // the NULL guard, the sample image (write-protected for the fault-based
-// dirty tracking), KUSER, the deterministic stack/heap/env regions, the
+// dirty tracking), KUSER (host-backed: the clock publishes through the
+// returned buffer), the deterministic stack/heap/env regions, the
 // x86 GDT page, then the resident module bytes and the sample itself,
 // and the KUSER semantic fields.
 std::expected<UnicornEngine, RebuildFailure>
 map_loader_address_space(const GuestMode mode, const std::uint64_t base,
                          const std::uint64_t image_size, const std::vector<std::uint8_t>& image,
-                         const LoadedSystemModules& loaded)
+                         const LoadedSystemModules& loaded, KuserHostPage& out_kuser_page)
 {
     const auto& layout = layout_for(mode);
     const auto& system_maps = loaded.maps;
@@ -1123,6 +1219,11 @@ map_loader_address_space(const GuestMode mode, const std::uint64_t base,
     }
     UnicornEngine unicorn{handle};
 
+    out_kuser_page = allocate_kuser_page();
+    if (out_kuser_page == nullptr) {
+        return std::unexpected(failure(RebuildError::kUnicornFailure));
+    }
+
     const auto image_span = static_cast<std::size_t>(image_size);
     // Fault-based dirty tracking: the
     // guest-writable loader regions map without write permission - the
@@ -1131,7 +1232,8 @@ map_loader_address_space(const GuestMode mode, const std::uint64_t base,
     constexpr auto kNoWrite = static_cast<std::uint32_t>(UC_PROT_READ | UC_PROT_EXEC);
     if (uc_mem_map(unicorn.get(), 0, kLoaderNullBytes, UC_PROT_NONE) != UC_ERR_OK ||
         uc_mem_map(unicorn.get(), base, image_span, kNoWrite) != UC_ERR_OK ||
-        uc_mem_map(unicorn.get(), kLoaderKUser, 0x1000, UC_PROT_READ) != UC_ERR_OK ||
+        uc_mem_map_ptr(unicorn.get(), kLoaderKUser, kPageBytes, UC_PROT_READ,
+                       out_kuser_page.get()) != UC_ERR_OK ||
         uc_mem_map(unicorn.get(), layout.stack_base, layout.stack_size, kNoWrite) != UC_ERR_OK ||
         uc_mem_map(unicorn.get(), layout.heap_base, layout.heap_size, kNoWrite) != UC_ERR_OK ||
         uc_mem_map(unicorn.get(), layout.env_base, layout.env_block_size, kNoWrite) != UC_ERR_OK ||
@@ -1263,7 +1365,7 @@ seed_ntdll_ifnt(UnicornEngine& unicorn, const GuestMode mode, const bool fidelit
 std::expected<LoaderWorld, RebuildFailure>
 build_loader_world(UnicornEngine& unicorn, const GuestMode mode, const LoadedSystemModules& loaded,
                    const std::vector<std::uint8_t>& image, const std::uint64_t base,
-                   const std::uint64_t image_size)
+                   const std::uint64_t image_size, std::uint8_t* kuser_page)
 {
     LoaderWorld world;
     auto& loader_exports = world.exports;
@@ -1272,11 +1374,17 @@ build_loader_world(UnicornEngine& unicorn, const GuestMode mode, const LoadedSys
     const auto& layout = layout_for(mode);
     const auto& system_modules = loaded.modules;
 
-    // KUSER_SHARED_DATA semantic fields: fixed deterministic values
+    // KUSER_SHARED_DATA semantic fields: fixed deterministic values. The
+    // page is the host-backed mapping (always present on this route) - the
+    // seed lands in the buffer the clock publishes through.
     {
         std::vector<std::uint8_t> kuser(0x1000, 0);
         loader::fill_kuser_shared_data(kuser);
-        uc_mem_write(unicorn.get(), kLoaderKUser, kuser.data(), kuser.size());
+        if (kuser_page != nullptr) {
+            std::memcpy(kuser_page, kuser.data(), kuser.size());
+        } else {
+            uc_mem_write(unicorn.get(), kLoaderKUser, kuser.data(), kuser.size());
+        }
     }
 
     // loader tables: the exports indexed at load time feed the
@@ -1483,8 +1591,9 @@ prepare_pe_file(const std::filesystem::path& path, bool fidelity_seams,
     std::vector<std::uint64_t> guest_boundary_trap_vas;
     std::map<std::uint64_t, std::tuple<std::string, std::string, std::uint32_t>>
         guest_boundary_trap_names;
-    auto unicorn_result =
-        map_loader_address_space(mode, mapped_base, info->image_size, *image, *system_loaded);
+    KuserHostPage kuser_page;
+    auto unicorn_result = map_loader_address_space(mode, mapped_base, info->image_size, *image,
+                                                   *system_loaded, kuser_page);
     if (!unicorn_result.has_value()) {
         return std::unexpected(unicorn_result.error());
     }
@@ -1495,8 +1604,8 @@ prepare_pe_file(const std::filesystem::path& path, bool fidelity_seams,
         !seeded.has_value()) {
         return std::unexpected(seeded.error());
     }
-    auto world =
-        build_loader_world(unicorn, mode, *system_loaded, *image, mapped_base, info->image_size);
+    auto world = build_loader_world(unicorn, mode, *system_loaded, *image, mapped_base,
+                                    info->image_size, kuser_page.get());
     if (!world.has_value()) {
         return std::unexpected(world.error());
     }
@@ -1666,6 +1775,7 @@ prepare_pe_file(const std::filesystem::path& path, bool fidelity_seams,
     guest.loader_route = true; // synthetic Ldr: LdrLoadDll misses stay answered
     // directory-mode world facts: empty in the synthetic/host routes
     guest.directory_mode = !system_modules_dir.empty();
+    guest.kuser_host_page = std::move(kuser_page);
     guest.module_sources = std::move(system_loaded->sources);
     guest.boundary_rules = std::move(system_loaded->boundary_rules);
     guest.api_set_map = std::move(system_loaded->api_set_map);

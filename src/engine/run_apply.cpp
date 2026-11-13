@@ -63,6 +63,10 @@ apply_run_plan(PreparedGuest& guest, const SyscallRunOptions& options, const Fac
     // either way (see SyscallRunState::loop_gate_counts). It is copied into the state
     // because the hook path reads it per probe window.
     state.loop_gate_trace = diag::loop_gate_on();
+    // SHELLER_RDTSC_TRACE: per-rdtsc/rdtscp answer trace (block position +
+    // value), the replay=rerun acceptance channel, as kDebug records. Same
+    // shape as the loop-gate switch: default off, event stream untouched.
+    state.rdtsc_trace = diag::rdtsc_on();
     // DLL-input route: the pending module travels into the run state and the
     // continuation-slot intercept arms (no-op without a pending block -
     // EXE/shellcode runs pay nothing). The arming maps the heap band and the
