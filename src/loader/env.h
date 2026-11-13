@@ -34,6 +34,21 @@ struct EnvModule {
     std::string name; // folded (lowercase) with extension
 };
 
+// The three chains' independent member orders, index-aligned with the
+// modules argument. Empty vectors chain every module in argument order
+// (the pre-record shape); a real-loader world threads each chain per its
+// own record - the capture corpus's shape: load/memory both lead with the
+// main image, the init chain excludes it and starts at ntdll (the
+// three-chain record in the crafted-world change directory). A chain order
+// MUST be a distinct in-range subset of the module indices (the validator
+// rejects duplicates and out-of-range indices); modules outside a chain
+// keep that chain's node self-looped.
+struct ChainOrders {
+    std::vector<std::size_t> load;
+    std::vector<std::size_t> memory;
+    std::vector<std::size_t> init;
+};
+
 struct EnvironmentBuild {
     std::uint64_t teb_va{};
     std::uint64_t peb_va{};
@@ -48,11 +63,14 @@ struct EnvironmentBuild {
 };
 
 // Builds the whole environment block (x64 layout). modules are chained in
-// the order given (the sample first, then system modules).
-// stack_base/limit feed the TEB NtTib; heap_base feeds PEB.ProcessHeap.
+// the order given (the sample first, then system modules); `orders` (when
+// its vectors are non-empty) threads each chain in its own member order
+// instead. stack_base/limit feed the TEB NtTib; heap_base feeds
+// PEB.ProcessHeap.
 EnvironmentBuild build_environment(std::uint64_t env_base, std::uint64_t image_base,
                                    std::uint64_t stack_base, std::uint64_t stack_limit,
-                                   std::uint64_t heap_base, const std::vector<EnvModule>& modules);
+                                   std::uint64_t heap_base, const std::vector<EnvModule>& modules,
+                                   const ChainOrders& orders = {});
 
 // x86 twin: the same block geometry (TEB/PEB/params/Ldr pages) but
 // the 32-bit structure shapes - fs:[18h] Self@0x18, ClientId@0x20, PEB@0x30;
@@ -62,7 +80,8 @@ EnvironmentBuild build_environment(std::uint64_t env_base, std::uint64_t image_b
 EnvironmentBuild build_environment_x86(std::uint64_t env_base, std::uint64_t image_base,
                                        std::uint64_t stack_base, std::uint64_t stack_limit,
                                        std::uint64_t heap_base,
-                                       const std::vector<EnvModule>& modules);
+                                       const std::vector<EnvModule>& modules,
+                                       const ChainOrders& orders = {});
 
 // KUSER_SHARED_DATA semantic fields: fixed SystemTime /
 // TickCount values plus the NtSystemRoot string - honest zeros everywhere

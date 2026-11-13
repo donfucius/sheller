@@ -448,7 +448,7 @@ void run_clock_partition(const std::size_t iterations_per_leg, std::vector<std::
     state.kuser_host_page = guest->kuser_host_page.get();
     state.rdtsc_trace = true;
     state.policy.set_builtin(0x1234, syscalls::BuiltinHandler::kQueryPerformanceCounter);
-    ClockReadProbe probe{&state};
+    ClockReadProbe probe{&state, {}};
     uc_hook block_hook = 0, tsc_hook = 0, read_hook = 0;
     ASSERT_EQ(uc_hook_add(uc, &block_hook, UC_HOOK_BLOCK,
                           reinterpret_cast<void*>(engine::on_syscall_run_block), &state, 1, 0),

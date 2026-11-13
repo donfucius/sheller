@@ -564,7 +564,8 @@ craft_dll_sample_container(const std::filesystem::path& pe_path,
         }
     }
     auto guest = prepare_pe_file(runner_path, fidelity_seams, synthetic_module_dir,
-                                 system_modules_dir, system_modules_fallback);
+                                 system_modules_dir, system_modules_fallback,
+                                 /*arrival_name=*/"sheller_run.exe", sample_bytes, arrival_name);
     std::error_code remove_ec;
     std::filesystem::remove(runner_path, remove_ec); // best effort: the world is built
     if (!guest) {

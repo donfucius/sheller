@@ -921,6 +921,12 @@ endif()
   add_test(NAME world_diff_regression
     COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/world_diff_regression.py")
 
+  # Equivalence-baseline machine adjudication (accepted-residuals gate):
+  # the happy path, unaccepted classes, scale-cap overruns and structural
+  # shape anchors (negative cases). Portable by design.
+  add_test(NAME accept_residuals
+    COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/accept_residuals_test.py")
+
   # Linux packed e2e: the packed.exe snapshot (captured on a Windows
   # host) is replayed on the Linux engine, the dump is repaired and the .unp
   # is produced. Skips when the snapshot file has not been transferred.
@@ -1233,6 +1239,21 @@ target_link_libraries(boundary_derive_test PRIVATE GTest::gtest_main sheller_eng
 sheller_apply_common(boundary_derive_test)
 
 add_test(NAME boundary_derive COMMAND boundary_derive_test)
+
+# Eager delayed-import binding: the construction-time policy over
+# DataDirectory[13] - RVA-form descriptors bind their IAT slots to the
+# final resolved VAs and nothing else (the capture corpus's .didat
+# records), VA-form and out-of-range descriptors are the named rejection,
+# name/ordinal/forwarder thunks resolve, missing delayed dependencies are
+# recorded, and the closure walk (write=false) never writes. Portable by
+# design.
+add_executable(delay_imports_test delay_imports_test.cpp)
+target_include_directories(delay_imports_test PRIVATE
+  "${CMAKE_CURRENT_SOURCE_DIR}/../src/loader")
+target_link_libraries(delay_imports_test PRIVATE GTest::gtest_main sheller_engine)
+sheller_apply_common(delay_imports_test)
+
+add_test(NAME delay_imports COMMAND delay_imports_test)
 
 add_executable(loader_pe_e2e_test loader_pe_e2e_test.cpp)
 target_compile_definitions(loader_pe_e2e_test PRIVATE

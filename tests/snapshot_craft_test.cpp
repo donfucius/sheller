@@ -533,7 +533,10 @@ TEST(SnapshotCraft, AttributionSeesSampleAndSyntheticModules)
                                          return image.module.base == probe->image_base;
                                      });
     ASSERT_NE(sample, probe->images.end());
-    EXPECT_EQ(std::string(sample->module.name.data()), "loader_image");
+    // container-derived attribution reads the guest-visible Ldr arrival
+    // name: the sample's own file name, never the construction-side
+    // `loader_image` attribution placeholder
+    EXPECT_EQ(std::string(sample->module.name.data()), "packed.exe");
 
     engine::mem_region::ImageLayout layout;
     ASSERT_EQ(engine::mem_region::parse_section_table(sample->header_bytes.data(),
@@ -555,7 +558,7 @@ TEST(SnapshotCraft, AttributionSeesSampleAndSyntheticModules)
     engine::mem_region::MemRegionMap map(probe->images, probe->regions);
     const auto attribution = map.query(probe->image_base + entry_rva);
     ASSERT_TRUE(attribution.has_value());
-    EXPECT_EQ(attribution->module_name, "loader_image");
+    EXPECT_EQ(attribution->module_name, "packed.exe");
     EXPECT_EQ(std::string(attribution->section_name), std::string(owning_section->name.data()));
     EXPECT_NE(attribution->section_name, "headers");
 }
@@ -667,6 +670,12 @@ TEST(SnapshotCraft, ReattachRebuildsTheConstructionTables)
     for (std::size_t i = 0; i < replay->loader_modules.size(); ++i) {
         EXPECT_EQ(replay->loader_modules[i].base, construction->loader_modules[i].base);
         EXPECT_EQ(replay->loader_modules[i].size, construction->loader_modules[i].size);
+        if (replay->loader_modules[i].base == replay->metadata.image_base) {
+            // the entry image: the replay carries the guest-visible arrival
+            // name, the construction's list the host attribution placeholder
+            EXPECT_EQ(std::string(replay->loader_modules[i].name.data()), "packed.exe");
+            continue;
+        }
         EXPECT_EQ(std::string(replay->loader_modules[i].name.data()),
                   std::string(construction->loader_modules[i].name.data()));
     }

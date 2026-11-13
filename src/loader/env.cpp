@@ -1,6 +1,7 @@
 #include "env.h"
 
 #include <algorithm>
+#include <array>
 #include <cstring>
 #include <span>
 
@@ -28,12 +29,48 @@ void store64(std::vector<std::uint8_t>& out, std::size_t offset, std::uint64_t v
     }
 }
 
+// The three chains' member sequences: an explicit member list per chain
+// when given, every module in argument order otherwise. A chain's list is
+// a distinct in-range subset of the module indices - the real loader's
+// init chain excludes the main image (the capture corpus's three-chain
+// record), and a module outside a chain keeps that chain's node
+// self-looped (the chain walk never visits it).
+std::array<std::vector<std::size_t>, 3> chain_sequences(const std::size_t count,
+                                                        const ChainOrders& orders)
+{
+    const std::array<const std::vector<std::size_t>*, 3> given{&orders.load, &orders.memory,
+                                                               &orders.init};
+    std::array<std::vector<std::size_t>, 3> out;
+    for (std::size_t c = 0; c < 3; ++c) {
+        if (given[c]->empty()) {
+            // no explicit order: every module, argument order
+            out[c].resize(count);
+            for (std::size_t i = 0; i < count; ++i) {
+                out[c][i] = i;
+            }
+            continue;
+        }
+        // subset check: distinct in-range indices, never a silent drop or
+        // duplicate member
+        std::vector<bool> seen(count, false);
+        for (const auto index : *given[c]) {
+            if (index >= count || seen[index]) {
+                return {};
+            }
+            seen[index] = true;
+        }
+        out[c] = *given[c];
+    }
+    return out;
+}
+
 } // namespace
 
 EnvironmentBuild build_environment(const std::uint64_t env_base, const std::uint64_t image_base,
                                    const std::uint64_t stack_base, const std::uint64_t stack_limit,
                                    const std::uint64_t heap_base,
-                                   const std::vector<EnvModule>& modules)
+                                   const std::vector<EnvModule>& modules,
+                                   const ChainOrders& orders)
 {
     EnvironmentBuild build;
     build.teb_va = env_base + kEnvTebOffset;
@@ -77,27 +114,47 @@ EnvironmentBuild build_environment(const std::uint64_t env_base, const std::uint
     store32(env, kEnvLdrOffset, 0x58); // Length
     env[kEnvLdrOffset + 4] = 1;        // Initialized
     // three closed circular chains, heads at ldr+0x10/0x20/0x30
-    // nodes: module i chain c at ldr+0x58 + i*0x100 + c*0x10
+    // nodes: module i chain c at ldr+0x58 + i*0x100 + c*0x10; each chain
+    // threads the node slots in its own member order
     // list pointers are guest VAs (env_base + block offset), not offsets
     const std::size_t node_base = kEnvLdrOffset + 0x58;
     const auto node = [&](std::size_t i, std::size_t c) {
         return node_base + i * static_cast<std::size_t>(kLdrEntryStride) + c * 0x10;
     };
+    const auto sequences = chain_sequences(modules.size(), orders);
     for (std::size_t c = 0; c < 3; ++c) {
         const auto head_off = kEnvLdrOffset + 0x10 + c * 0x10;
-        if (modules.empty()) {
+        const auto& sequence = sequences[c];
+        if (modules.empty() || sequence.empty()) {
+            // no members in this chain: every node self-loops
+            for (std::size_t i = 0; i < modules.size(); ++i) {
+                const auto nva = node(i, c);
+                store64(env, nva, env_base + nva);
+                store64(env, nva + 8, env_base + nva);
+            }
             store64(env, head_off, env_base + head_off);
             store64(env, head_off + 8, env_base + head_off);
             continue;
         }
-        store64(env, head_off, env_base + node(0, c));
-        store64(env, head_off + 8, env_base + node(modules.size() - 1, c));
-        for (std::size_t i = 0; i < modules.size(); ++i) {
-            const auto nva = node(i, c);
-            const auto next = i + 1 < modules.size() ? node(i + 1, c) : head_off;
-            const auto prev = i == 0 ? head_off : node(i - 1, c);
+        store64(env, head_off, env_base + node(sequence.front(), c));
+        store64(env, head_off + 8, env_base + node(sequence.back(), c));
+        for (std::size_t p = 0; p < sequence.size(); ++p) {
+            const auto nva = node(sequence[p], c);
+            const auto next =
+                p + 1 < sequence.size() ? node(sequence[p + 1], c) : head_off;
+            const auto prev = p == 0 ? head_off : node(sequence[p - 1], c);
             store64(env, nva, env_base + next);
             store64(env, nva + 8, env_base + prev);
+        }
+        // members only: a module outside the chain keeps its node
+        // self-looped (the walk never visits it)
+        for (std::size_t i = 0; i < modules.size(); ++i) {
+            if (std::find(sequence.begin(), sequence.end(), i) != sequence.end()) {
+                continue;
+            }
+            const auto nva = node(i, c);
+            store64(env, nva, env_base + nva);
+            store64(env, nva + 8, env_base + nva);
         }
     }
 
@@ -131,7 +188,8 @@ EnvironmentBuild build_environment_x86(const std::uint64_t env_base, const std::
                                        const std::uint64_t stack_base,
                                        const std::uint64_t stack_limit,
                                        const std::uint64_t heap_base,
-                                       const std::vector<EnvModule>& modules)
+                                       const std::vector<EnvModule>& modules,
+                                       const ChainOrders& orders)
 {
     EnvironmentBuild build;
     build.teb_va = env_base + kEnvTebOffset;
@@ -179,28 +237,49 @@ EnvironmentBuild build_environment_x86(const std::uint64_t env_base, const std::
     // heads sit at +0x0C/+0x14/+0x1C
     store32(env, kEnvLdrOffset, 0x30);
     env[kEnvLdrOffset + 4] = 1;
-    // nodes: module i chain c at ldr+0x30 + i*0x100 + c*0x8; list pointers
+    // nodes: module i chain c at ldr+0x30 + i*0x100 + c*0x8; each chain
+    // threads the node slots in its own member order; list pointers
     // are guest VAs truncated to 32 bits
     const std::size_t node_base = kEnvLdrOffset + 0x30;
     const auto node = [&](std::size_t i, std::size_t c) {
         return node_base + i * static_cast<std::size_t>(kLdrEntryStride) + c * 0x8;
     };
+    const auto sequences = chain_sequences(modules.size(), orders);
     for (std::size_t c = 0; c < 3; ++c) {
         const auto head_off = kEnvLdrOffset + 0x0C + c * 0x8;
-        if (modules.empty()) {
+        const auto& sequence = sequences[c];
+        if (modules.empty() || sequence.empty()) {
+            // no members in this chain: every node self-loops
+            for (std::size_t i = 0; i < modules.size(); ++i) {
+                const auto nva = node(i, c);
+                store32(env, nva, static_cast<std::uint32_t>(env_base + nva));
+                store32(env, nva + 4, static_cast<std::uint32_t>(env_base + nva));
+            }
             store32(env, head_off, static_cast<std::uint32_t>(env_base + head_off));
             store32(env, head_off + 4, static_cast<std::uint32_t>(env_base + head_off));
             continue;
         }
-        store32(env, head_off, static_cast<std::uint32_t>(env_base + node(0, c)));
+        store32(env, head_off,
+                static_cast<std::uint32_t>(env_base + node(sequence.front(), c)));
         store32(env, head_off + 4,
-                static_cast<std::uint32_t>(env_base + node(modules.size() - 1, c)));
-        for (std::size_t i = 0; i < modules.size(); ++i) {
-            const auto nva = node(i, c);
-            const auto next = i + 1 < modules.size() ? node(i + 1, c) : head_off;
-            const auto prev = i == 0 ? head_off : node(i - 1, c);
+                static_cast<std::uint32_t>(env_base + node(sequence.back(), c)));
+        for (std::size_t p = 0; p < sequence.size(); ++p) {
+            const auto nva = node(sequence[p], c);
+            const auto next =
+                p + 1 < sequence.size() ? node(sequence[p + 1], c) : head_off;
+            const auto prev = p == 0 ? head_off : node(sequence[p - 1], c);
             store32(env, nva, static_cast<std::uint32_t>(env_base + next));
             store32(env, nva + 4, static_cast<std::uint32_t>(env_base + prev));
+        }
+        // members only: a module outside the chain keeps its node
+        // self-looped (the walk never visits it)
+        for (std::size_t i = 0; i < modules.size(); ++i) {
+            if (std::find(sequence.begin(), sequence.end(), i) != sequence.end()) {
+                continue;
+            }
+            const auto nva = node(i, c);
+            store32(env, nva, static_cast<std::uint32_t>(env_base + nva));
+            store32(env, nva + 4, static_cast<std::uint32_t>(env_base + nva));
         }
     }
 
@@ -236,6 +315,11 @@ void fill_kuser_shared_data(std::span<std::uint8_t> page)
     }
     constexpr std::uint64_t kFixedFileTime = 0x01D9000000000000ULL;
     std::memcpy(&page[0x14], &kFixedFileTime, 8);
+    // NtSystemRoot: the fixed UTF-16 system root the capture world carries
+    // (lowercase `c:\windows`, the capture spelling) - a shell's PEB walk
+    // reads it, and a zero-filled field was a structural diff.
+    constexpr char16_t kNtSystemRoot[] = u"c:\\windows";
+    std::memcpy(&page[0x30], kNtSystemRoot, sizeof kNtSystemRoot);
     constexpr std::uint32_t kFixedTick = 0x10000000;
     std::memcpy(&page[0x320], &kFixedTick, 4);
 }

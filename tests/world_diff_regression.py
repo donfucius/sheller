@@ -21,9 +21,9 @@ def world():
     return wd.World(1, [], {}, {"peb_address": 0, "teb_address": 0, "image_base": 0}, None)
 
 
-def pe(size=24, reloc=(), slots=None, rva=0):
+def pe(size=24, reloc=(), slots=None, rva=0, delay=None):
     return wd.PeImage(0, size, [{"name": ".data", "rva": rva, "vsize": 24}],
-                      set(reloc), slots or {})
+                      set(reloc), slots or {}, delay or {})
 
 
 class SnapshotClockRegression(unittest.TestCase):
@@ -146,9 +146,105 @@ class WorldDiffRegression(unittest.TestCase):
         crafted[17:25] = (0x2800).to_bytes(8, "little")
         entries = self.compare(capture, crafted, pe(64, reloc=(1,)),
                                pe(64, reloc=(17,), rva=16))
+        self.assertTrue(any(e.get("note") == "section RVA differs" for e in entries))
+        entries = [e for e in entries if e.get("note") != "section RVA differs"]
         self.assertEqual(len(entries), 1)
         self.assertEqual(entries[0]["classification"], wd.CLASS_EXPECTED_RELOC)
         self.assertEqual(entries[0]["crafted_addr"], "0x2011")
+
+
+class DelayedImportClassification(unittest.TestCase):
+    """The delayed-import recognition and its classification priority: a
+    delay slot verifies by referenced identity FIRST - even when the
+    relocation table covers the slot - and the pre-revision classifications
+    for everything else stay untouched."""
+
+    def classify_delay(self, delay_a, delay_b, reloc_a=(), reloc_b=()):
+        modules_a = [{"name": "kernelbase.dll", "base": 0x3000, "size": 0x1000},
+                     {"name": "kernel32.dll", "base": 0x5000, "size": 0x1000}]
+        modules_b = [{"name": "kernelbase.dll", "base": 0x7000, "size": 0x1000},
+                     {"name": "kernel32.dll", "base": 0x9000, "size": 0x1000}]
+        # rva 0: capture value in kernelbase-a, crafted value in
+        # kernelbase-b; the delta is NOT a base delta (0x3000 vs 0x7000
+        # bases would make 0x4000 one) - the values differ arbitrarily, the
+        # way a bound slot vs a differently-bound slot does
+        return wd.Diff._classify_qword(pe(delay=delay_a, reloc=reloc_a),
+                                       pe(delay=delay_b, reloc=reloc_b),
+                                       0, 0x3001, 0x7001, 0, modules_a, modules_b)[0]
+
+    def test_delay_slot_classifies_by_identity_even_under_reloc_coverage(self):
+        # both worlds' reloc tables cover the slot AND the values are not a
+        # base delta apart: the old order produced candidate-reloc-anomaly,
+        # the identity-first revision reads the aligned referenced identity
+        # and the in-span values - expected-import
+        self.assertEqual(
+            self.classify_delay({0: {"name": "kernelbase.dll"}},
+                                {0: {"name": "kernelbase.dll"}},
+                                reloc_a=(0,), reloc_b=(0,)),
+            wd.CLASS_EXPECTED_IMPORT)
+
+    def test_identity_confusion_stays_an_anomaly(self):
+        # both values land in SOME resident span (kernelbase capture,
+        # kernel32 crafted) but the referenced identities differ - the
+        # import-anomaly verdict, never an any-span "expected"
+        self.assertEqual(
+            self.classify_delay({0: {"name": "kernelbase.dll"}},
+                                {0: {"name": "kernel32.dll"}},
+                                reloc_a=(0,), reloc_b=(0,)),
+            wd.CLASS_CANDIDATE_IMPORT_ANOMALY)
+
+    def test_unresolvable_name_verifies_by_terminal_module(self):
+        # api-set/forwarder names on both sides: the terminal module must
+        # match - the delay slots bind to the same endpoint on both worlds
+        modules_a = [{"name": "kernelbase.dll", "base": 0x3000, "size": 0x1000}]
+        modules_b = [{"name": "kernelbase.dll", "base": 0x7000, "size": 0x1000}]
+        classification, _note = wd.Diff._classify_qword(
+            pe(delay={0: {"name": "ext-ms-win-quirks-l1-1-0.dll"}}),
+            pe(delay={0: {"name": "ext-ms-win-quirks-l1-1-0.dll"}}),
+            0, 0x3001, 0x7001, 0, modules_a, modules_b)
+        self.assertEqual(classification, wd.CLASS_EXPECTED_IMPORT)
+
+    def test_unreadable_delay_identity_is_uncertain(self):
+        self.assertEqual(
+            self.classify_delay({0: {"name": None}}, {0: {"name": "kernelbase.dll"}}),
+            wd.CLASS_CAUSE_UNCERTAIN)
+
+    def test_delay_slot_missing_on_one_side_is_uncertain(self):
+        self.assertEqual(
+            self.classify_delay({0: {"name": "kernelbase.dll"}}, {}),
+            wd.CLASS_CAUSE_UNCERTAIN)
+
+    def test_non_delay_classifications_are_untouched(self):
+        # a plain reloc slot (no delay coverage) keeps the pre-revision
+        # verdicts exactly: base-delta -> expected-reloc, otherwise anomaly
+        self.assertEqual(
+            self.classify_delay({}, {}, reloc_a=(0,), reloc_b=(0,)),
+            wd.CLASS_CANDIDATE_RELOC_ANOMALY)  # 0x3001 vs 0x7001: no base delta
+        modules_a = [{"name": "kernelbase.dll", "base": 0x3000, "size": 0x1000}]
+        modules_b = [{"name": "kernelbase.dll", "base": 0x7000, "size": 0x1000}]
+        classification, _note = wd.Diff._classify_qword(
+            pe(reloc=(0,)), pe(reloc=(0,)),
+            0, 0x3001, 0x7001, (0x3001 - 0x7001) % (1 << 64), modules_a, modules_b)
+        self.assertEqual(classification, wd.CLASS_EXPECTED_RELOC)
+
+
+class ChainMultiplicityRegression(unittest.TestCase):
+    def test_one_sided_duplicate_is_a_structural_candidate(self):
+        diff = wd.Diff(world(), world())
+        diff.chains = {
+            "capture": {name: [] for name in wd.LDR_CHAIN_NAMES},
+            "crafted": {name: [{"name": "apphelp.dll"}, {"name": "apphelp.dll"}]
+                        for name in wd.LDR_CHAIN_NAMES},
+        }
+        diff._diff_ldr_chains()
+        self.assertEqual(len(diff.entries), 3)
+        self.assertTrue(all(e["classification"] == "candidate" for e in diff.entries))
+
+    def test_equal_bytes_at_a_moved_section_still_report_shape(self):
+        diff = wd.Diff(world(), world())
+        module = {"name": "foo.dll", "base": 0, "size": 64}
+        diff._diff_parsed(module, module, bytes(64), bytes(64), pe(rva=0), pe(rva=8))
+        self.assertTrue(any(e.get("note") == "section RVA differs" for e in diff.entries))
 
 
 if __name__ == "__main__":

@@ -559,8 +559,8 @@ TEST(WorldDiff, AlignClassifiesEveryCauseClass)
               {"domain": "infrastructure", "classification": "expected-volatile", "target": "kusd.tick_count"},
               {"domain": "infrastructure", "classification": "expected-volatile", "target": "kusd.interrupt_time"},
               {"domain": "infrastructure", "classification": "candidate", "target": "kusd.nt_system_root", "capture": "c:\\windows"},
-              {"domain": "infrastructure", "classification": "candidate", "target": "ldr.load", "detail": "count capture=8 crafted=9"},
-              {"domain": "infrastructure", "classification": "candidate", "target": "ldr.load", "detail": "order differs at index 1: capture=kernel32.dll crafted=win32u.dll"},
+              {"domain": "infrastructure", "classification": "expected", "target": "ldr.load", "detail": "membership: wmi.dll present on crafted only"},
+              {"domain": "infrastructure", "classification": "candidate", "target": "ldr.load", "detail": "order differs at common index 1: capture=kernel32.dll crafted=win32u.dll"},
               {"domain": "infrastructure", "classification": "candidate", "target": "peb.process_heap"}
             ])",
                                                             R"([

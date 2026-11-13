@@ -114,9 +114,16 @@ capture-class failure instead of entering the 32-bit path.
 `run` and `unpack` accept `--system-modules <dir>`: the resident system world
 is then built strictly from the user-supplied directory - real DLL bytes for
 every module except the boundary pair (`ntdll.dll`, `win32u.dll`), which is
-*derived*: export names, ordinals, aliases and forwarders survive, the entry
-addresses rebuild, and syscall service stubs keep their numbers (validated
-against the stub bytes, never the `Nt`/`Zw` prefix). The host's system
+*derived from its real file*: the source image is folded and relocated to the
+module's base exactly like every real-byte module (SizeOfImage and the
+section list stay the source's own), export names, ordinals, aliases and
+forwarders keep their source addresses, and syscall service stubs keep their
+source bytes and numbers (validated against the stub bytes, never the
+`Nt`/`Zw` prefix). The boundary dispositions (syscall registration, the
+four-kind classification, the counting whitelist, compat answers) ride an
+address-level runtime table; image rewrites are limited to an explicit
+whitelist - the reserved DOS `e_res2` marker slot, data-export slots whose
+mapped bytes are free, and manifest-defined stub bodies. The host's system
 directories are never read. You supply the DLLs; their license is your
 responsibility.
 
@@ -135,14 +142,21 @@ real builds shipped) are derived with their per-contract evidence by
 `tools/gen_apiset_evidence_map.py` - hosts confirmed by the build's
 same-source API Set schema or recorded review, never a silent pick (see
 `tools/apisetmap/README.md` for the regeneration and adjudication method).
-Resident real modules bind their own IATs at
-construction; no resident module runs DllMain, TLS callbacks or any entry
-initialization - the supported surface is the verified no-init-dependency
-call paths, and unrepaired paths may crash or misbehave (that is a
-compatibility limit, not a bug). A directory-mode container carries a
-versioned metadata record plus an independent mode marker, so replay restores
-the full run tables without the original directory; containers without the
-marks keep the synthetic route byte-for-byte.
+Resident real modules bind their own IATs at construction; delayed imports
+(`.didat`) bind eagerly in the same pass - resolvable slots take the final
+VAs, and a slot that cannot resolve keeps its file bytes (the file's own
+static failure thunk, exactly what a captured world carries there). No
+resident module runs DllMain, TLS callbacks or any entry initialization -
+the supported surface is the verified no-init-dependency call paths, and
+unrepaired paths may crash or misbehave (that is a compatibility limit, not
+a bug). The constructed KUSER page carries a deterministic `NtSystemRoot`,
+the PEB Ldr chains are threaded per the real loader's shape (load and memory
+orders lead with the main image, the initialization order excludes it), the
+entry image's Ldr entry carries its arrival name, and a directory-mode
+container carries a versioned metadata record plus an independent mode
+marker, so replay restores the full run tables without the original
+directory; containers without the marks keep the synthetic route
+byte-for-byte.
 
 Inside the emulator the guest is treated as a real Windows process: syscalls answer
 from a data-driven policy table with ntdll numbers resolved from the guest's own
@@ -168,7 +182,11 @@ workflow: it reads two snapshots of the same format version (a capture snapshot
 and a crafted container; v1, v2 with the trailing pending-module block, or v3
 with the trailing pending and clock-policy blocks - both v3 blocks are skipped,
 not world content),
-aligns the worlds' modules by Ldr name across differing bases, and renders a
+aligns the worlds' modules by Ldr name across differing bases, recognizes the
+delay-import directory (`directory(13)`) so delayed-import slots verify by
+referenced identity before relocation checks, compares the Ldr chains in
+common-member order (membership differences ride the module-set classification),
+and renders a
 deterministic JSON report classifying every difference as expected (module set,
 relocation deltas checked against the base delta, import binding checked against
 each side's module spans, KUSD time fields) or as a divergence candidate
@@ -177,8 +195,13 @@ evidence surface for why a crafted world crashes where the capture world does
 not. `--interest <report.json> --interest-side capture|crafted` annotates entries
 hit by a run's mem-read addresses (a full-level report details infrastructure
 reads too; a semantic-level report details module reads only; a report without
-per-address detail is named insufficient, never silently a no-hit). Same input
-pair, byte-identical report; the engine, CLI and snapshot format are untouched.
+per-address detail is named insufficient, never silently a no-hit).
+`tools/accept_residuals.py` adjudicates a diff report against a versioned
+accepted-residuals set (the equivalence gate: every candidate must fall into an
+accepted class within its position bounds and scale caps, structural-shape
+classes are rejected outright, and the negative cases prove the gate fails on
+unaccepted classes). Same input pair, byte-identical report; the engine, CLI
+and snapshot format are untouched.
 
 ## Input support: bitness, DLLs, shellcode
 

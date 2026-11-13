@@ -196,20 +196,40 @@ TEST(LoaderDirectory, MissingApisetMapIsNamedRejection)
 
 TEST(LoaderDirectory, SourceTableTiersTheDirectory)
 {
-    // a real-byte module in the directory maps as its own bytes and the
-    // source table distinguishes the tiers (the importing-builder output
-    // carries the reloc table real directory inputs must have)
-    const auto dir = make_directory(
-        "tiers", {{"other.dll", make_importing_source({}, {{"ntdll.dll", {"RtlFoo"}}})}});
+    // the resident set is the dependency closure, not the directory listing:
+    // the real-byte kernel32 the sample's import pulls is resident with its
+    // own bytes (the importing-builder output carries the reloc table real
+    // directory inputs must have), the module kernel32 itself imports joins
+    // through the closure, and a directory DLL nothing imports stays out
+    // entirely - not loaded, not in the source table, not mapped
+    auto linked_kernel32 = make_importing_source(
+        {{"SampleExport", nullptr, sheller_test::kBoundaryTextRva, {0x31, 0xC0, 0xC3}, {}}},
+        {{"linked.dll", {"LinkedExport"}}});
+    const auto linked_dll = make_importing_source(
+        {{"LinkedExport", nullptr, sheller_test::kBoundaryTextRva, {0x31, 0xC0, 0xC3}, {}}},
+        {{"ntdll.dll", {"RtlFoo"}}});
+    const auto unreferenced = make_importing_source({}, {{"ntdll.dll", {"RtlFoo"}}});
+    const auto dir = make_directory("tiers", {{"kernel32.dll", linked_kernel32},
+                                              {"linked.dll", linked_dll},
+                                              {"other.dll", unreferenced}});
     const auto built = sheller::engine::prepare_pe_file(kSamplePath, false, kSynthDir, dir, true);
     ASSERT_TRUE(built.has_value()) << rejection_detail(built);
-    const auto* other_source = find_source(*built, "other.dll");
-    ASSERT_NE(other_source, nullptr);
-    EXPECT_EQ(*other_source, SystemModuleSource::kDirectoryRealBytes);
+    const auto* linked_source = find_source(*built, "linked.dll");
+    ASSERT_NE(linked_source, nullptr);
+    EXPECT_EQ(*linked_source, SystemModuleSource::kDirectoryRealBytes);
+    const auto* kernel32_source = find_source(*built, "kernel32.dll");
+    ASSERT_NE(kernel32_source, nullptr);
+    EXPECT_EQ(*kernel32_source, SystemModuleSource::kDirectoryRealBytes);
+    // the closure never reached other.dll: no source row, no mapping
+    EXPECT_EQ(find_source(*built, "other.dll"), nullptr);
+    EXPECT_FALSE(built->map.module_index_by_name("other.dll").has_value());
     // the derived ntdll's export table answers lookups: the boundary layer
     // is live in this world
     const auto ntdll_base = built->map.module_index_by_name("ntdll.dll");
     ASSERT_TRUE(ntdll_base.has_value());
+    // and the closure-pulled member is actually mapped
+    const auto linked_base = built->map.module_index_by_name("linked.dll");
+    ASSERT_TRUE(linked_base.has_value());
 }
 
 TEST(LoaderDirectory, SyntheticRouteStaysUnmarked)
@@ -223,6 +243,50 @@ TEST(LoaderDirectory, SyntheticRouteStaysUnmarked)
     for (const auto& [name, source] : built->module_sources) {
         EXPECT_EQ(source, SystemModuleSource::kSynthetic) << name;
     }
+}
+
+TEST(LoaderDirectory, ClosureDoesNotRebindAFirstThunkLookupTable)
+{
+    auto kernel32 = make_importing_source({}, {{"linked.dll", {"LinkedExport"}},
+                                                {"ntdll.dll", {"RtlFoo"}}});
+    // Both ordinary descriptors use IAT as lookup. The second dependency
+    // resolves immediately; linked.dll needs another discovery round.
+    const std::uint32_t zero = 0;
+    std::memcpy(kernel32.data() + 0x2000, &zero, 4);
+    std::memcpy(kernel32.data() + 0x2014, &zero, 4);
+    const auto linked = make_importing_source(
+        {{"LinkedExport", nullptr, 0x1000, {0xC3}, {}}}, {});
+    const auto dir = make_directory("first_thunk", {{"kernel32.dll", kernel32},
+                                                     {"linked.dll", linked}});
+    const auto built = sheller::engine::prepare_pe_file(kSamplePath, false, kSynthDir, dir, true);
+    ASSERT_TRUE(built.has_value()) << rejection_detail(built);
+    const auto index = built->map.module_index_by_name("linked.dll");
+    ASSERT_TRUE(index.has_value());
+    EXPECT_NE(find_source(*built, "linked.dll"), nullptr);
+}
+
+TEST(LoaderDirectory, PendingDllContributesEveryImportedForwarderToClosure)
+{
+    // A runner imports one representative symbol per dependency. Its direct
+    // representative cannot stand in for another DLL import's forwarder.
+    const auto facade = make_importing_source(
+        {{"Direct", nullptr, 0x1000, {0xC3}, {}},
+         {"Forwarded", nullptr, 0, {}, "hidden.Target"}}, {});
+    const auto hidden = make_importing_source({{"Target", nullptr, 0x1000, {0xC3}, {}}}, {});
+    const auto dir = make_directory("pending_closure", {{"facade.dll", facade},
+                                                        {"hidden.dll", hidden}});
+    const auto runner = make_importing_source({}, {{"facade.dll", {"Direct"}}});
+    const auto pending = make_importing_source({}, {{"facade.dll", {"Direct", "Forwarded"}}});
+    const auto path = dir / "runner.exe";
+    write_bytes(path, runner);
+    const auto runner_only = sheller::engine::prepare_pe_file(path, false, {}, dir);
+    ASSERT_TRUE(runner_only.has_value()) << rejection_detail(runner_only);
+    EXPECT_EQ(find_source(*runner_only, "hidden.dll"), nullptr);
+    const auto with_pending = sheller::engine::prepare_pe_file(
+        path, false, {}, dir, false, "runner.exe", pending, "payload.dll");
+    ASSERT_TRUE(with_pending.has_value()) << rejection_detail(with_pending);
+    EXPECT_NE(find_source(*with_pending, "hidden.dll"), nullptr);
+    EXPECT_TRUE(with_pending->map.module_index_by_name("hidden.dll").has_value());
 }
 
 // ---- task 3.2: resident real-byte IAT binding ------------------------------
@@ -242,7 +306,7 @@ std::uint64_t expected_ntdll_stub_va()
 {
     const auto source = make_boundary_source(boundary_fixture_exports(false));
     const auto derived =
-        sheller::loader::derive_boundary_image(source, "ntdll.dll", boundary_fixture_rules());
+        sheller::loader::derive_boundary_image(source, "ntdll.dll", boundary_fixture_rules(), 0x7FF800000000ULL);
     EXPECT_TRUE(derived.has_value());
     if (!derived.has_value()) {
         return 0;
@@ -857,11 +921,21 @@ TEST(LoaderDirectory, ReplayRestoresTheRunTables)
     EXPECT_TRUE(replay->loader_route);
     EXPECT_TRUE(replay->directory_mode);
 
-    // modules: the resident set matches the construction (base, size, name)
+    // modules: the resident set matches the construction (base, size, name).
+    // The lists align member for member in InLoadOrder chain order. The
+    // entry image is the one name exception: the replay reads the
+    // guest-visible Ldr arrival name from the photographed world, while the
+    // construction's list keeps the host attribution placeholder
+    // (`loader_image`) - the synthetic name never enters a Ldr table entry.
     ASSERT_EQ(replay->loader_modules.size(), construction->loader_modules.size());
     for (std::size_t i = 0; i < replay->loader_modules.size(); ++i) {
         EXPECT_EQ(replay->loader_modules[i].base, construction->loader_modules[i].base);
         EXPECT_EQ(replay->loader_modules[i].size, construction->loader_modules[i].size);
+        if (replay->loader_modules[i].base == replay->metadata.image_base) {
+            EXPECT_NE(std::string(replay->loader_modules[i].name.data()), "loader_image")
+                << "the synthetic attribution placeholder reached the guest-visible name";
+            continue;
+        }
         EXPECT_EQ(std::string(replay->loader_modules[i].name.data()),
                   std::string(construction->loader_modules[i].name.data()));
     }
@@ -1240,6 +1314,11 @@ TEST(LoaderDirectory, StrictFacadeAndUnpackNeedNoSyntheticDirectory)
 
 TEST(LoaderDirectory, ForwardedDynamicLookupKeepsOwnerAndDirectoryMap)
 {
+    // owner.dll's Alias is a forwarder into the map-hosted contract; the
+    // sample statically imports owner.dll so the closure pulls it in (the
+    // closure, not the directory listing, decides residency), and the
+    // forwarded dynamic lookup keeps its owner attribution through the
+    // directory map
     const auto owner = make_importing_source(
         {{"Alias", nullptr, 0, {}, "api-ms-win-core-fixture-l1-1-0.Final"}}, {});
     const auto target = make_importing_source({{"Final", nullptr, 0x1000, {0xC3}, {}}}, {});
@@ -1247,7 +1326,8 @@ TEST(LoaderDirectory, ForwardedDynamicLookupKeepsOwnerAndDirectoryMap)
         make_directory("review_forward", {{"owner.dll", owner}, {"fakentdll.dll", target}});
     const auto sample = write_review_sample(
         "sheller_review_forward.exe",
-        make_importing_source({{"entry", nullptr, 0x1000, {0xEB, 0xFE}, {}}}, {}));
+        make_importing_source({{"entry", nullptr, 0x1000, {0xEB, 0xFE}, {}}},
+                              {{"owner.dll", {"Alias"}}}));
     auto direct = sheller::engine::prepare_pe_file(sample, false, {}, dir, false);
     ASSERT_TRUE(direct.has_value()) << direct.error().detail;
     const auto container = sheller::engine::craft_container_from_guest(*direct);
@@ -1322,16 +1402,22 @@ TEST(LoaderDirectory, ForwarderClosureAddsMissingFallbackEndpoint)
 
 TEST(LoaderDirectory, ImporterSpecificMissingHostUsesTheImporter)
 {
-    const auto dependent = make_importing_source({{"entry", nullptr, 0x1000, {0xC3}, {}}},
-                                                 {{"api-ms-win-core-console-l1-1-0", {"malloc"}}});
+    // the sample statically imports fakeuser32 (closure membership), whose
+    // importer-conditional map entry names other.dll as the host - the
+    // missing host is reported against the importer's own name
+    const auto dependent = make_importing_source(
+        {{"FakeEntry", nullptr, 0x1000, {0xC3}, {}},
+         {"entry", nullptr, 0x1000, {0xC3}, {}}},
+        {{"api-ms-win-core-console-l1-1-0", {"malloc"}}});
     const auto dir = make_directory("review_importer", {{"fakeuser32.dll", dependent}});
     const auto sample = write_review_sample(
         "sheller_review_importer.exe",
-        make_importing_source({{"entry", nullptr, 0x1000, {0xEB, 0xFE}, {}}}, {}));
+        make_importing_source({{"entry", nullptr, 0x1000, {0xEB, 0xFE}, {}}},
+                              {{"fakeuser32.dll", {"FakeEntry"}}}));
     const auto built = sheller::engine::prepare_pe_file(sample, false, {}, dir, false);
     ASSERT_FALSE(built.has_value());
     EXPECT_NE(built.error().detail.find("other.dll"), std::string::npos);
-    EXPECT_EQ(built.error().detail.find("fakentdll.dll"), std::string::npos);
+    EXPECT_NE(built.error().detail.find("fakeuser32.dll"), std::string::npos);
 }
 
 TEST(LoaderDirectory, DllAdmissionResolvesApiSetsAndOrdinalForwarders)
